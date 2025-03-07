@@ -3,6 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerControls } from './VisualizerControls';
 import { CodeHighlighter } from './CodeHighlighter';
 import { Algorithm } from '../utils/algorithmData';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { RefreshCw } from 'lucide-react';
 
 interface VisualizerProps {
   algorithm: Algorithm;
@@ -20,6 +23,7 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
   const [totalSteps, setTotalSteps] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [activeLineIndex, setActiveLineIndex] = useState(-1);
+  const [userInput, setUserInput] = useState<string>('');
   
   const animationRef = useRef<number | null>(null);
   const stepsRef = useRef<any[]>([]);
@@ -43,6 +47,49 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
     const mockSteps = generateMockSteps(newArray);
     stepsRef.current = mockSteps;
     setTotalSteps(mockSteps.length);
+  };
+  
+  const handleUserArraySubmit = () => {
+    try {
+      // Parse user input as an array of numbers
+      const inputArray = userInput
+        .split(',')
+        .map(item => item.trim())
+        .filter(item => item !== '')
+        .map(item => {
+          const num = Number(item);
+          if (isNaN(num)) {
+            throw new Error(`Invalid input: "${item}" is not a number`);
+          }
+          return num;
+        });
+      
+      if (inputArray.length === 0) {
+        throw new Error('Please enter at least one number');
+      }
+      
+      if (inputArray.length > 30) {
+        throw new Error('Maximum array size is 30 elements');
+      }
+      
+      const newArray = inputArray.map(value => ({
+        value,
+        status: 'default' as const
+      }));
+      
+      setArray(newArray);
+      reset();
+      
+      // Generate steps for the new array
+      const mockSteps = generateMockSteps(newArray);
+      stepsRef.current = mockSteps;
+      setTotalSteps(mockSteps.length);
+      
+      setUserInput('');
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : 'Invalid input');
+    }
   };
   
   // This is just a mock function to simulate algorithm steps
@@ -172,12 +219,34 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
       <div className="glass-card p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold">{algorithm.name} Visualization</h3>
-          <button 
-            onClick={generateRandomArray}
-            className="px-4 py-1.5 text-sm bg-secondary rounded-md hover:bg-secondary/80 transition-colors"
-          >
-            New Array
-          </button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={generateRandomArray}
+              variant="secondary"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <RefreshCw className="h-4 w-4" />
+              New Array
+            </Button>
+          </div>
+        </div>
+        
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
+            <Input
+              placeholder="Enter numbers separated by commas (e.g., 5, 3, 8, 1, 9)"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              className="flex-grow"
+            />
+            <Button onClick={handleUserArraySubmit} className="whitespace-nowrap">
+              Use Custom Array
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Enter your own dataset to visualize how the algorithm works on specific inputs.
+          </p>
         </div>
         
         <div className="relative h-64 flex items-end justify-center gap-1 mb-6">
