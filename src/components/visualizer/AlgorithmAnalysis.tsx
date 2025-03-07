@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Algorithm } from '../../utils/algorithmData';
+import { Algorithm } from '../../utils/algorithms';
 
 interface AlgorithmAnalysisProps {
   algorithm: Algorithm;

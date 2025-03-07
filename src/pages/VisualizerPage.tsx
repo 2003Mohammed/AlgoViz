@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { Visualizer } from '../components/Visualizer';
-import { algorithms } from '../utils/algorithmData';
+import { algorithms } from '../utils/algorithms';
 import { ArrowLeft, ChevronRight, Info } from 'lucide-react';
 
 const VisualizerPage = () => {

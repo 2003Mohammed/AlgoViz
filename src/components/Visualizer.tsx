@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerControls } from './VisualizerControls';
 import { CodeHighlighter } from './CodeHighlighter';
-import { Algorithm } from '../utils/algorithmData';
+import { Algorithm } from '../utils/algorithms';
 import { Button } from './ui/button';
 import { RefreshCw } from 'lucide-react';
 import { ArrayItem, VisualizerProps, VisualizerStep } from '../types/visualizer';

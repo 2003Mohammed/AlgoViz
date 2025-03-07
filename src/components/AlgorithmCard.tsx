@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Algorithm } from '../utils/algorithmData';
+import { Algorithm } from '../utils/algorithms';
 import { ArrowRight, Clock } from 'lucide-react';
 
 interface AlgorithmCardProps {

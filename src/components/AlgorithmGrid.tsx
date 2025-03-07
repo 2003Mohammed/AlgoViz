@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { AlgorithmCard } from './AlgorithmCard';
-import { algorithms, categories, Category } from '../utils/algorithmData';
+import { algorithms, categories } from '../utils/algorithms';
 
 export const AlgorithmGrid: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
