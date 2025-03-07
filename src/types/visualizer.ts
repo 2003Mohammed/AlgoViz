@@ -1,5 +1,5 @@
 
-import { Algorithm } from '../utils/algorithmData';
+import { Algorithm } from '../utils/algorithms';
 
 export interface ArrayItem {
   value: number;

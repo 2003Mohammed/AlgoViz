@@ -1,4 +1,3 @@
-
 import { ArrayItem, VisualizerStep } from '../types/visualizer';
 
 export const getStatusColor = (status: ArrayItem['status']) => {
@@ -23,6 +22,7 @@ export const generateRandomArray = (size = 10, max = 100): ArrayItem[] => {
   }));
 };
 
+// We'll keep this for backward compatibility with any other component that might use it
 export const generateMockSteps = (array: ArrayItem[], totalLines: number): VisualizerStep[] => {
   const steps: VisualizerStep[] = [];
   

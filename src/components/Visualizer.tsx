@@ -2,14 +2,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerControls } from './VisualizerControls';
 import { CodeHighlighter } from './CodeHighlighter';
-import { Algorithm } from '../utils/algorithms';
 import { Button } from './ui/button';
 import { RefreshCw } from 'lucide-react';
 import { ArrayItem, VisualizerProps, VisualizerStep } from '../types/visualizer';
-import { generateRandomArray, generateMockSteps } from '../utils/visualizerUtils';
+import { generateRandomArray } from '../utils/visualizerUtils';
 import { ArrayVisualizer } from './visualizer/ArrayVisualizer';
 import { CustomArrayInput } from './visualizer/CustomArrayInput';
 import { AlgorithmAnalysis } from './visualizer/AlgorithmAnalysis';
+import { getVisualizationSteps } from '../utils/algorithms/visualizations';
+import { toast } from '../hooks/use-toast';
 
 export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
   const [array, setArray] = useState<ArrayItem[]>([]);
@@ -24,32 +25,60 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
   
   useEffect(() => {
     handleGenerateRandomArray();
-  }, []);
+  }, [algorithm.id]); // Re-initialize when algorithm changes
   
   const handleGenerateRandomArray = () => {
-    const newArray = generateRandomArray();
-    setArray(newArray);
-    reset();
-    
-    const pseudoCodeLines = algorithm.pseudocode?.length || 0;
-    const mockSteps = generateMockSteps(newArray, pseudoCodeLines);
-    stepsRef.current = mockSteps;
-    setTotalSteps(mockSteps.length);
+    try {
+      const newArray = generateRandomArray();
+      setArray(newArray);
+      reset();
+      
+      // Generate real visualization steps
+      const visualizationSteps = getVisualizationSteps(algorithm.id, newArray);
+      stepsRef.current = visualizationSteps;
+      setTotalSteps(visualizationSteps.length);
+      
+      toast({
+        title: "New array generated",
+        description: `Ready to visualize ${algorithm.name}`,
+      });
+    } catch (error) {
+      console.error("Error generating array:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate new array",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleCustomArraySubmit = (inputArray: number[]) => {
-    const newArray = inputArray.map(value => ({
-      value,
-      status: 'default' as const
-    }));
-    
-    setArray(newArray);
-    reset();
-    
-    const pseudoCodeLines = algorithm.pseudocode?.length || 0;
-    const mockSteps = generateMockSteps(newArray, pseudoCodeLines);
-    stepsRef.current = mockSteps;
-    setTotalSteps(mockSteps.length);
+    try {
+      const newArray = inputArray.map(value => ({
+        value,
+        status: 'default' as const
+      }));
+      
+      setArray(newArray);
+      reset();
+      
+      // Generate real visualization steps for the custom array
+      const visualizationSteps = getVisualizationSteps(algorithm.id, newArray);
+      stepsRef.current = visualizationSteps;
+      setTotalSteps(visualizationSteps.length);
+      
+      toast({
+        title: "Custom array loaded",
+        description: `Ready to visualize ${algorithm.name}`,
+      });
+    } catch (error) {
+      console.error("Error processing custom array:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process custom array",
+        variant: "destructive",
+      });
+    }
   };
   
   const reset = () => {
@@ -60,6 +89,11 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
     setIsPlaying(false);
     setCurrentStep(0);
     setActiveLineIndex(-1);
+    
+    // Reset array to initial state if steps are available
+    if (stepsRef.current.length > 0) {
+      setArray(stepsRef.current[0].array);
+    }
   };
   
   const togglePlayPause = () => {
