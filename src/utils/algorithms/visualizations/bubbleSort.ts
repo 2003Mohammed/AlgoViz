@@ -1,6 +1,5 @@
 
-import { VisualizationStep } from '../../../types/visualizer';
-import { ArrayItem } from '../../../types/visualizer';
+import { ArrayItem, VisualizationStep } from '../../../types/visualizer';
 
 export function generateBubbleSortSteps(initialArray: ArrayItem[]): VisualizationStep[] {
   // Create a deep copy of the initial array to prevent modifying the original

@@ -3,12 +3,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerControls } from './VisualizerControls';
 import { CodeHighlighter } from './CodeHighlighter';
 import { Button } from './ui/button';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Download } from 'lucide-react';
 import { ArrayItem, VisualizerProps, VisualizerStep } from '../types/visualizer';
 import { generateRandomArray } from '../utils/visualizerUtils';
 import { ArrayVisualizer } from './visualizer/ArrayVisualizer';
 import { CustomArrayInput } from './visualizer/CustomArrayInput';
 import { AlgorithmAnalysis } from './visualizer/AlgorithmAnalysis';
+import { ProgressTracker } from './visualizer/ProgressTracker';
 import { getVisualizationSteps } from '../utils/algorithms/visualizations';
 import { toast } from '../hooks/use-toast';
 
@@ -22,6 +23,7 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
   
   const animationRef = useRef<number | null>(null);
   const stepsRef = useRef<VisualizerStep[]>([]);
+  const visualizerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     handleGenerateRandomArray();
@@ -132,6 +134,38 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
     setSpeed(newSpeed);
   };
   
+  const exportVisualization = () => {
+    try {
+      const visualizationData = {
+        algorithm: algorithm.id,
+        steps: stepsRef.current,
+        currentStep: currentStep
+      };
+      
+      const blob = new Blob([JSON.stringify(visualizationData)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${algorithm.id}-visualization.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Visualization exported",
+        description: "You can save this file and import it later",
+      });
+    } catch (error) {
+      console.error("Error exporting visualization:", error);
+      toast({
+        title: "Export failed",
+        description: "Could not export the visualization",
+        variant: "destructive",
+      });
+    }
+  };
+  
   // Animation loop
   useEffect(() => {
     if (isPlaying) {
@@ -166,11 +200,20 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
   }, [isPlaying, currentStep, speed, totalSteps]);
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" ref={visualizerRef}>
       <div className="glass-card p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold">{algorithm.name} Visualization</h3>
           <div className="flex gap-2">
+            <Button 
+              onClick={exportVisualization}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
             <Button 
               onClick={handleGenerateRandomArray}
               variant="secondary"
@@ -182,6 +225,12 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
             </Button>
           </div>
         </div>
+        
+        <ProgressTracker
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          algorithmId={algorithm.id}
+        />
         
         <CustomArrayInput onSubmit={handleCustomArraySubmit} />
         

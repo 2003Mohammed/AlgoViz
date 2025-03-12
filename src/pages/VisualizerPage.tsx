@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { Visualizer } from '../components/Visualizer';
+import { AlgorithmGuide } from '../components/visualizer/AlgorithmGuide';
 import { algorithms } from '../utils/algorithms';
 import { ArrowLeft, ChevronRight, Info } from 'lucide-react';
 
@@ -10,21 +10,30 @@ const VisualizerPage = () => {
   const { algorithmId } = useParams<{ algorithmId?: string }>();
   const navigate = useNavigate();
   const [algorithm, setAlgorithm] = useState(algorithms[0]);
+  const [showGuide, setShowGuide] = useState(true);
   
   useEffect(() => {
     if (algorithmId) {
       const found = algorithms.find(algo => algo.id === algorithmId);
       if (found) {
         setAlgorithm(found);
+        setShowGuide(localStorage.getItem(`algo-guide-${found.id}-completed`) !== 'true');
       } else {
-        // If algorithm not found, navigate to the first algorithm
         navigate(`/visualizer/${algorithms[0].id}`, { replace: true });
       }
     } else {
-      // If no algorithm specified, show all algorithms
       navigate('/visualizer', { replace: true });
     }
   }, [algorithmId, navigate]);
+  
+  const handleSkipGuide = () => {
+    setShowGuide(false);
+    localStorage.setItem(`algo-guide-${algorithm.id}-completed`, 'true');
+  };
+  
+  const handleShowGuide = () => {
+    setShowGuide(true);
+  };
   
   return (
     <Layout>
@@ -47,9 +56,20 @@ const VisualizerPage = () => {
               
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="heading-lg">{algorithm.name}</h1>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-                  <Info className="h-4 w-4" />
-                  <span>Category: {algorithm.category.charAt(0).toUpperCase() + algorithm.category.slice(1)}</span>
+                <div className="flex items-center gap-4">
+                  {!showGuide && (
+                    <button
+                      onClick={handleShowGuide}
+                      className="text-sm text-primary hover:underline flex items-center gap-1"
+                    >
+                      <Info className="h-4 w-4" />
+                      Show Guide
+                    </button>
+                  )}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
+                    <Info className="h-4 w-4" />
+                    <span>Category: {algorithm.category.charAt(0).toUpperCase() + algorithm.category.slice(1)}</span>
+                  </div>
                 </div>
               </div>
               
@@ -58,7 +78,11 @@ const VisualizerPage = () => {
               </p>
             </div>
             
-            <Visualizer algorithm={algorithm} />
+            {showGuide ? (
+              <AlgorithmGuide algorithm={algorithm} onSkip={handleSkipGuide} />
+            ) : (
+              <Visualizer algorithm={algorithm} />
+            )}
           </>
         ) : (
           <>
