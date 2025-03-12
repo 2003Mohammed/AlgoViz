@@ -1,0 +1,209 @@
+
+import { useState, useRef, useEffect } from 'react';
+import { ArrayItem, VisualizerStep } from '../types/visualizer';
+import { generateRandomArray } from '../utils/visualizerUtils';
+import { getVisualizationSteps } from '../utils/algorithms/visualizations';
+import { toast } from './use-toast';
+
+export function useVisualizerState(algorithmId: string) {
+  const [array, setArray] = useState<ArrayItem[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(0);
+  const [speed, setSpeed] = useState(1);
+  const [activeLineIndex, setActiveLineIndex] = useState(-1);
+  
+  const animationRef = useRef<number | null>(null);
+  const stepsRef = useRef<VisualizerStep[]>([]);
+  
+  useEffect(() => {
+    handleGenerateRandomArray();
+  }, [algorithmId]); // Re-initialize when algorithm changes
+  
+  const handleGenerateRandomArray = () => {
+    try {
+      const newArray = generateRandomArray();
+      setArray(newArray);
+      reset();
+      
+      // Generate visualization steps
+      const visualizationSteps = getVisualizationSteps(algorithmId, newArray);
+      stepsRef.current = visualizationSteps;
+      setTotalSteps(visualizationSteps.length);
+      
+      toast({
+        title: "New array generated",
+        description: `Ready to visualize ${algorithmId}`,
+      });
+    } catch (error) {
+      console.error("Error generating array:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate new array",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleCustomArraySubmit = (inputArray: number[]) => {
+    try {
+      const newArray = inputArray.map(value => ({
+        value,
+        status: 'default' as const
+      }));
+      
+      setArray(newArray);
+      reset();
+      
+      // Generate visualization steps for the custom array
+      const visualizationSteps = getVisualizationSteps(algorithmId, newArray);
+      stepsRef.current = visualizationSteps;
+      setTotalSteps(visualizationSteps.length);
+      
+      toast({
+        title: "Custom array loaded",
+        description: `Ready to visualize ${algorithmId}`,
+      });
+    } catch (error) {
+      console.error("Error processing custom array:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process custom array",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const reset = () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    setIsPlaying(false);
+    setCurrentStep(0);
+    setActiveLineIndex(-1);
+    
+    // Reset array to initial state if steps are available
+    if (stepsRef.current.length > 0) {
+      setArray(stepsRef.current[0].array);
+    }
+  };
+  
+  const togglePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+  
+  const stepForward = () => {
+    if (currentStep < totalSteps - 1) {
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      
+      const step = stepsRef.current[nextStep];
+      if (step) {
+        setArray(step.array);
+        setActiveLineIndex(step.lineIndex);
+      }
+    } else {
+      setIsPlaying(false);
+    }
+  };
+  
+  const stepBackward = () => {
+    if (currentStep > 0) {
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      
+      const step = stepsRef.current[prevStep];
+      if (step) {
+        setArray(step.array);
+        setActiveLineIndex(step.lineIndex);
+      }
+    }
+  };
+  
+  const changeSpeed = (newSpeed: number) => {
+    setSpeed(newSpeed);
+  };
+  
+  const exportVisualization = () => {
+    try {
+      const visualizationData = {
+        algorithm: algorithmId,
+        steps: stepsRef.current,
+        currentStep: currentStep
+      };
+      
+      const blob = new Blob([JSON.stringify(visualizationData)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${algorithmId}-visualization.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Visualization exported",
+        description: "You can save this file and import it later",
+      });
+    } catch (error) {
+      console.error("Error exporting visualization:", error);
+      toast({
+        title: "Export failed",
+        description: "Could not export the visualization",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Animation effect
+  useEffect(() => {
+    if (isPlaying) {
+      let lastTime = 0;
+      const interval = 1000 / speed;
+      
+      const animate = (timestamp: number) => {
+        if (!lastTime || timestamp - lastTime >= interval) {
+          lastTime = timestamp;
+          
+          if (currentStep < totalSteps - 1) {
+            stepForward();
+          } else {
+            setIsPlaying(false);
+            return;
+          }
+        }
+        
+        if (isPlaying) {
+          animationRef.current = requestAnimationFrame(animate);
+        }
+      };
+      
+      animationRef.current = requestAnimationFrame(animate);
+      
+      return () => {
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
+      };
+    }
+  }, [isPlaying, currentStep, speed, totalSteps]);
+
+  return {
+    array,
+    isPlaying,
+    currentStep,
+    totalSteps,
+    speed,
+    activeLineIndex,
+    handleGenerateRandomArray,
+    handleCustomArraySubmit,
+    reset,
+    togglePlayPause,
+    stepForward,
+    stepBackward,
+    changeSpeed,
+    exportVisualization
+  };
+}
