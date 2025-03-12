@@ -15,4 +15,9 @@ export interface Algorithm {
   spaceComplexity: string;
   pseudocode?: string[];
   implementation?: string;
+  realWorldExamples?: {
+    title: string;
+    description: string;
+    industry: string;
+  }[];
 }

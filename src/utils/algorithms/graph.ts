@@ -1,4 +1,3 @@
-
 import { Network } from 'lucide-react';
 import { Algorithm } from './types';
 
@@ -49,7 +48,29 @@ export const graphAlgorithms: Algorithm[] = [
   }
   
   return false; // Target not found
-}`
+}`,
+    realWorldExamples: [
+      {
+        title: "Social Network Analysis",
+        description: "BFS is used to find all friends within a certain number of connections (e.g., 'friends of friends') on social platforms like Facebook and LinkedIn.",
+        industry: "Social Media"
+      },
+      {
+        title: "Web Crawling",
+        description: "Search engines use BFS to crawl the web by visiting links from a page before moving to links at the next depth level.",
+        industry: "Internet Technology"
+      },
+      {
+        title: "GPS Navigation",
+        description: "Modified BFS algorithms are used in GPS systems to find the shortest route between two locations in a road network.",
+        industry: "Transportation"
+      },
+      {
+        title: "Network Broadcasting",
+        description: "In computer networks, BFS principles are used for broadcasting packets to all nodes efficiently.",
+        industry: "Telecommunications"
+      }
+    ]
   },
   {
     id: 'dfs',
@@ -80,7 +101,29 @@ export const graphAlgorithms: Algorithm[] = [
   }
   
   return visited;
-}`
+}`,
+    realWorldExamples: [
+      {
+        title: "Maze Generation and Solving",
+        description: "DFS is used to generate random mazes and find paths through existing mazes in puzzle games and artificial intelligence.",
+        industry: "Gaming"
+      },
+      {
+        title: "Topological Sorting",
+        description: "In project management, DFS-based topological sorting helps schedule tasks with dependencies (e.g., in build systems like Make).",
+        industry: "Software Development"
+      },
+      {
+        title: "Cycle Detection",
+        description: "DFS can detect cycles in directed graphs, useful in deadlock detection in operating systems and dependency resolution.",
+        industry: "Systems Programming"
+      },
+      {
+        title: "File System Traversal",
+        description: "Operating systems use DFS to search for files in directory structures and calculate folder sizes recursively.",
+        industry: "Operating Systems"
+      }
+    ]
   },
   {
     id: 'dijkstra',
@@ -111,6 +154,28 @@ export const graphAlgorithms: Algorithm[] = [
       '                dist[v] := alt',
       '                update v in Q',
       '    return dist[]'
+    ],
+    realWorldExamples: [
+      {
+        title: "Network Routing",
+        description: "The OSPF protocol used in internet routing relies on Dijkstra's algorithm to determine the shortest path for data packets.",
+        industry: "Networking"
+      },
+      {
+        title: "Google Maps",
+        description: "Navigation services like Google Maps use Dijkstra's algorithm (and variants) to find the shortest or fastest route between locations.",
+        industry: "Maps & Navigation"
+      },
+      {
+        title: "Flight Planning",
+        description: "Airlines use shortest path algorithms to plan routes that minimize fuel consumption, time, or cost.",
+        industry: "Aviation"
+      },
+      {
+        title: "Supply Chain Optimization",
+        description: "Companies use Dijkstra's algorithm to optimize logistics, finding the most efficient routes for product delivery.",
+        industry: "Logistics"
+      }
     ]
   }
 ];

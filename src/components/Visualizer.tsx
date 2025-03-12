@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerControls } from './VisualizerControls';
 import { CodeHighlighter } from './CodeHighlighter';
@@ -9,6 +8,7 @@ import { generateRandomArray } from '../utils/visualizerUtils';
 import { ArrayVisualizer } from './visualizer/ArrayVisualizer';
 import { CustomArrayInput } from './visualizer/CustomArrayInput';
 import { AlgorithmAnalysis } from './visualizer/AlgorithmAnalysis';
+import { RealWorldExamples } from './visualizer/RealWorldExamples';
 import { ProgressTracker } from './visualizer/ProgressTracker';
 import { getVisualizationSteps } from '../utils/algorithms/visualizations';
 import { toast } from '../hooks/use-toast';
@@ -166,7 +166,6 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
     }
   };
   
-  // Animation loop
   useEffect(() => {
     if (isPlaying) {
       let lastTime = 0;
@@ -271,6 +270,8 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
           />
         </div>
       )}
+      
+      <RealWorldExamples algorithm={algorithm} />
       
       <AlgorithmAnalysis algorithm={algorithm} />
     </div>

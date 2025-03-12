@@ -46,7 +46,29 @@ export const sortingAlgorithms: Algorithm[] = [
   } while (swapped);
   
   return arr;
-}`
+}`,
+    realWorldExamples: [
+      {
+        title: "Educational Tools",
+        description: "Bubble sort is widely used in educational settings to teach the basics of sorting algorithms due to its simplicity and ease of visualization.",
+        industry: "Education"
+      },
+      {
+        title: "Small Dataset Processing",
+        description: "When working with very small datasets where efficiency isn't critical, bubble sort can be implemented with minimal code and resources.",
+        industry: "Software Development"
+      },
+      {
+        title: "Nearly Sorted Data",
+        description: "In scenarios where data is already nearly sorted, bubble sort can be efficient as it has O(n) complexity in the best case.",
+        industry: "Data Analysis"
+      },
+      {
+        title: "Embedded Systems",
+        description: "In memory-constrained environments, bubble sort's low space complexity (O(1)) makes it useful for sorting small arrays.",
+        industry: "IoT & Embedded Systems"
+      }
+    ]
   },
   {
     id: 'quick-sort',
@@ -99,6 +121,28 @@ function partition(arr, low, high) {
   
   [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
   return i + 1;
-}`
+}`,
+    realWorldExamples: [
+      {
+        title: "Database Systems",
+        description: "Quick sort is often used in database systems for sorting records and optimizing queries due to its efficient average-case performance.",
+        industry: "Database Management"
+      },
+      {
+        title: "Programming Languages",
+        description: "Many programming language standard libraries implement quick sort as their default sorting algorithm (or variants like introsort).",
+        industry: "Software Development"
+      },
+      {
+        title: "Big Data Processing",
+        description: "In distributed systems like Hadoop and Spark, variants of quick sort are used for sorting large datasets efficiently.",
+        industry: "Big Data"
+      },
+      {
+        title: "Computer Graphics",
+        description: "Quick sort is used in rendering pipelines to sort objects by depth for correct rendering order (z-buffering).",
+        industry: "Graphics & Gaming"
+      }
+    ]
   }
 ];
