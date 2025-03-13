@@ -170,94 +170,26 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
   const renderDataStructure = () => {
     switch (dataStructure.id) {
       case 'array':
-        return (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {(structure as any[]).map((item, index) => (
-              <div 
-                key={index} 
-                className="w-12 h-12 flex items-center justify-center border border-primary/50 rounded-md bg-primary/10"
-              >
-                {item}
-              </div>
-            ))}
-            {(structure as any[]).length === 0 && (
-              <div className="text-muted-foreground">Array is empty</div>
-            )}
-          </div>
-        );
+        return renderArrayStructure();
         
       case 'linked-list':
-        const { nodes, head } = structure as any;
-        return (
-          <div className="flex flex-wrap gap-1 justify-center items-center">
-            {head !== null && nodes.length > 0 ? (
-              <>
-                <div className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mb-2">
-                  Head
-                </div>
-                <div className="flex flex-wrap gap-1 justify-center items-center">
-                  {(() => {
-                    const renderedNodes = [];
-                    let currentIndex = head;
-                    
-                    while (currentIndex !== null) {
-                      const node = nodes[currentIndex];
-                      const isLast = node.next === null;
-                      
-                      renderedNodes.push(
-                        <React.Fragment key={currentIndex}>
-                          <div className="w-12 h-12 flex items-center justify-center border border-primary/50 rounded-md bg-primary/10">
-                            {node.value}
-                          </div>
-                          {!isLast && (
-                            <div className="w-6 flex items-center justify-center">
-                              →
-                            </div>
-                          )}
-                        </React.Fragment>
-                      );
-                      
-                      currentIndex = node.next;
-                    }
-                    
-                    return renderedNodes;
-                  })()}
-                </div>
-              </>
-            ) : (
-              <div className="text-muted-foreground">Linked list is empty</div>
-            )}
-          </div>
-        );
+        return renderLinkedListStructure();
         
       case 'stack':
-        return (
-          <div className="flex flex-col gap-1 items-center">
-            {(structure as any[]).length > 0 ? (
-              <>
-                <div className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mb-2">
-                  Top
-                </div>
-                {(structure as any[]).map((item, index) => (
-                  <div 
-                    key={index} 
-                    className={`w-24 h-12 flex items-center justify-center border border-primary/50 rounded-md ${
-                      index === 0 ? 'bg-primary/20' : 'bg-primary/10'
-                    }`}
-                  >
-                    {item}
-                  </div>
-                ))}
-                <div className="border-b-2 border-primary/50 w-32 mt-1"></div>
-              </>
-            ) : (
-              <div className="text-muted-foreground">Stack is empty</div>
-            )}
-          </div>
-        );
+        return renderStackStructure();
         
-      // Additional cases for other data structures would go here
-      
+      case 'queue':
+        return renderQueueStructure();
+        
+      case 'binary-tree':
+        return renderBinaryTreeStructure();
+        
+      case 'hash-table':
+        return renderHashTableStructure();
+        
+      case 'graph':
+        return renderGraphStructure();
+        
       default:
         return (
           <div className="text-center text-muted-foreground">
@@ -265,6 +197,317 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           </div>
         );
     }
+  };
+  
+  // Array visualization
+  const renderArrayStructure = () => {
+    return (
+      <div className="flex flex-wrap gap-2 justify-center">
+        {(structure as any[]).map((item, index) => (
+          <div 
+            key={index} 
+            className="w-12 h-12 flex items-center justify-center border border-primary/50 rounded-md bg-primary/10"
+          >
+            {item}
+          </div>
+        ))}
+        {(structure as any[]).length === 0 && (
+          <div className="text-muted-foreground">Array is empty</div>
+        )}
+      </div>
+    );
+  };
+  
+  // Linked List visualization
+  const renderLinkedListStructure = () => {
+    const { nodes, head } = structure as any;
+    return (
+      <div className="flex flex-wrap gap-1 justify-center items-center">
+        {head !== null && nodes.length > 0 ? (
+          <>
+            <div className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mb-2">
+              Head
+            </div>
+            <div className="flex flex-wrap gap-1 justify-center items-center">
+              {(() => {
+                const renderedNodes = [];
+                let currentIndex = head;
+                
+                while (currentIndex !== null) {
+                  const node = nodes[currentIndex];
+                  const isLast = node.next === null;
+                  
+                  renderedNodes.push(
+                    <React.Fragment key={currentIndex}>
+                      <div className="w-12 h-12 flex items-center justify-center border border-primary/50 rounded-md bg-primary/10">
+                        {node.value}
+                      </div>
+                      {!isLast && (
+                        <div className="w-6 flex items-center justify-center">
+                          →
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                  
+                  currentIndex = node.next;
+                }
+                
+                return renderedNodes;
+              })()}
+            </div>
+          </>
+        ) : (
+          <div className="text-muted-foreground">Linked list is empty</div>
+        )}
+      </div>
+    );
+  };
+  
+  // Stack visualization
+  const renderStackStructure = () => {
+    return (
+      <div className="flex flex-col gap-1 items-center">
+        {(structure as any[]).length > 0 ? (
+          <>
+            <div className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mb-2">
+              Top
+            </div>
+            {(structure as any[]).map((item, index) => (
+              <div 
+                key={index} 
+                className={`w-24 h-12 flex items-center justify-center border border-primary/50 rounded-md ${
+                  index === 0 ? 'bg-primary/20' : 'bg-primary/10'
+                }`}
+              >
+                {item}
+              </div>
+            ))}
+            <div className="border-b-2 border-primary/50 w-32 mt-1"></div>
+          </>
+        ) : (
+          <div className="text-muted-foreground">Stack is empty</div>
+        )}
+      </div>
+    );
+  };
+  
+  // Queue visualization
+  const renderQueueStructure = () => {
+    return (
+      <div className="flex flex-col items-center">
+        {(structure as any[]).length > 0 ? (
+          <>
+            <div className="flex justify-between w-full max-w-md mb-2">
+              <div className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md">
+                Front
+              </div>
+              <div className="px-2 py-1 text-xs font-medium bg-secondary/50 rounded-md">
+                Rear
+              </div>
+            </div>
+            <div className="flex flex-row-reverse items-center justify-center">
+              {(structure as any[]).map((item, index) => (
+                <div 
+                  key={index} 
+                  className={`w-16 h-12 flex items-center justify-center border border-primary/50 rounded-md mx-1 ${
+                    index === 0 ? 'bg-primary/20' : 
+                    index === (structure as any[]).length - 1 ? 'bg-secondary/30' : 
+                    'bg-primary/10'
+                  }`}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="text-muted-foreground">Queue is empty</div>
+        )}
+      </div>
+    );
+  };
+  
+  // Binary Tree visualization
+  const renderBinaryTreeStructure = () => {
+    const { nodes, root } = structure as any;
+    
+    if (!nodes || nodes.length === 0 || root === null) {
+      return <div className="text-muted-foreground">Binary tree is empty</div>;
+    }
+    
+    // Helper function to recursively render tree nodes
+    const renderTreeNode = (nodeIndex: number, x: number, y: number, level: number, width: number) => {
+      if (nodeIndex === null || nodeIndex >= nodes.length) return null;
+      
+      const node = nodes[nodeIndex];
+      const elements = [];
+      
+      // Draw current node
+      elements.push(
+        <g key={`node-${nodeIndex}`}>
+          <circle
+            cx={x}
+            cy={y}
+            r={20}
+            className="fill-primary/20 stroke-primary"
+          />
+          <text
+            x={x}
+            y={y}
+            textAnchor="middle"
+            dy=".3em"
+            className="text-xs fill-foreground"
+          >
+            {node.value}
+          </text>
+        </g>
+      );
+      
+      // Draw left child
+      if (node.left !== null) {
+        const leftX = x - width / 2;
+        const leftY = y + 60;
+        
+        // Draw edge to left child
+        elements.push(
+          <line
+            key={`edge-${nodeIndex}-${node.left}`}
+            x1={x}
+            y1={y + 20}
+            x2={leftX}
+            y2={leftY - 20}
+            className="stroke-primary/60 stroke-1"
+          />
+        );
+        
+        // Recursively render left subtree
+        const leftElements = renderTreeNode(node.left, leftX, leftY, level + 1, width / 2);
+        if (leftElements) elements.push(...leftElements);
+      }
+      
+      // Draw right child
+      if (node.right !== null) {
+        const rightX = x + width / 2;
+        const rightY = y + 60;
+        
+        // Draw edge to right child
+        elements.push(
+          <line
+            key={`edge-${nodeIndex}-${node.right}`}
+            x1={x}
+            y1={y + 20}
+            x2={rightX}
+            y2={rightY - 20}
+            className="stroke-primary/60 stroke-1"
+          />
+        );
+        
+        // Recursively render right subtree
+        const rightElements = renderTreeNode(node.right, rightX, rightY, level + 1, width / 2);
+        if (rightElements) elements.push(...rightElements);
+      }
+      
+      return elements;
+    };
+    
+    return (
+      <div className="flex justify-center items-center h-64">
+        <svg width="600" height="240" className="overflow-visible">
+          {renderTreeNode(root, 300, 40, 0, 240)}
+        </svg>
+      </div>
+    );
+  };
+  
+  // Hash Table visualization
+  const renderHashTableStructure = () => {
+    const buckets = structure as any;
+    
+    return (
+      <div className="flex flex-col items-center max-w-lg mx-auto">
+        {buckets.map((bucket: any, index: number) => (
+          <div 
+            key={index}
+            className="w-full border border-primary/30 rounded-md mb-2 overflow-hidden"
+          >
+            <div className="bg-secondary/20 px-3 py-1 border-b border-primary/20">
+              <span className="text-xs font-mono">Bucket {index}</span>
+            </div>
+            <div className="p-2">
+              {bucket.length > 0 ? (
+                <div className="flex flex-col gap-1">
+                  {bucket.map((item: any, itemIndex: number) => (
+                    <div 
+                      key={itemIndex}
+                      className="flex items-center px-2 py-1 bg-primary/5 rounded"
+                    >
+                      <span className="text-sm font-medium mr-2">{item.key}:</span>
+                      <span className="text-sm text-muted-foreground">{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground italic">Empty</div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  
+  // Graph visualization
+  const renderGraphStructure = () => {
+    const { nodes, edges } = structure as any;
+    
+    if (!nodes || nodes.length === 0) {
+      return <div className="text-muted-foreground">Graph is empty</div>;
+    }
+    
+    return (
+      <div className="flex justify-center items-center h-64">
+        <svg width="400" height="240" className="overflow-visible">
+          {/* Draw edges */}
+          {edges.map((edge: any, index: number) => {
+            const source = nodes.find((n: any) => n.id === edge.source);
+            const target = nodes.find((n: any) => n.id === edge.target);
+            
+            return (
+              <line
+                key={`edge-${index}`}
+                x1={source.x}
+                y1={source.y}
+                x2={target.x}
+                y2={target.y}
+                className="stroke-primary/60 stroke-1"
+              />
+            );
+          })}
+          
+          {/* Draw nodes */}
+          {nodes.map((node: any) => (
+            <g key={`node-${node.id}`}>
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r={20}
+                className="fill-primary/20 stroke-primary"
+              />
+              <text
+                x={node.x}
+                y={node.y}
+                textAnchor="middle"
+                dy=".3em"
+                className="text-xs fill-foreground"
+              >
+                {node.id}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </div>
+    );
   };
   
   return (

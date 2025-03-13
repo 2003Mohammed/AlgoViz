@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
@@ -17,6 +18,7 @@ const VisualizerPage = () => {
       const found = algorithms.find(algo => algo.id === algorithmId);
       if (found) {
         setAlgorithm(found);
+        // Check if the user has chosen to not see the guide again
         setShowGuide(localStorage.getItem(`algo-guide-${found.id}-completed`) !== 'true');
       } else {
         navigate(`/visualizer/${algorithms[0].id}`, { replace: true });
@@ -26,9 +28,11 @@ const VisualizerPage = () => {
     }
   }, [algorithmId, navigate]);
   
-  const handleSkipGuide = () => {
+  const handleSkipGuide = (dontShowAgain = false) => {
     setShowGuide(false);
-    localStorage.setItem(`algo-guide-${algorithm.id}-completed`, 'true');
+    if (dontShowAgain) {
+      localStorage.setItem(`algo-guide-${algorithm.id}-completed`, 'true');
+    }
   };
   
   const handleShowGuide = () => {

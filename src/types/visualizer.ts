@@ -30,5 +30,33 @@ export interface GuideSlide {
 
 export interface AlgorithmGuideProps {
   algorithm: Algorithm;
-  onSkip: () => void;
+  onSkip: (dontShowAgain?: boolean) => void;
+}
+
+// New types for different visualization styles
+export interface NodeItem {
+  id: string;
+  value: string | number;
+  x?: number;
+  y?: number;
+  status?: 'default' | 'active' | 'visited' | 'current' | 'path' | 'target';
+}
+
+export interface EdgeItem {
+  source: string;
+  target: string;
+  weight?: number;
+  status?: 'default' | 'active' | 'path';
+}
+
+export interface GraphData {
+  nodes: NodeItem[];
+  edges: EdgeItem[];
+}
+
+export interface TreeNode {
+  value: number;
+  status?: 'default' | 'active' | 'comparing' | 'sorted';
+  left?: TreeNode;
+  right?: TreeNode;
 }

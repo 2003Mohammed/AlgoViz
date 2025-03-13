@@ -1,12 +1,14 @@
-
 import { useState, useRef, useEffect } from 'react';
-import { ArrayItem, VisualizerStep } from '../types/visualizer';
-import { generateRandomArray } from '../utils/visualizerUtils';
+import { ArrayItem, VisualizerStep, GraphData, TreeNode } from '../types/visualizer';
+import { generateRandomArray, generateRandomGraph, generateRandomTree } from '../utils/visualizerUtils';
 import { getVisualizationSteps } from '../utils/algorithms/visualizations';
 import { toast } from './use-toast';
 
 export function useVisualizerState(algorithmId: string) {
   const [array, setArray] = useState<ArrayItem[]>([]);
+  const [graphData, setGraphData] = useState<GraphData | null>(null);
+  const [treeData, setTreeData] = useState<TreeNode | null>(null);
+  const [visualizationType, setVisualizationType] = useState<'array' | 'graph' | 'tree'>('array');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [totalSteps, setTotalSteps] = useState(0);
@@ -17,12 +19,28 @@ export function useVisualizerState(algorithmId: string) {
   const stepsRef = useRef<VisualizerStep[]>([]);
   
   useEffect(() => {
-    handleGenerateRandomArray();
+    // Determine visualization type based on algorithm
+    if (algorithmId.includes('sort')) {
+      setVisualizationType('array');
+      handleGenerateRandomArray();
+    } else if (algorithmId.includes('search')) {
+      setVisualizationType('array');
+      handleGenerateRandomArray(true); // Generate sorted array for search algorithms
+    } else if (algorithmId.includes('graph') || algorithmId.includes('path')) {
+      setVisualizationType('graph');
+      handleGenerateRandomGraph();
+    } else if (algorithmId.includes('tree')) {
+      setVisualizationType('tree');
+      handleGenerateRandomTree();
+    } else {
+      setVisualizationType('array');
+      handleGenerateRandomArray();
+    }
   }, [algorithmId]); // Re-initialize when algorithm changes
   
-  const handleGenerateRandomArray = () => {
+  const handleGenerateRandomArray = (sorted = false) => {
     try {
-      const newArray = generateRandomArray();
+      const newArray = generateRandomArray(sorted);
       setArray(newArray);
       reset();
       
@@ -45,30 +63,47 @@ export function useVisualizerState(algorithmId: string) {
     }
   };
   
-  const handleCustomArraySubmit = (inputArray: number[]) => {
+  const handleGenerateRandomGraph = () => {
     try {
-      const newArray = inputArray.map(value => ({
-        value,
-        status: 'default' as const
-      }));
-      
-      setArray(newArray);
+      const newGraph = generateRandomGraph();
+      setGraphData(newGraph);
       reset();
       
-      // Generate visualization steps for the custom array
-      const visualizationSteps = getVisualizationSteps(algorithmId, newArray);
-      stepsRef.current = visualizationSteps;
-      setTotalSteps(visualizationSteps.length);
+      // Graph visualizations would be handled differently
+      // This is a placeholder for future implementation
       
       toast({
-        title: "Custom array loaded",
+        title: "New graph generated",
         description: `Ready to visualize ${algorithmId}`,
       });
     } catch (error) {
-      console.error("Error processing custom array:", error);
+      console.error("Error generating graph:", error);
       toast({
         title: "Error",
-        description: "Failed to process custom array",
+        description: "Failed to generate new graph",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleGenerateRandomTree = () => {
+    try {
+      const newTree = generateRandomTree();
+      setTreeData(newTree);
+      reset();
+      
+      // Tree visualizations would be handled differently
+      // This is a placeholder for future implementation
+      
+      toast({
+        title: "New tree generated",
+        description: `Ready to visualize ${algorithmId}`,
+      });
+    } catch (error) {
+      console.error("Error generating tree:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate new tree",
         variant: "destructive",
       });
     }
@@ -157,7 +192,7 @@ export function useVisualizerState(algorithmId: string) {
     }
   };
   
-  // Animation effect
+  // Animation effect - optimized with requestAnimationFrame
   useEffect(() => {
     if (isPlaying) {
       let lastTime = 0;
@@ -192,13 +227,45 @@ export function useVisualizerState(algorithmId: string) {
 
   return {
     array,
+    graphData,
+    treeData,
+    visualizationType,
     isPlaying,
     currentStep,
     totalSteps,
     speed,
     activeLineIndex,
     handleGenerateRandomArray,
-    handleCustomArraySubmit,
+    handleGenerateRandomGraph,
+    handleGenerateRandomTree,
+    handleCustomArraySubmit: (inputArray: number[]) => {
+      try {
+        const newArray = inputArray.map(value => ({
+          value,
+          status: 'default' as const
+        }));
+        
+        setArray(newArray);
+        reset();
+        
+        // Generate visualization steps for the custom array
+        const visualizationSteps = getVisualizationSteps(algorithmId, newArray);
+        stepsRef.current = visualizationSteps;
+        setTotalSteps(visualizationSteps.length);
+        
+        toast({
+          title: "Custom array loaded",
+          description: `Ready to visualize ${algorithmId}`,
+        });
+      } catch (error) {
+        console.error("Error processing custom array:", error);
+        toast({
+          title: "Error",
+          description: "Failed to process custom array",
+          variant: "destructive",
+        });
+      }
+    },
     reset,
     togglePlayPause,
     stepForward,

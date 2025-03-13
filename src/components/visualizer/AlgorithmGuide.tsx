@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
+import { Checkbox } from '../ui/checkbox';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -73,6 +74,7 @@ const getGuideSlides = (algorithm: Algorithm): GuideSlide[] => {
 export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSkip }) => {
   const slides = getGuideSlides(algorithm);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
   const currentSlide = slides[currentSlideIndex];
   const isLastSlide = currentSlideIndex === slides.length - 1;
 
@@ -80,7 +82,7 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
     if (currentSlideIndex < slides.length - 1) {
       setCurrentSlideIndex(currentSlideIndex + 1);
     } else {
-      onSkip(); // Complete the guide
+      onSkip(dontShowAgain); // Pass the checkbox state when completing
     }
   };
 
@@ -100,7 +102,7 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
         <Button 
           variant="ghost" 
           size="sm" 
-          onClick={onSkip}
+          onClick={() => onSkip(dontShowAgain)}
           className="flex items-center gap-1"
         >
           <SkipForward className="h-4 w-4" />
@@ -164,6 +166,22 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
           )}
         </Button>
       </div>
+
+      {isLastSlide && (
+        <div className="mt-6 flex items-center space-x-2">
+          <Checkbox 
+            id="dontShowAgain" 
+            checked={dontShowAgain} 
+            onCheckedChange={(checked) => setDontShowAgain(checked === true)}
+          />
+          <label
+            htmlFor="dontShowAgain"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Don't show this guide again
+          </label>
+        </div>
+      )}
     </div>
   );
 };

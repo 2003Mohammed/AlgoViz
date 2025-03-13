@@ -20,12 +20,17 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
   
   const {
     array,
+    graphData,
+    treeData,
+    visualizationType,
     isPlaying,
     currentStep,
     totalSteps,
     speed,
     activeLineIndex,
     handleGenerateRandomArray,
+    handleGenerateRandomGraph,
+    handleGenerateRandomTree,
     handleCustomArraySubmit,
     reset,
     togglePlayPause,
@@ -35,12 +40,23 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
     exportVisualization
   } = useVisualizerState(algorithm.id);
 
+  // Function to generate new data based on algorithm type
+  const handleGenerateNewData = () => {
+    if (visualizationType === 'array') {
+      handleGenerateRandomArray();
+    } else if (visualizationType === 'graph') {
+      handleGenerateRandomGraph();
+    } else if (visualizationType === 'tree') {
+      handleGenerateRandomTree();
+    }
+  };
+
   return (
     <div className="space-y-6" ref={visualizerRef}>
       <div className="glass-card p-6">
         <VisualizerHeader 
           algorithmName={algorithm.name}
-          onGenerateNewArray={handleGenerateRandomArray}
+          onGenerateNewArray={handleGenerateNewData}
           onExportVisualization={exportVisualization}
         />
         
@@ -50,9 +66,17 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
           algorithmId={algorithm.id}
         />
         
-        <CustomArrayInput onSubmit={handleCustomArraySubmit} />
+        {visualizationType === 'array' && (
+          <CustomArrayInput onSubmit={handleCustomArraySubmit} />
+        )}
         
-        <ArrayVisualizer array={array} />
+        <ArrayVisualizer 
+          array={array} 
+          graphData={graphData}
+          treeData={treeData}
+          type={visualizationType}
+          algorithmId={algorithm.id}
+        />
         
         <VisualizerControls
           isPlaying={isPlaying}
