@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { ArrayItem, GraphData, TreeNode } from '../../types/visualizer';
 import { getStatusColor } from '../../utils/visualizerUtils';
+import { motion } from 'framer-motion';
 
 interface VisualizationProps {
   array?: ArrayItem[];
@@ -41,19 +43,34 @@ const renderArrayVisualization = (array: ArrayItem[], algorithmId: string) => {
   }
 };
 
-// Bar chart visualization for sorting algorithms
+// Bar chart visualization for sorting algorithms with height constraint
 const renderBarChart = (array: ArrayItem[]) => {
+  // Find max value for proper scaling
+  const maxValue = Math.max(...array.map(item => item.value), 100);
+  
   return (
-    <div className="relative h-64 flex items-end justify-center gap-1 mb-6">
-      {array.map((item, index) => (
-        <div
-          key={index}
-          className={`w-8 rounded-t-md ${getStatusColor(item.status)} transition-all duration-300`}
-          style={{ height: `${(item.value / 100) * 80}%` }}
-        >
-          <div className="text-xs mt-2 text-center">{item.value}</div>
-        </div>
-      ))}
+    <div className="relative h-64 flex items-end justify-center gap-1 mb-6 overflow-hidden">
+      {array.map((item, index) => {
+        // Scale height to percentage of container height (max 80%)
+        const heightPercentage = Math.min((item.value / maxValue) * 80, 80);
+        
+        return (
+          <motion.div
+            key={index}
+            className={`w-8 rounded-t-md ${getStatusColor(item.status)} transition-all duration-300 relative group`}
+            style={{ height: `${heightPercentage}%` }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: index * 0.03 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <div className="text-xs text-center absolute bottom-0 w-full transform translate-y-full pt-1">{item.value}</div>
+            <div className="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 transition-opacity duration-300">
+              {item.value}
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 };
@@ -63,24 +80,31 @@ const renderSearchArray = (array: ArrayItem[]) => {
   return (
     <div className="relative h-32 flex items-center justify-center gap-1 mb-6">
       {array.map((item, index) => (
-        <div
+        <motion.div
           key={index}
           className={`h-16 w-12 flex items-center justify-center border border-1 rounded-md ${getStatusColor(item.status)} transition-all duration-300`}
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3, delay: index * 0.05 }}
+          whileHover={{ 
+            scale: 1.1,
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+          }}
         >
           <div className="text-sm text-center">{item.value}</div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
 };
 
-// Graph visualization for graph algorithms
+// Enhanced Graph visualization for graph algorithms with 3D-like effects
 const renderGraphVisualization = (graphData: GraphData) => {
   const width = 600;
   const height = 400;
   
   return (
-    <div className="relative h-96 w-full mb-6 border-2 border-dashed border-secondary/30 rounded-lg flex items-center justify-center">
+    <div className="relative h-96 w-full mb-6 border-2 border-dashed border-secondary/30 rounded-lg flex items-center justify-center perspective-1000">
       <svg width={width} height={height} className="overflow-visible">
         {/* Render edges */}
         {graphData.edges.map((edge, index) => {
@@ -99,29 +123,35 @@ const renderGraphVisualization = (graphData: GraphData) => {
           
           return (
             <g key={`edge-${index}`}>
-              <line
+              <motion.line
                 x1={source.x}
                 y1={source.y}
                 x2={target.x}
                 y2={target.y}
                 className={`${edgeClassName} transition-all duration-300`}
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.8, delay: index * 0.05 }}
               />
               {edge.weight !== undefined && (
-                <text
+                <motion.text
                   x={(source.x + target.x) / 2}
                   y={(source.y + target.y) / 2}
                   dy={-5}
                   className="text-xs fill-current text-muted-foreground"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.5 + index * 0.05 }}
                 >
                   {edge.weight}
-                </text>
+                </motion.text>
               )}
             </g>
           );
         })}
         
         {/* Render nodes */}
-        {graphData.nodes.map((node) => {
+        {graphData.nodes.map((node, idx) => {
           if (!node.x || !node.y) return null;
           
           const nodeClassName = node.status === 'active' 
@@ -135,12 +165,25 @@ const renderGraphVisualization = (graphData: GraphData) => {
                   : 'fill-gray-200';
           
           return (
-            <g key={node.id} className="transition-all duration-300">
+            <motion.g 
+              key={node.id} 
+              className="transition-all duration-300"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ 
+                type: "spring", 
+                duration: 0.5, 
+                delay: idx * 0.1,
+                bounce: 0.5 
+              }}
+              whileHover={{ scale: 1.15 }}
+            >
               <circle
                 cx={node.x}
                 cy={node.y}
                 r={20}
-                className={`${nodeClassName} stroke-2 stroke-gray-700 transition-all duration-300`}
+                className={`${nodeClassName} stroke-2 stroke-gray-700 transition-all duration-300 shadow-lg`}
+                filter="drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.3))"
               />
               <text
                 x={node.x}
@@ -151,7 +194,7 @@ const renderGraphVisualization = (graphData: GraphData) => {
               >
                 {node.value}
               </text>
-            </g>
+            </motion.g>
           );
         })}
       </svg>
@@ -159,13 +202,13 @@ const renderGraphVisualization = (graphData: GraphData) => {
   );
 };
 
-// Tree visualization for tree algorithms
+// Enhanced Tree visualization with 3D-like effects
 const renderTreeVisualization = (root: TreeNode) => {
   const width = 600;
   const height = 400;
   
   // Calculate tree layout (simplified)
-  const renderTreeNodes = (node: TreeNode, x: number, y: number, level: number, maxWidth: number) => {
+  const renderTreeNodes = (node: TreeNode, x: number, y: number, level: number, maxWidth: number, index: number = 0) => {
     const nodeRadius = 25;
     const levelHeight = 80;
     const elements: JSX.Element[] = [];
@@ -179,14 +222,27 @@ const renderTreeVisualization = (root: TreeNode) => {
           ? 'fill-green-500'
           : 'fill-gray-200';
     
-    // Add current node
+    // Add current node with 3D-like effect
     elements.push(
-      <g key={`node-${x}-${y}`} className="transition-all duration-300">
+      <motion.g 
+        key={`node-${x}-${y}`} 
+        className="transition-all duration-300"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 200, 
+          damping: 15, 
+          delay: level * 0.2 + index * 0.1 
+        }}
+        whileHover={{ scale: 1.1 }}
+      >
         <circle
           cx={x}
           cy={y}
           r={nodeRadius}
           className={`${nodeClassName} stroke-2 stroke-gray-700 transition-all duration-300`}
+          filter="drop-shadow(3px 3px 4px rgba(0, 0, 0, 0.3))"
         />
         <text
           x={x}
@@ -197,7 +253,7 @@ const renderTreeVisualization = (root: TreeNode) => {
         >
           {node.value}
         </text>
-      </g>
+      </motion.g>
     );
     
     // Calculate positions for children
@@ -210,18 +266,21 @@ const renderTreeVisualization = (root: TreeNode) => {
       
       // Draw edge to left child
       elements.push(
-        <line
+        <motion.line
           key={`edge-${x}-${leftX}`}
           x1={x}
           y1={y + nodeRadius}
           x2={leftX}
           y2={leftY - nodeRadius}
           className="stroke-gray-400 stroke-[2px]"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: level * 0.2 + 0.3 }}
         />
       );
       
       // Recursively draw left subtree
-      elements.push(...renderTreeNodes(node.left, leftX, leftY, level + 1, nextLevelWidth));
+      elements.push(...renderTreeNodes(node.left, leftX, leftY, level + 1, nextLevelWidth, index * 2));
     }
     
     // Draw right child if exists
@@ -231,25 +290,28 @@ const renderTreeVisualization = (root: TreeNode) => {
       
       // Draw edge to right child
       elements.push(
-        <line
+        <motion.line
           key={`edge-${x}-${rightX}`}
           x1={x}
           y1={y + nodeRadius}
           x2={rightX}
           y2={rightY - nodeRadius}
           className="stroke-gray-400 stroke-[2px]"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: level * 0.2 + 0.3 }}
         />
       );
       
       // Recursively draw right subtree
-      elements.push(...renderTreeNodes(node.right, rightX, rightY, level + 1, nextLevelWidth));
+      elements.push(...renderTreeNodes(node.right, rightX, rightY, level + 1, nextLevelWidth, index * 2 + 1));
     }
     
     return elements;
   };
   
   return (
-    <div className="relative h-96 w-full mb-6 border-2 border-dashed border-secondary/30 rounded-lg flex items-center justify-center">
+    <div className="relative h-96 w-full mb-6 border-2 border-dashed border-secondary/30 rounded-lg flex items-center justify-center perspective-1000">
       <svg width={width} height={height} className="overflow-visible">
         {renderTreeNodes(root, width / 2, 60, 0, width / 3)}
       </svg>

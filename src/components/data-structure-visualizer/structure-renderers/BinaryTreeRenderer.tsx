@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface BinaryTreeStructure {
   nodes: Array<{
@@ -30,23 +31,35 @@ export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) 
     
     // Draw current node
     elements.push(
-      <g key={`node-${nodeIndex}`}>
+      <motion.g 
+        key={`node-${nodeIndex}`}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 260, 
+          damping: 20, 
+          delay: level * 0.2 
+        }}
+        whileHover={{ scale: 1.1 }}
+      >
         <circle
           cx={x}
           cy={y}
           r={20}
           className="fill-primary/20 stroke-primary"
+          filter="drop-shadow(2px 3px 2px rgba(0, 0, 0, 0.2))"
         />
         <text
           x={x}
           y={y}
           textAnchor="middle"
           dy=".3em"
-          className="text-xs fill-foreground"
+          className="text-xs fill-foreground font-medium"
         >
           {node.value}
         </text>
-      </g>
+      </motion.g>
     );
     
     // Draw left child
@@ -56,13 +69,16 @@ export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) 
       
       // Draw edge to left child
       elements.push(
-        <line
+        <motion.line
           key={`edge-${nodeIndex}-${node.left}`}
           x1={x}
           y1={y + 20}
           x2={leftX}
           y2={leftY - 20}
           className="stroke-primary/60 stroke-1"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.4, delay: level * 0.2 + 0.2 }}
         />
       );
       
@@ -78,13 +94,16 @@ export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) 
       
       // Draw edge to right child
       elements.push(
-        <line
+        <motion.line
           key={`edge-${nodeIndex}-${node.right}`}
           x1={x}
           y1={y + 20}
           x2={rightX}
           y2={rightY - 20}
           className="stroke-primary/60 stroke-1"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.4, delay: level * 0.2 + 0.2 }}
         />
       );
       
@@ -97,8 +116,19 @@ export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) 
   };
   
   return (
-    <div className="flex justify-center items-center h-64">
+    <div className="flex justify-center items-center h-64 perspective-1000">
       <svg width="600" height="240" className="overflow-visible">
+        <motion.rect
+          x="0"
+          y="0"
+          width="600"
+          height="240"
+          rx="8"
+          className="fill-muted/20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ duration: 0.5 }}
+        />
         {renderTreeNode(root, 300, 40, 0, 240)}
       </svg>
     </div>

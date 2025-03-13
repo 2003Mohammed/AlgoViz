@@ -1,177 +1,78 @@
 
 import React, { useState } from 'react';
+import { ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { Algorithm } from '../../utils/algorithms';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  BookOpen, 
-  SkipForward, 
-  Check 
-} from 'lucide-react';
-import { Algorithm } from '../../utils/algorithms';
-import { GuideSlide, AlgorithmGuideProps } from '../../types/visualizer';
+import { AlgorithmGuideProps, GuideSlide } from '../../types/visualizer';
 
-// Function to generate guide slides based on algorithm
-const getGuideSlides = (algorithm: Algorithm): GuideSlide[] => {
-  // Base slides for any algorithm
-  const baseSlides: GuideSlide[] = [
+export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSkip }) => {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+  
+  const slides: GuideSlide[] = [
     {
       id: 1,
-      title: "Welcome to the Algorithm Guide",
-      content: `This guide will help you understand how the ${algorithm.name} algorithm works and how to use the visualizer effectively.`
+      title: `What is ${algorithm.name}?`,
+      content: algorithm.description,
     },
     {
       id: 2,
-      title: "How the Visualizer Works",
-      content: "The visualizer shows the algorithm's steps in real-time. You can use the controls to play, pause, step forward, and step backward through the visualization."
-    }
-  ];
-
-  // Algorithm-specific slides
-  if (algorithm.id === 'bubble-sort') {
-    return [
-      ...baseSlides,
-      {
-        id: 3,
-        title: "Understanding Bubble Sort",
-        content: "Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order."
-      },
-      {
-        id: 4,
-        title: "Visual Elements",
-        content: "In the visualization, elements being compared are highlighted in yellow. When elements are swapped, they briefly turn blue. Sorted elements are shown in green."
-      },
-      {
-        id: 5,
-        title: "Time Complexity",
-        content: `Bubble Sort has a time complexity of ${algorithm.timeComplexity.worst} in the worst case, making it efficient only for small lists or nearly sorted data.`
-      },
-      {
-        id: 6,
-        title: "You're Ready!",
-        content: "Now you understand how Bubble Sort works. Use the controls below the visualization to explore the algorithm's behavior on different inputs."
-      }
-    ];
-  }
-
-  // For other algorithms, return the base slides plus a generic completion slide
-  return [
-    ...baseSlides,
-    {
-      id: 3,
-      title: `Understanding ${algorithm.name}`,
-      content: algorithm.description
+      title: 'How it works',
+      content: algorithm.longDescription || 'This algorithm solves problems by using a specific approach tailored to its domain.',
     },
     {
-      id: 4,
-      title: "You're Ready!",
-      content: "Now you understand the basics. Use the controls below the visualization to explore the algorithm's behavior on different inputs."
-    }
+      id: 3,
+      title: 'Visualizer Controls',
+      content: 'Use the play/pause button to start or stop the visualization. You can also step forward or backward, adjust the speed, or reset the visualization at any time.',
+    },
   ];
-};
-
-export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSkip }) => {
-  const slides = getGuideSlides(algorithm);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [dontShowAgain, setDontShowAgain] = useState(false);
-  const currentSlide = slides[currentSlideIndex];
-  const isLastSlide = currentSlideIndex === slides.length - 1;
-
+  
   const handleNext = () => {
     if (currentSlideIndex < slides.length - 1) {
-      setCurrentSlideIndex(currentSlideIndex + 1);
+      setCurrentSlideIndex(prev => prev + 1);
     } else {
-      onSkip(dontShowAgain); // Pass the checkbox state when completing
+      handleComplete();
     }
   };
-
-  const handlePrevious = () => {
+  
+  const handlePrev = () => {
     if (currentSlideIndex > 0) {
-      setCurrentSlideIndex(currentSlideIndex - 1);
+      setCurrentSlideIndex(prev => prev - 1);
     }
   };
-
+  
+  const handleComplete = () => {
+    onSkip(dontShowAgain);
+  };
+  
+  const currentSlide = slides[currentSlideIndex];
+  
   return (
-    <div className="glass-card p-6 animate-fade-in">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <h3 className="text-xl font-semibold">{algorithm.name} Guide</h3>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => onSkip(dontShowAgain)}
-          className="flex items-center gap-1"
-        >
-          <SkipForward className="h-4 w-4" />
-          Skip Guide
+    <div className="glass-card p-8 max-w-3xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold">Algorithm Guide</h2>
+        <Button variant="ghost" size="icon" onClick={() => onSkip(dontShowAgain)} className="h-8 w-8">
+          <X className="h-4 w-4" />
         </Button>
       </div>
-
-      <div className="py-8 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4">{currentSlide.title}</h2>
-          <p className="text-muted-foreground text-lg mb-6">{currentSlide.content}</p>
-          
-          {currentSlide.image && (
-            <div className="my-6">
-              <img 
-                src={currentSlide.image} 
-                alt={currentSlide.title} 
-                className="rounded-lg mx-auto"
-              />
-            </div>
-          )}
-        </div>
+      
+      <div className="mb-8">
+        <h3 className="text-xl font-medium mb-3">{currentSlide.title}</h3>
+        <p className="text-muted-foreground">{currentSlide.content}</p>
+        
+        {currentSlide.image && (
+          <div className="mt-4">
+            <img src={currentSlide.image} alt={currentSlide.title} className="max-w-full rounded-md border" />
+          </div>
+        )}
       </div>
-
-      <div className="flex justify-between items-center mt-6">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentSlideIndex === 0}
-          className="flex items-center gap-1"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Previous
-        </Button>
-
-        <div className="flex gap-1">
-          {slides.map((_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 rounded-full ${
-                index === currentSlideIndex ? "bg-primary" : "bg-secondary"
-              }`}
-            />
-          ))}
-        </div>
-
-        <Button
-          onClick={handleNext}
-          className="flex items-center gap-1"
-        >
-          {isLastSlide ? (
-            <>
-              Start Visualizing
-              <Check className="h-4 w-4 ml-1" />
-            </>
-          ) : (
-            <>
-              Next
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </Button>
-      </div>
-
-      {isLastSlide && (
-        <div className="mt-6 flex items-center space-x-2">
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
           <Checkbox 
             id="dontShowAgain" 
-            checked={dontShowAgain} 
+            checked={dontShowAgain}
             onCheckedChange={(checked) => setDontShowAgain(checked === true)}
           />
           <label
@@ -181,7 +82,41 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
             Don't show this guide again
           </label>
         </div>
-      )}
+        
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            onClick={handlePrev}
+            disabled={currentSlideIndex === 0}
+            className="flex items-center"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" /> Previous
+          </Button>
+          
+          {currentSlideIndex < slides.length - 1 ? (
+            <Button onClick={handleNext} className="flex items-center">
+              Next <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={handleComplete}>Get Started</Button>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex justify-center mt-6">
+        <div className="flex space-x-1">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              className={`h-1.5 rounded-full transition-all ${
+                index === currentSlideIndex
+                  ? 'w-6 bg-primary'
+                  : 'w-1.5 bg-muted'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

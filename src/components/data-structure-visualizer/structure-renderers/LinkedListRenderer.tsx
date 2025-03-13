@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface LinkedListStructure {
   nodes: Array<{
@@ -20,9 +21,14 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ structur
     <div className="flex flex-wrap gap-1 justify-center items-center">
       {head !== null && nodes.length > 0 ? (
         <>
-          <div className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mb-2">
+          <motion.div 
+            className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mb-2"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             Head
-          </div>
+          </motion.div>
           <div className="flex flex-wrap gap-1 justify-center items-center">
             {(() => {
               const renderedNodes = [];
@@ -34,13 +40,36 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ structur
                 
                 renderedNodes.push(
                   <React.Fragment key={currentIndex}>
-                    <div className="w-12 h-12 flex items-center justify-center border border-primary/50 rounded-md bg-primary/10">
+                    <motion.div 
+                      className="w-12 h-12 flex items-center justify-center border border-primary/50 rounded-md bg-primary/10"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{
+                        type: "spring", 
+                        stiffness: 260, 
+                        damping: 20,
+                        delay: currentIndex * 0.1
+                      }}
+                      whileHover={{ scale: 1.1, backgroundColor: "rgba(var(--primary), 0.2)" }}
+                    >
                       {node.value}
-                    </div>
+                    </motion.div>
                     {!isLast && (
-                      <div className="w-6 flex items-center justify-center">
-                        →
-                      </div>
+                      <motion.div 
+                        className="w-6 flex items-center justify-center"
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: 24, opacity: 1 }}
+                        transition={{ duration: 0.3, delay: currentIndex * 0.1 + 0.1 }}
+                      >
+                        <motion.div
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.3, delay: currentIndex * 0.1 + 0.2 }}
+                          style={{ originX: 0 }}
+                        >
+                          →
+                        </motion.div>
+                      </motion.div>
                     )}
                   </React.Fragment>
                 );
