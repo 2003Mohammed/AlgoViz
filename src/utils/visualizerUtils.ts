@@ -95,6 +95,7 @@ export function generateRandomTree(): TreeNode {
     
     const value = Math.floor(Math.random() * 90) + 10; // 10-99
     
+    // Make sure we explicitly use a valid status
     return {
       value,
       status: 'default',
@@ -103,8 +104,8 @@ export function generateRandomTree(): TreeNode {
     };
   }
   
-  // Create a root node
-  const root = {
+  // Create a root node with explicit status
+  const root: TreeNode = {
     value: Math.floor(Math.random() * 90) + 10,
     status: 'default',
     left: createRandomTree(2),

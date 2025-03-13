@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { ArrayItem, GraphData, TreeNode } from '../../types/visualizer';
 import { getStatusColor } from '../../utils/visualizerUtils';
-import { ChartContainer, BarChart, Bar, XAxis, YAxis } from '../ui/chart';
 
 interface VisualizationProps {
   array?: ArrayItem[];

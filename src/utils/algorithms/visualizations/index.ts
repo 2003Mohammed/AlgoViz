@@ -1,7 +1,7 @@
 
 import { generateBubbleSortSteps } from './bubbleSort';
 import { generateQuickSortSteps } from './quickSort';
-import { generateMergeSortSteps } from './mergeSort';
+import { generateMergeSortSteps } from './mergeSort/index';
 import { ArrayItem, VisualizationStep } from '../../../types/visualizer';
 
 export function getVisualizationSteps(algorithm: string, array: ArrayItem[]): VisualizationStep[] {
