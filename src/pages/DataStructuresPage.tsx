@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { dataStructures } from '../utils/dataStructureData';
 import { DataStructureGrid } from '../components/DataStructureGrid';
-import { DataStructureVisualizer } from '../components/DataStructureVisualizer';
+import { DataStructureVisualizer } from '../components/data-structure-visualizer';
 import { ArrowLeft, ChevronRight, Info } from 'lucide-react';
 
 const DataStructuresPage = () => {
