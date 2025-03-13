@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { ArrayItem, VisualizerStep, GraphData, TreeNode } from '../types/visualizer';
 import { generateRandomArray, generateRandomGraph, generateRandomTree } from '../utils/visualizerUtils';
@@ -18,6 +19,7 @@ export function useVisualizerState(algorithmId: string) {
   const animationRef = useRef<number | null>(null);
   const stepsRef = useRef<VisualizerStep[]>([]);
   
+  // Initialize visualization when component mounts or algorithm changes
   useEffect(() => {
     // Determine visualization type based on algorithm
     if (algorithmId.includes('sort')) {
@@ -36,6 +38,13 @@ export function useVisualizerState(algorithmId: string) {
       setVisualizationType('array');
       handleGenerateRandomArray();
     }
+    
+    // Cleanup on unmount or algorithm change
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
   }, [algorithmId]); // Re-initialize when algorithm changes
   
   const handleGenerateRandomArray = (sorted = false) => {
@@ -49,15 +58,21 @@ export function useVisualizerState(algorithmId: string) {
       stepsRef.current = visualizationSteps;
       setTotalSteps(visualizationSteps.length);
       
+      // Set the initial state from the first step
+      if (visualizationSteps.length > 0) {
+        setArray(visualizationSteps[0].array);
+        setActiveLineIndex(visualizationSteps[0].lineIndex);
+      }
+      
       toast({
-        title: "New array generated",
+        title: "Example array generated",
         description: `Ready to visualize ${algorithmId}`,
       });
     } catch (error) {
       console.error("Error generating array:", error);
       toast({
         title: "Error",
-        description: "Failed to generate new array",
+        description: "Failed to generate example array",
         variant: "destructive",
       });
     }
@@ -69,18 +84,15 @@ export function useVisualizerState(algorithmId: string) {
       setGraphData(newGraph);
       reset();
       
-      // Graph visualizations would be handled differently
-      // This is a placeholder for future implementation
-      
       toast({
-        title: "New graph generated",
+        title: "Example graph generated",
         description: `Ready to visualize ${algorithmId}`,
       });
     } catch (error) {
       console.error("Error generating graph:", error);
       toast({
         title: "Error",
-        description: "Failed to generate new graph",
+        description: "Failed to generate example graph",
         variant: "destructive",
       });
     }
@@ -92,18 +104,15 @@ export function useVisualizerState(algorithmId: string) {
       setTreeData(newTree);
       reset();
       
-      // Tree visualizations would be handled differently
-      // This is a placeholder for future implementation
-      
       toast({
-        title: "New tree generated",
+        title: "Example tree generated",
         description: `Ready to visualize ${algorithmId}`,
       });
     } catch (error) {
       console.error("Error generating tree:", error);
       toast({
         title: "Error",
-        description: "Failed to generate new tree",
+        description: "Failed to generate example tree",
         variant: "destructive",
       });
     }
@@ -138,8 +147,15 @@ export function useVisualizerState(algorithmId: string) {
         setArray(step.array);
         setActiveLineIndex(step.lineIndex);
       }
+      
+      return true; // Successfully stepped forward
     } else {
       setIsPlaying(false);
+      toast({
+        title: "End of visualization",
+        description: "Reached the final step of the algorithm",
+      });
+      return false; // Could not step forward (end reached)
     }
   };
   
@@ -153,11 +169,18 @@ export function useVisualizerState(algorithmId: string) {
         setArray(step.array);
         setActiveLineIndex(step.lineIndex);
       }
+      
+      return true; // Successfully stepped backward
     }
+    return false; // Could not step backward (beginning reached)
   };
   
   const changeSpeed = (newSpeed: number) => {
     setSpeed(newSpeed);
+    toast({
+      title: `Speed: ${newSpeed}x`,
+      description: newSpeed > 1 ? "Faster animation" : "Slower animation",
+    });
   };
   
   const exportVisualization = () => {
@@ -225,6 +248,7 @@ export function useVisualizerState(algorithmId: string) {
     }
   }, [isPlaying, currentStep, speed, totalSteps]);
 
+  // Public API
   return {
     array,
     graphData,
@@ -252,6 +276,12 @@ export function useVisualizerState(algorithmId: string) {
         const visualizationSteps = getVisualizationSteps(algorithmId, newArray);
         stepsRef.current = visualizationSteps;
         setTotalSteps(visualizationSteps.length);
+        
+        // Set the initial state from the first step
+        if (visualizationSteps.length > 0) {
+          setArray(visualizationSteps[0].array);
+          setActiveLineIndex(visualizationSteps[0].lineIndex);
+        }
         
         toast({
           title: "Custom array loaded",

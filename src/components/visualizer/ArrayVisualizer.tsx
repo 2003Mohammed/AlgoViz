@@ -2,7 +2,7 @@
 import React from 'react';
 import { ArrayItem, GraphData, TreeNode } from '../../types/visualizer';
 import { getStatusColor } from '../../utils/visualizerUtils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface VisualizationProps {
   array?: ArrayItem[];
@@ -50,27 +50,75 @@ const renderBarChart = (array: ArrayItem[]) => {
   
   return (
     <div className="relative h-64 flex items-end justify-center gap-1 mb-6 overflow-hidden">
-      {array.map((item, index) => {
-        // Scale height to percentage of container height (max 80%)
-        const heightPercentage = Math.min((item.value / maxValue) * 80, 80);
-        
-        return (
-          <motion.div
-            key={index}
-            className={`w-8 rounded-t-md ${getStatusColor(item.status)} transition-all duration-300 relative group`}
-            style={{ height: `${heightPercentage}%` }}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.3, delay: index * 0.03 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="text-xs text-center absolute bottom-0 w-full transform translate-y-full pt-1">{item.value}</div>
-            <div className="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 transition-opacity duration-300">
-              {item.value}
-            </div>
-          </motion.div>
-        );
-      })}
+      <AnimatePresence>
+        {array.map((item, index) => {
+          // Scale height to percentage of container height (max 80%)
+          const heightPercentage = Math.min((item.value / maxValue) * 80, 80);
+          
+          return (
+            <motion.div
+              key={index}
+              className={`w-12 rounded-t-md ${getStatusColor(item.status)} transition-all duration-300 relative group overflow-visible`}
+              style={{ height: `${heightPercentage}%` }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ 
+                duration: 0.3, 
+                delay: index * 0.03,
+                type: "spring",
+                stiffness: 200,
+                damping: 25
+              }}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
+              }}
+            >
+              {/* Value number on top of bar */}
+              <motion.div 
+                className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground text-xs font-medium rounded px-2 py-1 opacity-0 group-hover:opacity-100 z-10"
+                initial={{ y: 5 }}
+                whileHover={{ y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {item.value}
+              </motion.div>
+              
+              {/* Value inside bar for taller bars */}
+              {heightPercentage > 20 && (
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                  {item.value}
+                </div>
+              )}
+              
+              {/* Value below bar for smaller bars */}
+              {heightPercentage <= 20 && (
+                <motion.div 
+                  className="text-xs text-center absolute bottom-0 w-full transform translate-y-full pt-1 text-foreground"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {item.value}
+                </motion.div>
+              )}
+              
+              {/* 3D effect - shadow and gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-x-0 top-0 h-1 bg-white/30 rounded-t-md pointer-events-none"></div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+      
+      {/* Axis line */}
+      <motion.div 
+        className="absolute bottom-0 w-full h-0.5 bg-muted-foreground/30"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      />
     </div>
   );
 };
@@ -79,21 +127,44 @@ const renderBarChart = (array: ArrayItem[]) => {
 const renderSearchArray = (array: ArrayItem[]) => {
   return (
     <div className="relative h-32 flex items-center justify-center gap-1 mb-6">
-      {array.map((item, index) => (
-        <motion.div
-          key={index}
-          className={`h-16 w-12 flex items-center justify-center border border-1 rounded-md ${getStatusColor(item.status)} transition-all duration-300`}
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3, delay: index * 0.05 }}
-          whileHover={{ 
-            scale: 1.1,
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-          }}
-        >
-          <div className="text-sm text-center">{item.value}</div>
-        </motion.div>
-      ))}
+      <AnimatePresence>
+        {array.map((item, index) => (
+          <motion.div
+            key={index}
+            className={`h-16 w-16 flex items-center justify-center border border-1 rounded-md ${getStatusColor(item.status)} transition-all duration-300 relative group`}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ 
+              duration: 0.3, 
+              delay: index * 0.05,
+              type: "spring",
+              stiffness: 200,
+              damping: 25
+            }}
+            whileHover={{ 
+              scale: 1.1,
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              zIndex: 10
+            }}
+          >
+            <div className="text-lg font-medium text-center">{item.value}</div>
+            
+            {/* Index number below element */}
+            <motion.div 
+              className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              [{index}]
+            </motion.div>
+            
+            {/* 3D effect - gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none"></div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };
@@ -138,7 +209,7 @@ const renderGraphVisualization = (graphData: GraphData) => {
                   x={(source.x + target.x) / 2}
                   y={(source.y + target.y) / 2}
                   dy={-5}
-                  className="text-xs fill-current text-muted-foreground"
+                  className="text-xs fill-current text-muted-foreground bg-background px-1 rounded"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.5 + index * 0.05 }}
@@ -253,6 +324,26 @@ const renderTreeVisualization = (root: TreeNode) => {
         >
           {node.value}
         </text>
+        
+        {/* Add value label when hovered */}
+        <g className="opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <rect 
+            x={x - 20} 
+            y={y + nodeRadius + 5} 
+            width={40} 
+            height={20} 
+            rx={4} 
+            className="fill-primary"
+          />
+          <text
+            x={x}
+            y={y + nodeRadius + 18}
+            textAnchor="middle"
+            className="text-xs fill-primary-foreground"
+          >
+            val: {node.value}
+          </text>
+        </g>
       </motion.g>
     );
     
