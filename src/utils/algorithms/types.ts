@@ -1,5 +1,6 @@
 
 import { Category } from './categories';
+import { GuideSlide } from '../../types/visualizer';
 
 export interface Algorithm {
   id: string;
@@ -20,4 +21,5 @@ export interface Algorithm {
     description: string;
     industry: string;
   }[];
+  slides?: GuideSlide[];
 }
