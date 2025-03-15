@@ -1,7 +1,7 @@
 
 import React, { useRef } from 'react';
 import { Algorithm } from '../../utils/algorithms';
-import { useVisualizerState } from '../../hooks/useVisualizerState';
+import { useVisualizerState } from '../../hooks/visualizer';
 import { VisualizerHeader } from './VisualizerHeader';
 import { ProgressTracker } from './ProgressTracker';
 import { CustomArrayInput } from './CustomArrayInput';

@@ -1,121 +1,131 @@
 
 import React, { useState } from 'react';
+import { Algorithm } from '../../utils/algorithms';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
-import { AlgorithmGuideProps, GuideSlide } from '../../types/visualizer';
-import { motion } from 'framer-motion';
+import { GuideSlide } from '../../types/visualizer';
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+
+export interface AlgorithmGuideProps {
+  algorithm: Algorithm;
+  onSkip: (dontShowAgain?: boolean) => void;
+}
 
 export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSkip }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   
-  // Generate slides based on algorithm
-  const slides: GuideSlide[] = [
+  // Define default slides if not provided in the algorithm
+  const defaultSlides: GuideSlide[] = [
     {
       id: 1,
       title: `Introduction to ${algorithm.name}`,
-      content: algorithm.description,
-      image: algorithm.visualizationImage || '/placeholder.svg'
+      content: algorithm.description
     },
     {
       id: 2,
-      title: 'How to use this visualizer',
-      content: 'Use the controls below to step through the algorithm. You can play, pause, step forward/backward, and adjust the speed.',
-      image: '/placeholder.svg'
+      title: 'How to Use This Visualizer',
+      content: 'Use the controls at the bottom to start, pause, step through, or reset the visualization. You can also adjust the speed and input your own data to see how the algorithm performs.'
     },
     {
       id: 3,
-      title: 'Time & Space Complexity',
-      content: `Time Complexity: ${algorithm.timeComplexity || 'Varies'}\nSpace Complexity: ${algorithm.spaceComplexity || 'Varies'}`,
-      image: '/placeholder.svg'
+      title: 'Ready to Start?',
+      content: 'Click "Get Started" to begin visualizing the algorithm. You can always revisit this guide by clicking "Show Guide" in the top right corner.'
     }
   ];
   
-  const nextSlide = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
+  const slides = algorithm.slides || defaultSlides;
+  const currentSlide = slides[currentSlideIndex];
+  
+  const handleNext = () => {
+    if (currentSlideIndex < slides.length - 1) {
+      setCurrentSlideIndex(currentSlideIndex + 1);
     } else {
       onSkip(dontShowAgain);
     }
   };
   
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
+  const handlePrevious = () => {
+    if (currentSlideIndex > 0) {
+      setCurrentSlideIndex(currentSlideIndex - 1);
     }
   };
   
   return (
-    <motion.div 
-      className="glass-card p-6 mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="relative overflow-hidden">
-        <motion.div
-          key={currentSlide}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-6"
-        >
-          <h2 className="text-xl font-semibold">{slides[currentSlide].title}</h2>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-1/2">
-              <p className="text-muted-foreground whitespace-pre-line">{slides[currentSlide].content}</p>
-            </div>
-            <div className="md:w-1/2 flex justify-center">
-              <img 
-                src={slides[currentSlide].image} 
-                alt={slides[currentSlide].title} 
-                className="max-h-64 object-contain rounded-md border border-border/50"
-              />
-            </div>
-          </div>
-        </motion.div>
-        
-        <div className="flex items-center justify-between mt-8">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="dontShowAgain" 
-              checked={dontShowAgain}
-              onCheckedChange={(checked) => setDontShowAgain(checked === true)}
-            />
-            <label 
-              htmlFor="dontShowAgain" 
-              className="text-sm text-muted-foreground cursor-pointer"
-            >
-              Don't show this guide again
-            </label>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={prevSlide} 
-              disabled={currentSlide === 0}
-            >
-              Previous
-            </Button>
-            <Button onClick={nextSlide}>
-              {currentSlide < slides.length - 1 ? 'Next' : 'Start Visualizing'}
-            </Button>
-          </div>
+    <div className="glass-card p-8 space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold">Algorithm Guide</h3>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="dontShowAgain"
+            checked={dontShowAgain}
+            onCheckedChange={(checked) => setDontShowAgain(checked === true)}
+          />
+          <label
+            htmlFor="dontShowAgain"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Don't show again
+          </label>
         </div>
       </div>
       
-      <div className="flex justify-center mt-6">
-        <div className="flex gap-1">
+      <div className="relative">
+        <div className="min-h-64 flex flex-col items-center justify-center px-8 py-12 bg-secondary/10 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">{currentSlide.title}</h2>
+          <p className="text-center max-w-2xl mb-6">{currentSlide.content}</p>
+          
+          {currentSlide.image && (
+            <img
+              src={currentSlide.image}
+              alt={currentSlide.title}
+              className="max-w-full max-h-60 object-contain rounded-md shadow-md mb-6"
+            />
+          )}
+        </div>
+      </div>
+      
+      <div className="flex justify-between items-center">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePrevious}
+          disabled={currentSlideIndex === 0}
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Previous
+        </Button>
+        
+        <div className="flex space-x-1">
           {slides.map((_, index) => (
-            <div 
-              key={index} 
-              className={`h-2 w-2 rounded-full ${index === currentSlide ? 'bg-primary' : 'bg-muted'}`}
+            <div
+              key={index}
+              className={`h-2 w-2 rounded-full ${
+                index === currentSlideIndex ? 'bg-primary' : 'bg-primary/30'
+              }`}
             />
           ))}
         </div>
+        
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm" onClick={() => onSkip(dontShowAgain)}>
+            Skip
+          </Button>
+          <Button size="sm" onClick={handleNext}>
+            {currentSlideIndex === slides.length - 1 ? (
+              <>
+                Get Started
+                <Check className="h-4 w-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Next
+                <ChevronRight className="h-4 w-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
