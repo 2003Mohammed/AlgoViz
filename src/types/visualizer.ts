@@ -2,7 +2,7 @@
 // Array visualizer types
 export interface ArrayItem {
   value: any;
-  status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added';
+  status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added' | 'current' | 'pivot' | 'active' | 'target';
 }
 
 // Step in the visualization process
@@ -16,13 +16,17 @@ export interface VisualizationStep {
   currentIndex?: number;
 }
 
+// Visualizer steps used by animations
+export interface VisualizerStep extends VisualizationStep {}
+
 // Graph visualizer types
 export interface GraphNode {
   id: string;
   x: number;
   y: number;
+  value?: any;
   color?: string;
-  status?: 'default' | 'visited' | 'processing' | 'path';
+  status?: 'default' | 'visited' | 'processing' | 'path' | 'active' | 'target';
 }
 
 export interface GraphEdge {
@@ -42,9 +46,23 @@ export interface GraphData {
 export interface TreeNode {
   id: string;
   value: any;
-  left?: string | null;
-  right?: string | null;
-  status?: 'default' | 'visited' | 'inserted' | 'removed' | 'found';
+  left?: TreeNode | null;
+  right?: TreeNode | null;
+  status?: 'default' | 'visited' | 'inserted' | 'removed' | 'found' | 'active' | 'comparing' | 'sorted';
+}
+
+// NodeItem and EdgeItem for general visualization utilities
+export interface NodeItem {
+  id: string;
+  label: string;
+  status?: string;
+}
+
+export interface EdgeItem {
+  source: string;
+  target: string;
+  label?: string;
+  status?: string;
 }
 
 // Algorithm visualizer props
@@ -58,4 +76,5 @@ export interface GuideSlide {
   content: string;
   code?: string;
   image?: string;
+  id?: string;
 }

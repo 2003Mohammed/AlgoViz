@@ -1,254 +1,260 @@
 
-import { VisualizationStep } from '../types/visualizer';
+import { ArrayItem, VisualizationStep } from '../types/visualizer';
 
-export interface VisualizationStepWithDetails<T> {
-  data: T[];
-  comparingIndices: number[];
-  swappedIndices: number[];
-  sortedIndices: number[];
-  pivotIndex?: number;
-  currentIndex?: number;
-  activeLineIndex: number;
-}
-
-export function generateBubbleSortSteps(array: number[]): VisualizationStep[] {
+// Array visualization
+export const visualizeArrayOperation = (array: any[], operation: string, value?: any): VisualizationStep[] => {
   const steps: VisualizationStep[] = [];
-  const arr = [...array];
-  const n = arr.length;
+  const initialArray = array.map(item => ({ value: item, status: 'default' }));
   
   // Initial state
   steps.push({
-    array: arr.map(value => ({ value, status: 'default' })),
-    lineIndex: 0
+    array: [...initialArray],
+    lineIndex: 0,
   });
   
-  // Bubble sort algorithm with steps
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n - i - 1; j++) {
-      // Comparing
-      steps.push({
-        array: arr.map((value, idx) => ({
-          value,
-          status: idx === j || idx === j + 1 ? 'comparing' : 
-                 idx >= n - i ? 'sorted' : 'default'
-        })),
-        lineIndex: 1
+  if (operation === 'add') {
+    // Visualization for adding an element
+    const updatedArray = [...initialArray];
+    const newItem = { value, status: 'added' };
+    
+    // Show array before addition
+    steps.push({
+      array: [...updatedArray],
+      lineIndex: 1,
+    });
+    
+    // Show adding the element
+    updatedArray.push(newItem);
+    steps.push({
+      array: [...updatedArray],
+      lineIndex: 2,
+    });
+    
+    // Show array after addition with new element highlighted
+    const finalArray = updatedArray.map((item, index) => 
+      index === updatedArray.length - 1 
+        ? { ...item, status: 'added' } 
+        : { ...item, status: 'default' }
+    );
+    
+    steps.push({
+      array: finalArray,
+      lineIndex: 3,
+    });
+  } 
+  else if (operation === 'remove') {
+    // Visualization for removing an element
+    const updatedArray = [...initialArray];
+    
+    // Highlight last element to be removed
+    const highlightArray = updatedArray.map((item, index) => 
+      index === updatedArray.length - 1 
+        ? { ...item, status: 'removing' } 
+        : { ...item, status: 'default' }
+    );
+    
+    steps.push({
+      array: [...highlightArray],
+      lineIndex: 1,
+    });
+    
+    // Show array after removal
+    updatedArray.pop();
+    steps.push({
+      array: [...updatedArray],
+      lineIndex: 2,
+    });
+  }
+  else if (operation === 'search') {
+    // Visualization for searching
+    const searchSteps = [];
+    for (let i = 0; i < initialArray.length; i++) {
+      const currentArray = initialArray.map((item, idx) => {
+        if (idx < i) return { ...item, status: 'visited' };
+        if (idx === i) return { ...item, status: 'comparing' };
+        return { ...item, status: 'default' };
       });
       
-      if (arr[j] > arr[j + 1]) {
-        // Swapping
-        steps.push({
-          array: arr.map((value, idx) => ({
-            value,
-            status: idx === j || idx === j + 1 ? 'swapping' : 
-                   idx >= n - i ? 'sorted' : 'default'
-          })),
-          lineIndex: 2
+      searchSteps.push({
+        array: [...currentArray],
+        lineIndex: 1,
+        currentIndex: i,
+      });
+      
+      // If found, highlight the element
+      if (initialArray[i].value === value) {
+        const foundArray = initialArray.map((item, idx) => {
+          if (idx === i) return { ...item, status: 'found' };
+          if (idx < i) return { ...item, status: 'visited' };
+          return { ...item, status: 'default' };
         });
         
-        // Swap the elements
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-        
-        // After swap
-        steps.push({
-          array: arr.map((value, idx) => ({
-            value,
-            status: idx === j || idx === j + 1 ? 'comparing' : 
-                   idx >= n - i ? 'sorted' : 'default'
-          })),
-          lineIndex: 3
+        searchSteps.push({
+          array: [...foundArray],
+          lineIndex: 2,
+          currentIndex: i,
+        });
+        break;
+      }
+      
+      // If we've reached the end without finding
+      if (i === initialArray.length - 1) {
+        searchSteps.push({
+          array: initialArray.map(item => ({ ...item, status: 'visited' })),
+          lineIndex: 3,
         });
       }
     }
     
-    // Mark the largest element as sorted
-    steps.push({
-      array: arr.map((value, idx) => ({
-        value,
-        status: idx >= n - i - 1 ? 'sorted' : 'default'
-      })),
-      lineIndex: 4
-    });
+    steps.push(...searchSteps);
   }
   
-  // Final state - all sorted
-  steps.push({
-    array: arr.map(value => ({ value, status: 'sorted' })),
-    lineIndex: 5
-  });
-  
   return steps;
-}
+};
 
-export function generateQuickSortSteps(array: number[]): VisualizationStep[] {
+// Stack visualization
+export const visualizeStackOperation = (stack: any[], operation: string, value?: any): VisualizationStep[] => {
   const steps: VisualizationStep[] = [];
-  const arr = [...array];
+  const initialStack = stack.map(item => ({ value: item, status: 'default' }));
   
   // Initial state
   steps.push({
-    array: arr.map(value => ({ value, status: 'default' })),
-    lineIndex: 0
+    array: [...initialStack],
+    lineIndex: 0,
   });
   
-  // Helper function to generate steps for quicksort
-  const quickSort = (start: number, end: number) => {
-    if (start >= end) return;
-    
-    // Choose pivot (last element)
-    const pivot = arr[end];
-    
-    // Highlight pivot
+  if (operation === 'push') {
+    // Show stack before push
     steps.push({
-      array: arr.map((value, idx) => ({
-        value,
-        status: idx === end ? 'comparing' : 'default'
-      })),
-      lineIndex: 1
+      array: [...initialStack],
+      lineIndex: 1,
     });
     
-    let i = start - 1;
+    // Show pushing the element (stacks show newest items at top/beginning)
+    const newItem = { value, status: 'added' };
+    const updatedStack = [newItem, ...initialStack];
     
-    // Partition process
-    for (let j = start; j < end; j++) {
-      // Compare with pivot
-      steps.push({
-        array: arr.map((value, idx) => ({
-          value,
-          status: idx === j ? 'comparing' : 
-                 idx === end ? 'comparing' : 
-                 idx <= i ? 'visited' : 'default'
-        })),
-        lineIndex: 2
-      });
-      
-      if (arr[j] <= pivot) {
-        i++;
-        
-        // Highlight elements to be swapped
-        if (i !== j) {
-          steps.push({
-            array: arr.map((value, idx) => ({
-              value,
-              status: idx === i || idx === j ? 'swapping' : 
-                     idx === end ? 'comparing' : 'default'
-            })),
-            lineIndex: 3
-          });
-          
-          // Swap
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-      }
-    }
-    
-    // Place pivot in its final position
-    i++;
     steps.push({
-      array: arr.map((value, idx) => ({
-        value,
-        status: idx === i || idx === end ? 'swapping' : 'default'
-      })),
-      lineIndex: 4
+      array: [...updatedStack],
+      lineIndex: 2,
     });
     
-    [arr[i], arr[end]] = [arr[end], arr[i]];
-    
-    // Pivot is in its final position
+    // Show stack after push with new element highlighted
     steps.push({
-      array: arr.map((value, idx) => ({
-        value,
-        status: idx === i ? 'sorted' : 'default'
-      })),
-      lineIndex: 5
+      array: updatedStack.map((item, index) => 
+        index === 0 ? item : { ...item, status: 'default' }
+      ),
+      lineIndex: 3,
+    });
+  } 
+  else if (operation === 'pop') {
+    // Highlight top element to be popped
+    const highlightStack = initialStack.map((item, index) => 
+      index === 0 ? { ...item, status: 'removing' } : { ...item, status: 'default' }
+    );
+    
+    steps.push({
+      array: [...highlightStack],
+      lineIndex: 1,
     });
     
-    // Recursively sort left and right
-    quickSort(start, i - 1);
-    quickSort(i + 1, end);
-  };
-  
-  // Start the sorting
-  quickSort(0, arr.length - 1);
-  
-  // Final state - all sorted
-  steps.push({
-    array: arr.map(value => ({ value, status: 'sorted' })),
-    lineIndex: 6
-  });
+    // Show stack after pop
+    const updatedStack = [...initialStack];
+    updatedStack.shift();
+    
+    steps.push({
+      array: [...updatedStack],
+      lineIndex: 2,
+    });
+  }
+  else if (operation === 'peek') {
+    // Highlight top element for peek
+    const peekStack = initialStack.map((item, index) => 
+      index === 0 ? { ...item, status: 'comparing' } : { ...item, status: 'default' }
+    );
+    
+    steps.push({
+      array: [...peekStack],
+      lineIndex: 1,
+    });
+    
+    // Show peek result
+    steps.push({
+      array: [...peekStack],
+      lineIndex: 2,
+    });
+  }
   
   return steps;
-}
+};
 
-export function generateBinarySearchSteps(array: number[], target: number): VisualizationStep[] {
+// Queue visualization
+export const visualizeQueueOperation = (queue: any[], operation: string, value?: any): VisualizationStep[] => {
   const steps: VisualizationStep[] = [];
-  const arr = [...array];
+  const initialQueue = queue.map(item => ({ value: item, status: 'default' }));
   
   // Initial state
   steps.push({
-    array: arr.map(value => ({ value, status: 'default' })),
-    lineIndex: 0
+    array: [...initialQueue],
+    lineIndex: 0,
   });
   
-  let left = 0;
-  let right = arr.length - 1;
-  let found = false;
-  
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-    
-    // Highlight current search range
+  if (operation === 'enqueue') {
+    // Show queue before enqueue
     steps.push({
-      array: arr.map((value, idx) => ({
-        value,
-        status: idx < left || idx > right ? 'visited' :
-               idx === mid ? 'comparing' : 'default'
-      })),
-      lineIndex: 1
+      array: [...initialQueue],
+      lineIndex: 1,
     });
     
-    if (arr[mid] === target) {
-      // Found the target
-      steps.push({
-        array: arr.map((value, idx) => ({
-          value,
-          status: idx === mid ? 'found' : 'visited'
-        })),
-        lineIndex: 2
-      });
-      found = true;
-      break;
-    } else if (arr[mid] < target) {
-      // Target is on the right
-      steps.push({
-        array: arr.map((value, idx) => ({
-          value,
-          status: idx <= mid ? 'visited' :
-                 idx > right ? 'visited' : 'default'
-        })),
-        lineIndex: 3
-      });
-      left = mid + 1;
-    } else {
-      // Target is on the left
-      steps.push({
-        array: arr.map((value, idx) => ({
-          value,
-          status: idx >= mid ? 'visited' :
-                 idx < left ? 'visited' : 'default'
-        })),
-        lineIndex: 4
-      });
-      right = mid - 1;
-    }
-  }
-  
-  // Final state - show results
-  if (!found) {
+    // Show enqueuing the element (added to end)
+    const newItem = { value, status: 'added' };
+    const updatedQueue = [...initialQueue, newItem];
+    
     steps.push({
-      array: arr.map(value => ({ value, status: 'visited' })),
-      lineIndex: 5
+      array: [...updatedQueue],
+      lineIndex: 2,
+    });
+    
+    // Show queue after enqueue with new element highlighted
+    steps.push({
+      array: updatedQueue.map((item, index) => 
+        index === updatedQueue.length - 1 ? item : { ...item, status: 'default' }
+      ),
+      lineIndex: 3,
+    });
+  } 
+  else if (operation === 'dequeue') {
+    // Highlight front element to be dequeued
+    const highlightQueue = initialQueue.map((item, index) => 
+      index === 0 ? { ...item, status: 'removing' } : { ...item, status: 'default' }
+    );
+    
+    steps.push({
+      array: [...highlightQueue],
+      lineIndex: 1,
+    });
+    
+    // Show queue after dequeue
+    const updatedQueue = [...initialQueue];
+    updatedQueue.shift();
+    
+    steps.push({
+      array: [...updatedQueue],
+      lineIndex: 2,
     });
   }
   
   return steps;
-}
+};
+
+// Binary tree visualization functions (to be implemented)
+export const visualizeBinaryTreeOperation = (tree: any, operation: string, value?: any) => {
+  // Implement binary tree visualizations
+  return [];
+};
+
+// Hash table visualization functions (to be implemented)
+export const visualizeHashTableOperation = (table: any, operation: string, key?: string, value?: any) => {
+  // Implement hash table visualizations
+  return [];
+};

@@ -4,7 +4,9 @@ import { DataStructure } from '../../utils/dataStructureData';
 import { 
   visualizeArrayOperation, 
   visualizeStackOperation, 
-  visualizeQueueOperation 
+  visualizeQueueOperation,
+  visualizeBinaryTreeOperation,
+  visualizeHashTableOperation
 } from '../../utils/visualizations';
 import { toast } from '../../hooks/use-toast';
 import { VisualizationStep } from '../../types/visualizer';
@@ -216,21 +218,36 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
               addLogEntry("Please enter a value to insert");
               return;
             }
+            const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
             // Binary tree insertion logic would go here
+            // For now, just show a log
+            addLogEntry(`Inserted ${value} into the binary tree (visualization in progress)`);
           }
           break;
           
         case 'hash-table':
           // Hash table operations
           if (operation === 'set') {
+            if (!customInput) {
+              addLogEntry("Please enter a key:value pair (e.g., name:John)");
+              return;
+            }
             // Hash table set logic would go here
+            // For now, just show a log
+            addLogEntry(`Set key-value pair in hash table (visualization in progress)`);
           }
           break;
           
         case 'graph':
           // Graph operations
           if (operation === 'addVertex') {
+            if (!customInput) {
+              addLogEntry("Please enter a vertex name");
+              return;
+            }
             // Graph add vertex logic would go here
+            // For now, just show a log
+            addLogEntry(`Added vertex to graph (visualization in progress)`);
           }
           break;
           
@@ -270,6 +287,7 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     resetToDefault,
     handleOperation,
     handleInputChange,
-    addLogEntry
+    addLogEntry,
+    setCurrentStep
   };
 };

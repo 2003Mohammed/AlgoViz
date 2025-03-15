@@ -9,28 +9,33 @@ import {
   HashTableRenderer, 
   GraphRenderer 
 } from './structure-renderers';
+import { VisualizationStep } from '../../types/visualizer';
 
 interface StructureRendererProps {
   structure: any;
   dataStructureId: string;
+  animationStep?: VisualizationStep;
+  currentStep?: number;
 }
 
 export const StructureRenderer: React.FC<StructureRendererProps> = ({ 
   structure, 
-  dataStructureId 
+  dataStructureId,
+  animationStep,
+  currentStep = 0
 }) => {
   switch (dataStructureId) {
     case 'array':
-      return <ArrayRenderer array={structure} />;
+      return <ArrayRenderer array={animationStep ? animationStep.array : structure.map((item: any) => ({ value: item, status: 'default' }))} />;
       
     case 'linked-list':
       return <LinkedListRenderer structure={structure} />;
       
     case 'stack':
-      return <StackRenderer stack={structure} />;
+      return <StackRenderer stack={animationStep ? animationStep.array : structure.map((item: any) => ({ value: item, status: 'default' }))} />;
       
     case 'queue':
-      return <QueueRenderer queue={structure} />;
+      return <QueueRenderer queue={animationStep ? animationStep.array : structure.map((item: any) => ({ value: item, status: 'default' }))} />;
       
     case 'binary-tree':
       return <BinaryTreeRenderer tree={structure} />;

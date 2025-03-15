@@ -29,7 +29,8 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     setCustomInput,
     resetToDefault,
     handleOperation,
-    handleInputChange
+    handleInputChange,
+    setCurrentStep
   } = useDataStructureState(dataStructure);
   
   const [speed, setSpeed] = useState(1);
@@ -87,6 +88,8 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           <StructureRenderer 
             structure={structure} 
             dataStructureId={dataStructure.id} 
+            animationStep={animationSteps[currentStep]}
+            currentStep={currentStep}
           />
         </motion.div>
         
@@ -107,7 +110,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
                   variant="ghost"
                   className="h-8 w-8"
                   disabled={currentStep <= 0}
-                  onClick={() => isAnimating ? null : setCurrentStep(prev => Math.max(0, prev - 1))}
+                  onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
                 >
                   <StepBack className="h-4 w-4" />
                 </Button>
@@ -115,8 +118,8 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
                   size="icon" 
                   variant="ghost"
                   className="h-8 w-8"
-                  disabled={isAnimating}
-                  onClick={() => isAnimating ? null : setCurrentStep(prev => Math.min(animationSteps.length - 1, prev + 1))}
+                  disabled={currentStep >= animationSteps.length - 1}
+                  onClick={() => setCurrentStep(Math.min(animationSteps.length - 1, currentStep + 1))}
                 >
                   <StepForward className="h-4 w-4" />
                 </Button>
