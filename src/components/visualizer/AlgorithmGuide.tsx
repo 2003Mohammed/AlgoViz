@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Algorithm } from '../../utils/algorithms';
 import { Button } from '../ui/button';
@@ -126,7 +127,6 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
               </div>
               <CodeHighlighter 
                 code={currentSlide.code.split('\n')} 
-                language="javascript" 
               />
             </div>
           )}

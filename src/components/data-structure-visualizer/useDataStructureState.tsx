@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { 
@@ -7,7 +6,7 @@ import {
   visualizeQueueOperation,
   visualizeBinaryTreeOperation,
   visualizeHashTableOperation
-} from '../../utils/visualizations';
+} from '../../utils/visualizations/index';
 import { toast } from '../../hooks/use-toast';
 import { VisualizationStep } from '../../types/visualizer';
 
@@ -20,7 +19,6 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   
-  // Reset animation state when data structure changes
   useEffect(() => {
     setStructure(dataStructure.defaultExample);
     setOperationResult(null);
@@ -47,7 +45,6 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     setCustomInput(e.target.value);
   };
   
-  // Handle animation steps
   useEffect(() => {
     if (isAnimating && animationSteps.length > 0) {
       if (currentStep < animationSteps.length - 1) {
@@ -212,41 +209,32 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
           break;
           
         case 'binary-tree':
-          // Binary tree operations
           if (operation === 'insert') {
             if (!customInput) {
               addLogEntry("Please enter a value to insert");
               return;
             }
             const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
-            // Binary tree insertion logic would go here
-            // For now, just show a log
             addLogEntry(`Inserted ${value} into the binary tree (visualization in progress)`);
           }
           break;
           
         case 'hash-table':
-          // Hash table operations
           if (operation === 'set') {
             if (!customInput) {
               addLogEntry("Please enter a key:value pair (e.g., name:John)");
               return;
             }
-            // Hash table set logic would go here
-            // For now, just show a log
             addLogEntry(`Set key-value pair in hash table (visualization in progress)`);
           }
           break;
           
         case 'graph':
-          // Graph operations
           if (operation === 'addVertex') {
             if (!customInput) {
               addLogEntry("Please enter a vertex name");
               return;
             }
-            // Graph add vertex logic would go here
-            // For now, just show a log
             addLogEntry(`Added vertex to graph (visualization in progress)`);
           }
           break;

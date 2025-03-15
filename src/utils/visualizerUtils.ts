@@ -1,3 +1,4 @@
+
 import { ArrayItem, GraphData, TreeNode, GraphNode, GraphEdge, NodeItem, EdgeItem } from '../types/visualizer';
 
 // Status color mapping
@@ -49,7 +50,7 @@ export function generateRandomGraph(): GraphData {
       value: String.fromCharCode(65 + i),
       x,
       y,
-      status: 'default'
+      status: 'default' as const
     });
   }
   
@@ -60,7 +61,7 @@ export function generateRandomGraph(): GraphData {
       source: nodes[i].id,
       target: nodes[(i + 1) % nodeCount].id,
       weight: Math.floor(Math.random() * 9) + 1,
-      status: 'default'
+      status: 'default' as const
     });
     
     // Add some random edges for a more connected graph
@@ -76,7 +77,7 @@ export function generateRandomGraph(): GraphData {
           source: nodes[i].id,
           target: nodes[targetIdx].id,
           weight: Math.floor(Math.random() * 9) + 1,
-          status: 'default'
+          status: 'default' as const
         });
       }
     }
@@ -98,7 +99,7 @@ export function generateRandomTree(): TreeNode {
     return {
       id: nodeId,
       value,
-      status: 'default',
+      status: 'default' as const,
       left: Math.random() > 0.3 ? createRandomTree(depth - 1, `${nodeId}-L`) : null,
       right: Math.random() > 0.3 ? createRandomTree(depth - 1, `${nodeId}-R`) : null
     };
@@ -109,7 +110,7 @@ export function generateRandomTree(): TreeNode {
   const root: TreeNode = {
     id: `root-${rootValue}`,
     value: rootValue,
-    status: 'default',
+    status: 'default' as const,
     left: createRandomTree(2, `root-${rootValue}-L`),
     right: createRandomTree(2, `root-${rootValue}-R`)
   };
@@ -150,7 +151,7 @@ export function arrayToTree(arr: (number | null)[]): TreeNode | null {
     return {
       id: `node-${index}`,
       value: arr[index] as number,
-      status: 'default',
+      status: 'default' as const,
       left: buildTree(2 * index + 1),
       right: buildTree(2 * index + 2)
     };

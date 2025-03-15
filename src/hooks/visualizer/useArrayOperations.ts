@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { ArrayItem } from '../../types/visualizer';
 import { generateRandomArray } from '../../utils/visualizerUtils';
-import { generateVisualizationSteps } from '../../utils/visualizations';
+import { generateVisualizationSteps } from '../../utils/visualizations/index';
 import { toast } from '../use-toast';
 
 export function useArrayOperations(
