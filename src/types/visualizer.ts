@@ -1,8 +1,7 @@
-
 // Array visualizer types
 export interface ArrayItem {
   value: any;
-  status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added' | 'current' | 'pivot' | 'active' | 'target';
+  status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added' | 'current' | 'pivot' | 'active' | 'target' | 'path' | 'processing';
 }
 
 // Step in the visualization process
@@ -14,6 +13,7 @@ export interface VisualizationStep {
   sortedIndices?: number[];
   pivotIndex?: number;
   currentIndex?: number;
+  graphData?: GraphData;
 }
 
 // Visualizer steps used by animations

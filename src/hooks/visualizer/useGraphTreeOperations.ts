@@ -1,18 +1,56 @@
 
+import { useState } from 'react';
 import { generateRandomGraph, generateRandomTree } from '../../utils/visualizerUtils';
+import { visualizeGraphOperation } from '../../utils/visualizations';
 import { toast } from '../use-toast';
+import { GraphData, TreeNode } from '../../types/visualizer';
 
 export function useGraphTreeOperations(
   algorithmId: string,
-  setGraphData: React.Dispatch<React.SetStateAction<any>>,
-  setTreeData: React.Dispatch<React.SetStateAction<any>>,
-  resetAnimation: () => void
+  setGraphData: React.Dispatch<React.SetStateAction<GraphData | null>>,
+  setTreeData: React.Dispatch<React.SetStateAction<TreeNode | null>>,
+  resetAnimation: () => void,
+  setSteps?: React.Dispatch<React.SetStateAction<any[]>>,
+  setTotalSteps?: React.Dispatch<React.SetStateAction<number>>
 ) {
+  const [startNode, setStartNode] = useState<string | undefined>();
+  const [endNode, setEndNode] = useState<string | undefined>();
+  
   const handleGenerateRandomGraph = () => {
     try {
       const newGraph = generateRandomGraph();
       setGraphData(newGraph);
       resetAnimation();
+      
+      // For algorithms that need a start and end node, set them automatically
+      if (newGraph.nodes.length > 0) {
+        const randomStartIndex = Math.floor(Math.random() * newGraph.nodes.length);
+        let randomEndIndex;
+        do {
+          randomEndIndex = Math.floor(Math.random() * newGraph.nodes.length);
+        } while (randomEndIndex === randomStartIndex && newGraph.nodes.length > 1);
+        
+        setStartNode(newGraph.nodes[randomStartIndex].id);
+        setEndNode(newGraph.nodes[randomEndIndex].id);
+        
+        // If this is a pathfinding algorithm, generate visualization steps
+        if (algorithmId === 'dijkstra' || algorithmId === 'bfs' || algorithmId === 'dfs') {
+          const operation = algorithmId.replace('-', '');
+          const steps = visualizeGraphOperation(
+            newGraph, 
+            operation, 
+            newGraph.nodes[randomStartIndex].id,
+            newGraph.nodes[randomEndIndex].id
+          );
+          
+          if (setSteps) {
+            setSteps(steps);
+          }
+          if (setTotalSteps) {
+            setTotalSteps(steps.length);
+          }
+        }
+      }
       
       toast({
         title: "Example graph generated",
@@ -50,6 +88,10 @@ export function useGraphTreeOperations(
 
   return {
     handleGenerateRandomGraph,
-    handleGenerateRandomTree
+    handleGenerateRandomTree,
+    startNode,
+    endNode,
+    setStartNode,
+    setEndNode
   };
 }
