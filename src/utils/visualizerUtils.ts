@@ -1,5 +1,4 @@
-
-import { ArrayItem, GraphData, TreeNode, NodeItem, EdgeItem } from '../types/visualizer';
+import { ArrayItem, GraphData, TreeNode, GraphNode, GraphEdge, NodeItem, EdgeItem } from '../types/visualizer';
 
 // Status color mapping
 export function getStatusColor(status: ArrayItem['status']) {
@@ -19,8 +18,8 @@ export function getStatusColor(status: ArrayItem['status']) {
 
 // Generate random array for sorting/searching visualizations
 export function generateRandomArray(sorted = false): ArrayItem[] {
-  const length = Math.floor(Math.random() * 7) + 8; // 8-15 elements
-  let values = Array.from({ length }, () => Math.floor(Math.random() * 90) + 10); // 10-99
+  const length = Math.floor(Math.random() * 7) + 8;
+  let values = Array.from({ length }, () => Math.floor(Math.random() * 90) + 10);
   
   if (sorted) {
     values.sort((a, b) => a - b);
@@ -34,20 +33,19 @@ export function generateRandomArray(sorted = false): ArrayItem[] {
 
 // Generate random graph for graph algorithm visualizations
 export function generateRandomGraph(): GraphData {
-  const nodeCount = Math.floor(Math.random() * 4) + 6; // 6-10 nodes
+  const nodeCount = Math.floor(Math.random() * 4) + 6;
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];
   
-  // Create nodes
+  // Create nodes with proper typing
   for (let i = 0; i < nodeCount; i++) {
-    // Position nodes in a circle
     const angle = (i / nodeCount) * 2 * Math.PI;
     const radius = 150;
     const x = 300 + radius * Math.cos(angle);
     const y = 200 + radius * Math.sin(angle);
     
     nodes.push({
-      id: String.fromCharCode(65 + i), // A, B, C, ...
+      id: String.fromCharCode(65 + i),
       value: String.fromCharCode(65 + i),
       x,
       y,
@@ -93,7 +91,7 @@ export function generateRandomTree(): TreeNode {
   function createRandomTree(depth: number, prefix: string): TreeNode | null {
     if (depth <= 0) return null;
     
-    const value = Math.floor(Math.random() * 90) + 10; // 10-99
+    const value = Math.floor(Math.random() * 90) + 10;
     const nodeId = `${prefix}-${value}`;
     
     // Make sure we explicitly use a valid status

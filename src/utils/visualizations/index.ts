@@ -1,11 +1,7 @@
-
 import { getVisualizationSteps } from '../algorithms/visualizations';
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
 
-// Centralized visualization generator
-export function generateVisualizationSteps(algorithmId: string, array: ArrayItem[]): VisualizationStep[] {
-  return getVisualizationSteps(algorithmId, array);
-}
+export const generateVisualizationSteps = getVisualizationSteps;
 
 // Data structure operation visualizers
 export function visualizeArrayOperation(array: any[], operation: string, value: any): VisualizationStep[] {
