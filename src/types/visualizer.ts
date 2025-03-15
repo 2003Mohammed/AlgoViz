@@ -1,7 +1,8 @@
+
 // Array visualizer types
 export interface ArrayItem {
   value: any;
-  status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added' | 'current' | 'pivot' | 'active' | 'target' | 'path' | 'processing';
+  status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added' | 'current' | 'pivot' | 'active' | 'target' | 'path' | 'processing' | 'comparing';
 }
 
 // Step in the visualization process
@@ -26,7 +27,7 @@ export interface GraphNode {
   y: number;
   value?: any;
   color?: string;
-  status?: 'default' | 'visited' | 'processing' | 'path' | 'active' | 'target';
+  status?: 'default' | 'visited' | 'processing' | 'path' | 'active' | 'target' | 'comparing';
 }
 
 export interface GraphEdge {
@@ -34,7 +35,8 @@ export interface GraphEdge {
   target: string;
   weight?: number;
   color?: string;
-  status?: 'default' | 'visited' | 'path';
+  status?: 'default' | 'visited' | 'path' | 'comparing';
+  directed?: boolean;
 }
 
 export interface GraphData {

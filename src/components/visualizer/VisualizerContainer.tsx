@@ -53,7 +53,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
 
   return (
     <div className="space-y-6" ref={visualizerRef}>
-      <div className="glass-card p-6">
+      <div className="pixel-card rounded-lg">
         <VisualizerHeader 
           algorithmName={algorithm.name}
           onGenerateNewArray={handleGenerateNewData}

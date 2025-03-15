@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 210 20% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -34,36 +34,48 @@
     --ring: 222 47% 11%;
 
     --radius: 0.75rem;
+    
+    /* Pixel art background colors */
+    --pixel-bg-1: 220 15% 90%;
+    --pixel-bg-2: 210 20% 85%;
+    --pixel-bg-3: 200 15% 87%;
+    --pixel-bg-4: 215 10% 82%;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 240 10% 10%;
+    --foreground: 0 0% 95%;
     
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 240 10% 12%;
+    --card-foreground: 0 0% 95%;
     
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 95%;
     
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 0 0% 98%;
     
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 17%;
+    --secondary-foreground: 0 0% 95%;
     
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 240 3.7% 20%;
+    --muted-foreground: 240 5% 65%;
     
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 240 3.7% 25%;
+    --accent-foreground: 0 0% 95%;
     
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 95%;
     
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 3.7% 20%;
+    --input: 240 3.7% 20%;
     --ring: 240 4.9% 83.9%;
+    
+    /* Pixel art background colors - dark mode */
+    --pixel-bg-1: 240 15% 12%;
+    --pixel-bg-2: 230 10% 15%;
+    --pixel-bg-3: 220 15% 13%;
+    --pixel-bg-4: 240 10% 10%;
   }
 
   * {
@@ -77,6 +89,12 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+    background-image: linear-gradient(to right,
+      hsl(var(--pixel-bg-1)) 25%, 
+      hsl(var(--pixel-bg-2)) 25%, hsl(var(--pixel-bg-2)) 50%, 
+      hsl(var(--pixel-bg-3)) 50%, hsl(var(--pixel-bg-3)) 75%, 
+      hsl(var(--pixel-bg-4)) 75%);
+    background-size: 24px 24px;
   }
 
   ::selection {
@@ -86,13 +104,13 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-lg shadow-sm border border-white/20 rounded-xl dark:bg-gray-800/50 dark:border-gray-700/30;
+    @apply bg-white/70 backdrop-blur-md shadow-sm border border-white/30 rounded-xl dark:bg-gray-800/40 dark:border-gray-700/20;
   }
   
   .glass-button {
-    @apply bg-white/90 backdrop-blur-md shadow-sm border border-white/30 
-           hover:bg-white/95 hover:border-white/40 transition-all duration-300
-           dark:bg-gray-800/70 dark:border-gray-700/30 dark:hover:bg-gray-800/90;
+    @apply bg-white/80 backdrop-blur-md shadow-sm border border-white/30 
+           hover:bg-white/90 hover:border-white/40 transition-all duration-300
+           dark:bg-gray-800/60 dark:border-gray-700/30 dark:hover:bg-gray-800/80;
   }
   
   .hero-gradient {
@@ -134,6 +152,19 @@
   .body-sm {
     @apply text-sm text-pretty;
   }
+  
+  /* Pixel art UI elements */
+  .pixel-border {
+    @apply border-2 border-foreground/80 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1;
+  }
+  
+  .pixel-button {
+    @apply px-4 py-2 bg-white dark:bg-gray-800 border-2 border-foreground/80 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1;
+  }
+  
+  .pixel-card {
+    @apply bg-white/90 dark:bg-gray-800/90 border-2 border-foreground/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] p-4;
+  }
 }
 
 @layer utilities {
@@ -152,5 +183,29 @@
   
   .text-gradient {
     @apply bg-gradient-to-br from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent;
+  }
+  
+  /* Pixel art utilities */
+  .pixel-bg {
+    background-color: #f0f0f0;
+    background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%, #e0e0e0),
+                      linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%, #e0e0e0);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+  
+  .pixel-dot {
+    background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+  
+  .dark .pixel-bg {
+    background-color: #202030;
+    background-image: linear-gradient(45deg, #252535 25%, transparent 25%, transparent 75%, #252535 75%, #252535),
+                      linear-gradient(45deg, #252535 25%, transparent 25%, transparent 75%, #252535 75%, #252535);
+  }
+  
+  .dark .pixel-dot {
+    background-image: radial-gradient(#303045 1px, transparent 1px);
   }
 }

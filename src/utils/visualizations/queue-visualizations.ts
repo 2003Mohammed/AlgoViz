@@ -1,12 +1,13 @@
 
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
+import { ITEM_STATUSES } from './index';
 
 /**
  * Visualizes queue operations like enqueue, dequeue
  */
 export function visualizeQueueOperation(queue: any[], operation: string, value?: any): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const initialQueue = queue.map(item => ({ value: item, status: 'default' as const }));
+  const initialQueue = queue.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT }));
   
   steps.push({
     array: [...initialQueue],
@@ -19,7 +20,7 @@ export function visualizeQueueOperation(queue: any[], operation: string, value?:
       lineIndex: 1,
     });
     
-    const newItem = { value, status: 'added' as const };
+    const newItem = { value, status: ITEM_STATUSES.ADDED };
     const updatedQueue = [...initialQueue, newItem];
     
     steps.push({
@@ -29,14 +30,14 @@ export function visualizeQueueOperation(queue: any[], operation: string, value?:
     
     steps.push({
       array: updatedQueue.map((item, index) => 
-        index === updatedQueue.length - 1 ? item : { ...item, status: 'default' as const }
+        index === updatedQueue.length - 1 ? item : { ...item, status: ITEM_STATUSES.DEFAULT }
       ),
       lineIndex: 3,
     });
   } 
   else if (operation === 'dequeue') {
     const highlightQueue = initialQueue.map((item, index) => 
-      index === 0 ? { ...item, status: 'removing' as const } : { ...item, status: 'default' as const }
+      index === 0 ? { ...item, status: ITEM_STATUSES.REMOVING } : { ...item, status: ITEM_STATUSES.DEFAULT }
     );
     
     steps.push({

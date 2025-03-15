@@ -1,12 +1,13 @@
 
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
+import { ITEM_STATUSES } from './index';
 
 /**
  * Visualizes stack operations like push, pop, peek
  */
 export function visualizeStackOperation(stack: any[], operation: string, value?: any): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const initialStack = stack.map(item => ({ value: item, status: 'default' as const }));
+  const initialStack = stack.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT }));
   
   steps.push({
     array: [...initialStack],
@@ -19,7 +20,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value?:
       lineIndex: 1,
     });
     
-    const newItem = { value, status: 'added' as const };
+    const newItem = { value, status: ITEM_STATUSES.ADDED };
     const updatedStack = [newItem, ...initialStack];
     
     steps.push({
@@ -29,14 +30,14 @@ export function visualizeStackOperation(stack: any[], operation: string, value?:
     
     steps.push({
       array: updatedStack.map((item, index) => 
-        index === 0 ? item : { ...item, status: 'default' as const }
+        index === 0 ? item : { ...item, status: ITEM_STATUSES.DEFAULT }
       ),
       lineIndex: 3,
     });
   } 
   else if (operation === 'pop') {
     const highlightStack = initialStack.map((item, index) => 
-      index === 0 ? { ...item, status: 'removing' as const } : { ...item, status: 'default' as const }
+      index === 0 ? { ...item, status: ITEM_STATUSES.REMOVING } : { ...item, status: ITEM_STATUSES.DEFAULT }
     );
     
     steps.push({
@@ -54,7 +55,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value?:
   }
   else if (operation === 'peek') {
     const peekStack = initialStack.map((item, index) => 
-      index === 0 ? { ...item, status: 'comparing' as const } : { ...item, status: 'default' as const }
+      index === 0 ? { ...item, status: ITEM_STATUSES.COMPARING } : { ...item, status: ITEM_STATUSES.DEFAULT }
     );
     
     steps.push({

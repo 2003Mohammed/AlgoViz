@@ -1,5 +1,6 @@
 
 import { GraphData, GraphNode, GraphEdge, VisualizationStep } from '../../types/visualizer';
+import { ITEM_STATUSES } from './index';
 
 /**
  * Visualizes graph operations like traversal and pathfinding
@@ -13,8 +14,8 @@ export function visualizeGraphOperation(
   const steps: VisualizationStep[] = [];
   
   // Create a copy of the initial graph to avoid modifying the original
-  const initialNodes = graphData.nodes.map(node => ({ ...node, status: 'default' as const }));
-  const initialEdges = graphData.edges.map(edge => ({ ...edge, status: 'default' as const }));
+  const initialNodes = graphData.nodes.map(node => ({ ...node, status: 'default' }));
+  const initialEdges = graphData.edges.map(edge => ({ ...edge, status: 'default' }));
   
   // First step: initial state
   steps.push({
@@ -265,9 +266,9 @@ function createTraversalStep(
     ...node,
     status: visited.has(node.id) 
       ? queue.includes(node.id) 
-        ? 'processing' as const 
-        : 'visited' as const
-      : 'default' as const
+        ? 'processing'
+        : 'visited'
+      : 'default'
   }));
   
   const updatedEdges = edges.map(edge => {
@@ -278,10 +279,10 @@ function createTraversalStep(
     return {
       ...edge,
       status: isCurrentEdge 
-        ? 'visited' as const 
+        ? 'visited'
         : (visited.has(edge.source) && visited.has(edge.target)) 
-          ? 'visited' as const 
-          : 'default' as const
+          ? 'visited'
+          : 'default'
     };
   });
   
@@ -311,23 +312,23 @@ function createDijkstraStep(
   
   // Create copies with updated statuses
   const updatedNodes = nodes.map(node => {
-    if (node.id === currentNodeId) return { ...node, status: 'processing' as const };
-    if (node.id === neighborId) return { ...node, status: 'comparing' as const };
-    if (!unvisited.has(node.id)) return { ...node, status: 'visited' as const };
-    return { ...node, status: 'default' as const };
+    if (node.id === currentNodeId) return { ...node, status: 'processing' };
+    if (node.id === neighborId) return { ...node, status: 'comparing' };
+    if (!unvisited.has(node.id)) return { ...node, status: 'visited' };
+    return { ...node, status: 'default' };
   });
   
   const updatedEdges = edges.map(edge => {
     if (edge.source === currentNodeId && edge.target === neighborId) {
-      return { ...edge, status: 'comparing' as const };
+      return { ...edge, status: 'comparing' };
     }
     
     // Highlight edges in the current shortest paths
     if (previous[edge.target] === edge.source || previous[edge.source] === edge.target) {
-      return { ...edge, status: 'visited' as const };
+      return { ...edge, status: 'visited' };
     }
     
-    return { ...edge, status: 'default' as const };
+    return { ...edge, status: 'default' };
   });
   
   return {
@@ -353,7 +354,7 @@ function createDijkstraPathStep(
   // Create copies with updated statuses
   const updatedNodes = nodes.map(node => ({
     ...node,
-    status: path.includes(node.id) ? 'path' as const : 'visited' as const
+    status: path.includes(node.id) ? 'path' : 'visited'
   }));
   
   const updatedEdges = edges.map(edge => {
@@ -366,7 +367,7 @@ function createDijkstraPathStep(
     
     return {
       ...edge,
-      status: isPathEdge ? 'path' as const : 'visited' as const
+      status: isPathEdge ? 'path' : 'visited'
     };
   });
   
@@ -393,7 +394,7 @@ function createAdjacencyList(graphData: GraphData): Record<string, string[]> {
     adjacencyList[edge.source].push(edge.target);
     
     // For undirected graphs, add the reverse edge as well
-    if (!edge.directed) {
+    if (edge.directed === false) {
       if (!adjacencyList[edge.target]) {
         adjacencyList[edge.target] = [];
       }
@@ -419,7 +420,7 @@ function createWeightedAdjacencyList(graphData: GraphData): Record<string, Array
     adjacencyList[edge.source].push([edge.target, weight]);
     
     // For undirected graphs, add the reverse edge as well
-    if (!edge.directed) {
+    if (edge.directed === false) {
       if (!adjacencyList[edge.target]) {
         adjacencyList[edge.target] = [];
       }
