@@ -28,15 +28,15 @@ export function generateRandomArray(sorted = false): ArrayItem[] {
   
   return values.map(value => ({
     value,
-    status: 'default'
+    status: 'default' as const
   }));
 }
 
 // Generate random graph for graph algorithm visualizations
 export function generateRandomGraph(): GraphData {
   const nodeCount = Math.floor(Math.random() * 4) + 6; // 6-10 nodes
-  const nodes: NodeItem[] = [];
-  const edges: EdgeItem[] = [];
+  const nodes: GraphNode[] = [];
+  const edges: GraphEdge[] = [];
   
   // Create nodes
   for (let i = 0; i < nodeCount; i++) {
@@ -90,26 +90,30 @@ export function generateRandomGraph(): GraphData {
 // Generate random binary tree
 export function generateRandomTree(): TreeNode {
   // Helper function to create a tree with given depth
-  function createRandomTree(depth: number): TreeNode | null {
+  function createRandomTree(depth: number, prefix: string): TreeNode | null {
     if (depth <= 0) return null;
     
     const value = Math.floor(Math.random() * 90) + 10; // 10-99
+    const nodeId = `${prefix}-${value}`;
     
     // Make sure we explicitly use a valid status
     return {
+      id: nodeId,
       value,
       status: 'default',
-      left: Math.random() > 0.3 ? createRandomTree(depth - 1) : null,
-      right: Math.random() > 0.3 ? createRandomTree(depth - 1) : null
+      left: Math.random() > 0.3 ? createRandomTree(depth - 1, `${nodeId}-L`) : null,
+      right: Math.random() > 0.3 ? createRandomTree(depth - 1, `${nodeId}-R`) : null
     };
   }
   
   // Create a root node with explicit status
+  const rootValue = Math.floor(Math.random() * 90) + 10;
   const root: TreeNode = {
-    value: Math.floor(Math.random() * 90) + 10,
+    id: `root-${rootValue}`,
+    value: rootValue,
     status: 'default',
-    left: createRandomTree(2),
-    right: createRandomTree(2)
+    left: createRandomTree(2, `root-${rootValue}-L`),
+    right: createRandomTree(2, `root-${rootValue}-R`)
   };
   
   return root;
@@ -146,6 +150,7 @@ export function arrayToTree(arr: (number | null)[]): TreeNode | null {
     if (index >= arr.length || arr[index] === null) return null;
     
     return {
+      id: `node-${index}`,
       value: arr[index] as number,
       status: 'default',
       left: buildTree(2 * index + 1),

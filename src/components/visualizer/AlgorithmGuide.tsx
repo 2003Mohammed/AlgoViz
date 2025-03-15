@@ -3,38 +3,47 @@ import React, { useState } from 'react';
 import { Algorithm } from '../../utils/algorithms';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
+import { 
+  ChevronLeft, 
+  ChevronRight,
+  Code,
+  BookOpen,
+  ArrowRight,
+  X
+} from 'lucide-react';
 import { GuideSlide } from '../../types/visualizer';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { CodeHighlighter } from '../CodeHighlighter';
+import { motion } from 'framer-motion';
 
-export interface AlgorithmGuideProps {
+interface AlgorithmGuideProps {
   algorithm: Algorithm;
-  onSkip: (dontShowAgain?: boolean) => void;
+  onSkip: (dontShowAgain: boolean) => void;
 }
+
+// Default slides if algorithm doesn't provide its own
+const defaultSlides: GuideSlide[] = [
+  {
+    id: "1",
+    title: "Introduction",
+    content: "This algorithm visualizer will help you understand how the algorithm works step by step."
+  },
+  {
+    id: "2",
+    title: "How to Use",
+    content: "Use the controls to play, pause, and step through the visualization. You can also adjust the speed."
+  },
+  {
+    id: "3",
+    title: "Ready?",
+    content: "You're now ready to start visualizing! Click 'Start Visualizing' to begin."
+  }
+];
 
 export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSkip }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   
-  // Define default slides if not provided in the algorithm
-  const defaultSlides: GuideSlide[] = [
-    {
-      id: 1,
-      title: `Introduction to ${algorithm.name}`,
-      content: algorithm.description
-    },
-    {
-      id: 2,
-      title: 'How to Use This Visualizer',
-      content: 'Use the controls at the bottom to start, pause, step through, or reset the visualization. You can also adjust the speed and input your own data to see how the algorithm performs.'
-    },
-    {
-      id: 3,
-      title: 'Ready to Start?',
-      content: 'Click "Get Started" to begin visualizing the algorithm. You can always revisit this guide by clicking "Show Guide" in the top right corner.'
-    }
-  ];
-  
-  const slides = algorithm.slides || defaultSlides;
+  const slides = (algorithm.slides as GuideSlide[]) || defaultSlides;
   const currentSlide = slides[currentSlideIndex];
   
   const handleNext = () => {
@@ -51,81 +60,125 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
     }
   };
   
+  const handleSkip = () => {
+    onSkip(dontShowAgain);
+  };
+  
   return (
-    <div className="glass-card p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold">Algorithm Guide</h3>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="dontShowAgain"
-            checked={dontShowAgain}
-            onCheckedChange={(checked) => setDontShowAgain(checked === true)}
-          />
-          <label
-            htmlFor="dontShowAgain"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Don't show again
-          </label>
-        </div>
+    <motion.div 
+      className="glass-card p-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          <BookOpen className="h-5 w-5" />
+          {algorithm.name} Guide
+        </h2>
+        <Button variant="ghost" size="icon" onClick={handleSkip}>
+          <X className="h-4 w-4" />
+        </Button>
       </div>
       
-      <div className="relative">
-        <div className="min-h-64 flex flex-col items-center justify-center px-8 py-12 bg-secondary/10 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">{currentSlide.title}</h2>
-          <p className="text-center max-w-2xl mb-6">{currentSlide.content}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1 flex flex-col justify-between">
+          <div>
+            <div className="bg-muted p-3 rounded-md mb-4">
+              <h3 className="font-medium mb-2">Contents</h3>
+              <ol className="space-y-1.5 text-sm">
+                {slides.map((slide, index) => (
+                  <li key={slide.id} className="flex items-center gap-2">
+                    <span className={`h-5 w-5 rounded-full flex items-center justify-center text-xs 
+                      ${index === currentSlideIndex ? 'bg-primary text-primary-foreground' : 
+                        index < currentSlideIndex ? 'bg-primary/20 text-muted-foreground' : 
+                        'bg-muted-foreground/20 text-muted-foreground'}`}>
+                      {index + 1}
+                    </span>
+                    <span className={index === currentSlideIndex ? 'font-medium' : 'text-muted-foreground'}>
+                      {slide.title}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            
+            <div className="hidden md:block text-sm text-muted-foreground">
+              <p>
+                This guide provides a brief explanation of {algorithm.name} and how to use this visualizer.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="md:col-span-2">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">{currentSlide.title}</h3>
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <p>{currentSlide.content}</p>
+            </div>
+          </div>
+          
+          {currentSlide.code && (
+            <div className="bg-muted rounded-md p-2 mb-4">
+              <div className="flex items-center text-xs text-muted-foreground mb-2 px-2">
+                <Code className="h-3.5 w-3.5 mr-1" />
+                <span>Code Snippet</span>
+              </div>
+              <CodeHighlighter code={currentSlide.code} language="javascript" />
+            </div>
+          )}
           
           {currentSlide.image && (
-            <img
-              src={currentSlide.image}
-              alt={currentSlide.title}
-              className="max-w-full max-h-60 object-contain rounded-md shadow-md mb-6"
-            />
+            <div className="bg-muted rounded-md p-3 mb-4">
+              <img 
+                src={currentSlide.image} 
+                alt={currentSlide.title} 
+                className="rounded-md max-h-60 object-contain mx-auto"
+              />
+            </div>
           )}
         </div>
       </div>
       
-      <div className="flex justify-between items-center">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handlePrevious}
-          disabled={currentSlideIndex === 0}
-        >
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Previous
-        </Button>
-        
-        <div className="flex space-x-1">
-          {slides.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 w-2 rounded-full ${
-                index === currentSlideIndex ? 'bg-primary' : 'bg-primary/30'
-              }`}
-            />
-          ))}
+      <div className="flex items-center justify-between mt-6 pt-4 border-t">
+        <div className="flex items-center gap-2">
+          <Checkbox 
+            id="dontShowAgain" 
+            checked={dontShowAgain}
+            onCheckedChange={(checked) => setDontShowAgain(!!checked)} 
+          />
+          <label 
+            htmlFor="dontShowAgain" 
+            className="text-sm text-muted-foreground cursor-pointer"
+          >
+            Don't show again
+          </label>
         </div>
         
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" onClick={() => onSkip(dontShowAgain)}>
-            Skip
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            disabled={currentSlideIndex === 0}
+            onClick={handlePrevious}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
           </Button>
-          <Button size="sm" onClick={handleNext}>
-            {currentSlideIndex === slides.length - 1 ? (
-              <>
-                Get Started
-                <Check className="h-4 w-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Next
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </>
-            )}
-          </Button>
+          
+          {currentSlideIndex < slides.length - 1 ? (
+            <Button onClick={handleNext}>
+              Next
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          ) : (
+            <Button onClick={handleNext}>
+              Start Visualizing
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

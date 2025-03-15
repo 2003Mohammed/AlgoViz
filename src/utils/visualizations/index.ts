@@ -14,7 +14,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
   
   // Initial state
   steps.push({
-    array: JSON.parse(JSON.stringify(initialArray.map(item => ({ value: item, status: 'default' })))),
+    array: JSON.parse(JSON.stringify(initialArray.map(item => ({ value: item, status: 'default' as const })))),
     lineIndex: 0
   });
   
@@ -24,7 +24,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
     case 'add':
       // Highlight the position where the element will be added
       steps.push({
-        array: JSON.parse(JSON.stringify(initialArray.map(item => ({ value: item, status: 'default' })))),
+        array: JSON.parse(JSON.stringify(initialArray.map(item => ({ value: item, status: 'default' as const })))),
         lineIndex: 1
       });
       
@@ -33,7 +33,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
       steps.push({
         array: JSON.parse(JSON.stringify(resultArray.map((item, idx) => ({ 
           value: item, 
-          status: idx === resultArray.length - 1 ? 'added' : 'default' 
+          status: idx === resultArray.length - 1 ? 'added' as const : 'default' as const 
         })))),
         lineIndex: 2
       });
@@ -45,7 +45,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
         steps.push({
           array: JSON.parse(JSON.stringify(initialArray.map((item, idx) => ({ 
             value: item, 
-            status: idx === initialArray.length - 1 ? 'removing' : 'default' 
+            status: idx === initialArray.length - 1 ? 'removing' as const : 'default' as const 
           })))),
           lineIndex: 1
         });
@@ -53,7 +53,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
         // Remove the element
         resultArray.pop();
         steps.push({
-          array: JSON.parse(JSON.stringify(resultArray.map(item => ({ value: item, status: 'default' })))),
+          array: JSON.parse(JSON.stringify(resultArray.map(item => ({ value: item, status: 'default' as const })))),
           lineIndex: 2
         });
       }
@@ -64,7 +64,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
       
       // Start the search
       steps.push({
-        array: JSON.parse(JSON.stringify(initialArray.map(item => ({ value: item, status: 'default' })))),
+        array: JSON.parse(JSON.stringify(initialArray.map(item => ({ value: item, status: 'default' as const })))),
         lineIndex: 1
       });
       
@@ -73,8 +73,8 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
         steps.push({
           array: JSON.parse(JSON.stringify(initialArray.map((item, idx) => ({ 
             value: item, 
-            status: idx === i ? (item === value ? 'found' : 'comparing') : 
-                    idx < i ? 'visited' : 'default'
+            status: idx === i ? (item === value ? 'found' as const : 'comparing' as const) : 
+                    idx < i ? 'visited' as const : 'default' as const
           })))),
           lineIndex: i % 2 === 0 ? 2 : 3
         });
@@ -84,7 +84,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value: 
       steps.push({
         array: JSON.parse(JSON.stringify(initialArray.map((item, idx) => ({ 
           value: item, 
-          status: idx === foundIndex ? 'found' : 'default'
+          status: idx === foundIndex ? 'found' as const : 'default' as const
         })))),
         lineIndex: foundIndex !== -1 ? 4 : 5
       });
@@ -101,7 +101,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value: 
   
   // Initial state
   steps.push({
-    array: JSON.parse(JSON.stringify(initialStack.map(item => ({ value: item, status: 'default' })))),
+    array: JSON.parse(JSON.stringify(initialStack.map(item => ({ value: item, status: 'default' as const })))),
     lineIndex: 0
   });
   
@@ -111,7 +111,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value: 
     case 'push':
       // Prepare to push
       steps.push({
-        array: JSON.parse(JSON.stringify(initialStack.map(item => ({ value: item, status: 'default' })))),
+        array: JSON.parse(JSON.stringify(initialStack.map(item => ({ value: item, status: 'default' as const })))),
         lineIndex: 1
       });
       
@@ -120,7 +120,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value: 
       steps.push({
         array: JSON.parse(JSON.stringify(resultStack.map((item, idx) => ({ 
           value: item, 
-          status: idx === 0 ? 'added' : 'default' 
+          status: idx === 0 ? 'added' as const : 'default' as const 
         })))),
         lineIndex: 2
       });
@@ -132,7 +132,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value: 
         steps.push({
           array: JSON.parse(JSON.stringify(initialStack.map((item, idx) => ({ 
             value: item, 
-            status: idx === 0 ? 'removing' : 'default' 
+            status: idx === 0 ? 'removing' as const : 'default' as const 
           })))),
           lineIndex: 1
         });
@@ -140,7 +140,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value: 
         // Pop the element
         resultStack.shift();
         steps.push({
-          array: JSON.parse(JSON.stringify(resultStack.map(item => ({ value: item, status: 'default' })))),
+          array: JSON.parse(JSON.stringify(resultStack.map(item => ({ value: item, status: 'default' as const })))),
           lineIndex: 2
         });
       }
@@ -152,7 +152,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value: 
         steps.push({
           array: JSON.parse(JSON.stringify(initialStack.map((item, idx) => ({ 
             value: item, 
-            status: idx === 0 ? 'comparing' : 'default' 
+            status: idx === 0 ? 'comparing' as const : 'default' as const 
           })))),
           lineIndex: 1
         });
@@ -170,7 +170,7 @@ export function visualizeQueueOperation(queue: any[], operation: string, value: 
   
   // Initial state
   steps.push({
-    array: JSON.parse(JSON.stringify(initialQueue.map(item => ({ value: item, status: 'default' })))),
+    array: JSON.parse(JSON.stringify(initialQueue.map(item => ({ value: item, status: 'default' as const })))),
     lineIndex: 0
   });
   
@@ -180,7 +180,7 @@ export function visualizeQueueOperation(queue: any[], operation: string, value: 
     case 'enqueue':
       // Prepare to enqueue
       steps.push({
-        array: JSON.parse(JSON.stringify(initialQueue.map(item => ({ value: item, status: 'default' })))),
+        array: JSON.parse(JSON.stringify(initialQueue.map(item => ({ value: item, status: 'default' as const })))),
         lineIndex: 1
       });
       
@@ -189,7 +189,7 @@ export function visualizeQueueOperation(queue: any[], operation: string, value: 
       steps.push({
         array: JSON.parse(JSON.stringify(resultQueue.map((item, idx) => ({ 
           value: item, 
-          status: idx === resultQueue.length - 1 ? 'added' : 'default' 
+          status: idx === resultQueue.length - 1 ? 'added' as const : 'default' as const 
         })))),
         lineIndex: 2
       });
@@ -201,7 +201,7 @@ export function visualizeQueueOperation(queue: any[], operation: string, value: 
         steps.push({
           array: JSON.parse(JSON.stringify(initialQueue.map((item, idx) => ({ 
             value: item, 
-            status: idx === initialQueue.length - 1 ? 'removing' : 'default' 
+            status: idx === 0 ? 'removing' as const : 'default' as const 
           })))),
           lineIndex: 1
         });
@@ -209,7 +209,7 @@ export function visualizeQueueOperation(queue: any[], operation: string, value: 
         // Dequeue the element
         resultQueue.shift();
         steps.push({
-          array: JSON.parse(JSON.stringify(resultQueue.map(item => ({ value: item, status: 'default' })))),
+          array: JSON.parse(JSON.stringify(resultQueue.map(item => ({ value: item, status: 'default' as const })))),
           lineIndex: 2
         });
       }

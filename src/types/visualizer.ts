@@ -56,6 +56,9 @@ export interface NodeItem {
   id: string;
   label: string;
   status?: string;
+  value?: any;
+  x?: number;
+  y?: number;
 }
 
 export interface EdgeItem {
@@ -63,6 +66,7 @@ export interface EdgeItem {
   target: string;
   label?: string;
   status?: string;
+  weight?: number;
 }
 
 // Algorithm visualizer props
@@ -76,5 +80,5 @@ export interface GuideSlide {
   content: string;
   code?: string;
   image?: string;
-  id?: string;
+  id: string; // Changed from optional to required
 }
