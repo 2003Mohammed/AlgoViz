@@ -1,20 +1,34 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronRight, Menu, X } from 'lucide-react';
+import { ChevronRight, Menu, X, Sun, Moon } from 'lucide-react';
+import { Button } from './ui/button';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const location = useLocation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
+  
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
+    
+    // Check user's preferred color scheme
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDarkMode(prefersDark);
+    if (prefersDark) {
+      document.documentElement.classList.add('dark');
+    }
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -25,21 +39,23 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Algorithms', path: '/visualizer' },
-    { name: 'Learn', path: '#' },
+    { name: 'Data Structures', path: '/data-structures' },
     { name: 'About', path: '#' },
   ];
 
   return (
     <header 
       className={`sticky top-0 z-40 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm' : 'bg-transparent'
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-lg shadow-sm dark:bg-gray-900/80' 
+          : 'bg-transparent'
       }`}
     >
       <div className="container">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-2 font-bold text-xl" onClick={closeMenu}>
-              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-white">
+              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground">
                 AV
               </div>
               <span>AlgoViz</span>
@@ -60,6 +76,16 @@ export const Navbar: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="rounded-full"
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            
             <Link
               to="/visualizer"
               className="hidden md:flex items-center h-9 rounded-md px-4 py-2 bg-primary text-primary-foreground text-sm font-medium shadow-sm hover:bg-primary/90 transition-colors"

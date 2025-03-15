@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Info, PlusCircle, MinusCircle, RotateCcw } from 'lucide-react';
+import { Info, PlusCircle, MinusCircle, RotateCcw, Play, Pause, StepForward, StepBack } from 'lucide-react';
 import { OperationControls } from './OperationControls';
 import { OperationLog } from './OperationLog';
 import { StructureRenderer } from './StructureRenderer';
@@ -11,6 +11,7 @@ import { OperationsInfo } from './OperationsInfo';
 import { ImplementationCode } from './ImplementationCode';
 import { useDataStructureState } from './useDataStructureState';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
 
 interface DataStructureVisualizerProps {
   dataStructure: DataStructure;
@@ -22,11 +23,20 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     structure,
     operationResult,
     operationLog,
+    animationSteps,
+    currentStep,
+    isAnimating,
     setCustomInput,
     resetToDefault,
     handleOperation,
     handleInputChange
   } = useDataStructureState(dataStructure);
+  
+  const [speed, setSpeed] = useState(1);
+  
+  const handleSpeedChange = (value: number[]) => {
+    setSpeed(value[0]);
+  };
   
   return (
     <div className="space-y-6">
@@ -79,6 +89,61 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
             dataStructureId={dataStructure.id} 
           />
         </motion.div>
+        
+        {animationSteps.length > 0 && (
+          <motion.div 
+            className="mb-6 space-y-3 py-2 px-4 bg-muted/30 rounded-lg"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {animationSteps.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  size="icon" 
+                  variant="ghost"
+                  className="h-8 w-8"
+                  disabled={currentStep <= 0}
+                  onClick={() => isAnimating ? null : setCurrentStep(prev => Math.max(0, prev - 1))}
+                >
+                  <StepBack className="h-4 w-4" />
+                </Button>
+                <Button 
+                  size="icon" 
+                  variant="ghost"
+                  className="h-8 w-8"
+                  disabled={isAnimating}
+                  onClick={() => isAnimating ? null : setCurrentStep(prev => Math.min(animationSteps.length - 1, prev + 1))}
+                >
+                  <StepForward className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-xs">Speed:</span>
+              <Slider
+                defaultValue={[1]}
+                min={0.5}
+                max={2}
+                step={0.5}
+                onValueChange={handleSpeedChange}
+                className="w-32"
+              />
+              <span className="text-xs">{speed}x</span>
+            </div>
+            
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div 
+                className="bg-primary h-2.5 rounded-full" 
+                style={{ width: `${(currentStep / (animationSteps.length - 1)) * 100}%` }}
+              ></div>
+            </div>
+          </motion.div>
+        )}
         
         <motion.div 
           className="flex flex-col sm:flex-row gap-4 items-center justify-center"

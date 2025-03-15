@@ -36,6 +36,36 @@
     --radius: 0.75rem;
   }
 
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+
   * {
     @apply border-border selection:bg-primary/10 selection:text-primary;
   }
@@ -56,12 +86,13 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-lg shadow-sm border border-white/20 rounded-xl;
+    @apply bg-white/80 backdrop-blur-lg shadow-sm border border-white/20 rounded-xl dark:bg-gray-800/50 dark:border-gray-700/30;
   }
   
   .glass-button {
     @apply bg-white/90 backdrop-blur-md shadow-sm border border-white/30 
-           hover:bg-white/95 hover:border-white/40 transition-all duration-300;
+           hover:bg-white/95 hover:border-white/40 transition-all duration-300
+           dark:bg-gray-800/70 dark:border-gray-700/30 dark:hover:bg-gray-800/90;
   }
   
   .hero-gradient {
@@ -113,5 +144,13 @@
 
   .scrollbar-hidden::-webkit-scrollbar {
     display: none;
+  }
+  
+  .glass-morphism {
+    @apply backdrop-blur-xl bg-white/10 border border-white/10 rounded-xl shadow-md dark:bg-black/20 dark:border-white/5;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-br from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent;
   }
 }
