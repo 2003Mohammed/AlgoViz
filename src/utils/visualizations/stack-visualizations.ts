@@ -1,13 +1,13 @@
 
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
-import { ITEM_STATUSES } from './index';
+import { ITEM_STATUSES } from './constants';
 
 /**
  * Visualizes stack operations like push, pop, peek
  */
 export function visualizeStackOperation(stack: any[], operation: string, value?: any): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const initialStack = stack.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT }));
+  const initialStack = stack.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
   
   steps.push({
     array: [...initialStack],
@@ -20,7 +20,7 @@ export function visualizeStackOperation(stack: any[], operation: string, value?:
       lineIndex: 1,
     });
     
-    const newItem = { value, status: ITEM_STATUSES.ADDED };
+    const newItem = { value, status: ITEM_STATUSES.ADDED as ArrayItem['status'] };
     const updatedStack = [newItem, ...initialStack];
     
     steps.push({
@@ -30,14 +30,16 @@ export function visualizeStackOperation(stack: any[], operation: string, value?:
     
     steps.push({
       array: updatedStack.map((item, index) => 
-        index === 0 ? item : { ...item, status: ITEM_STATUSES.DEFAULT }
+        index === 0 ? item : { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }
       ),
       lineIndex: 3,
     });
   } 
   else if (operation === 'pop') {
     const highlightStack = initialStack.map((item, index) => 
-      index === 0 ? { ...item, status: ITEM_STATUSES.REMOVING } : { ...item, status: ITEM_STATUSES.DEFAULT }
+      index === 0 
+        ? { ...item, status: ITEM_STATUSES.REMOVING as ArrayItem['status'] } 
+        : { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }
     );
     
     steps.push({
@@ -55,7 +57,9 @@ export function visualizeStackOperation(stack: any[], operation: string, value?:
   }
   else if (operation === 'peek') {
     const peekStack = initialStack.map((item, index) => 
-      index === 0 ? { ...item, status: ITEM_STATUSES.COMPARING } : { ...item, status: ITEM_STATUSES.DEFAULT }
+      index === 0 
+        ? { ...item, status: ITEM_STATUSES.COMPARING as ArrayItem['status'] } 
+        : { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }
     );
     
     steps.push({

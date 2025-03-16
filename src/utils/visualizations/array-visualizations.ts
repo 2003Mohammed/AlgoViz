@@ -1,13 +1,13 @@
 
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
-import { ITEM_STATUSES } from './index';
+import { ITEM_STATUSES } from './constants';
 
 /**
  * Visualizes array operations like add, remove, search
  */
 export function visualizeArrayOperation(array: any[], operation: string, value?: any): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const initialArray = array.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT }));
+  const initialArray = array.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
   
   steps.push({
     array: [...initialArray],
@@ -16,7 +16,7 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
   
   if (operation === 'add') {
     const updatedArray = [...initialArray];
-    const newItem = { value, status: ITEM_STATUSES.ADDED };
+    const newItem = { value, status: ITEM_STATUSES.ADDED as ArrayItem['status'] };
     
     steps.push({
       array: [...updatedArray],
@@ -32,8 +32,8 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
     steps.push({
       array: updatedArray.map((item, index) => 
         index === updatedArray.length - 1 
-          ? { ...item, status: ITEM_STATUSES.ADDED } 
-          : { ...item, status: ITEM_STATUSES.DEFAULT }
+          ? { ...item, status: ITEM_STATUSES.ADDED as ArrayItem['status'] } 
+          : { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }
       ),
       lineIndex: 3,
     });
@@ -43,8 +43,8 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
     
     const highlightArray = updatedArray.map((item, index) => 
       index === updatedArray.length - 1 
-        ? { ...item, status: ITEM_STATUSES.REMOVING } 
-        : { ...item, status: ITEM_STATUSES.DEFAULT }
+        ? { ...item, status: ITEM_STATUSES.REMOVING as ArrayItem['status'] } 
+        : { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }
     );
     
     steps.push({
@@ -62,9 +62,9 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
     const searchSteps = [];
     for (let i = 0; i < initialArray.length; i++) {
       const currentArray = initialArray.map((item, idx) => {
-        if (idx < i) return { ...item, status: ITEM_STATUSES.VISITED };
-        if (idx === i) return { ...item, status: ITEM_STATUSES.COMPARING };
-        return { ...item, status: ITEM_STATUSES.DEFAULT };
+        if (idx < i) return { ...item, status: ITEM_STATUSES.VISITED as ArrayItem['status'] };
+        if (idx === i) return { ...item, status: ITEM_STATUSES.COMPARING as ArrayItem['status'] };
+        return { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] };
       });
       
       searchSteps.push({
@@ -75,9 +75,9 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
       
       if (initialArray[i].value === value) {
         const foundArray = initialArray.map((item, idx) => {
-          if (idx === i) return { ...item, status: ITEM_STATUSES.FOUND };
-          if (idx < i) return { ...item, status: ITEM_STATUSES.VISITED };
-          return { ...item, status: ITEM_STATUSES.DEFAULT };
+          if (idx === i) return { ...item, status: ITEM_STATUSES.FOUND as ArrayItem['status'] };
+          if (idx < i) return { ...item, status: ITEM_STATUSES.VISITED as ArrayItem['status'] };
+          return { ...item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] };
         });
         
         searchSteps.push({
@@ -89,8 +89,10 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
       }
       
       if (i === initialArray.length - 1) {
+        const finalArray = initialArray.map(item => ({ ...item, status: ITEM_STATUSES.VISITED as ArrayItem['status'] }));
+        
         searchSteps.push({
-          array: initialArray.map(item => ({ ...item, status: ITEM_STATUSES.VISITED })),
+          array: finalArray,
           lineIndex: 3,
         });
       }

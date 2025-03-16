@@ -1,6 +1,6 @@
 
 import { GraphData, GraphNode, GraphEdge, VisualizationStep } from '../../types/visualizer';
-import { ITEM_STATUSES } from './index';
+import { ITEM_STATUSES } from './constants';
 
 /**
  * Visualizes graph operations like traversal and pathfinding
@@ -14,8 +14,8 @@ export function visualizeGraphOperation(
   const steps: VisualizationStep[] = [];
   
   // Create a copy of the initial graph to avoid modifying the original
-  const initialNodes = graphData.nodes.map(node => ({ ...node, status: 'default' }));
-  const initialEdges = graphData.edges.map(edge => ({ ...edge, status: 'default' }));
+  const initialNodes = graphData.nodes.map(node => ({ ...node, status: 'default' as GraphNode['status'] }));
+  const initialEdges = graphData.edges.map(edge => ({ ...edge, status: 'default' as GraphEdge['status'] }));
   
   // First step: initial state
   steps.push({
@@ -266,9 +266,9 @@ function createTraversalStep(
     ...node,
     status: visited.has(node.id) 
       ? queue.includes(node.id) 
-        ? 'processing'
-        : 'visited'
-      : 'default'
+        ? 'processing' as GraphNode['status']
+        : 'visited' as GraphNode['status']
+      : 'default' as GraphNode['status']
   }));
   
   const updatedEdges = edges.map(edge => {
@@ -279,10 +279,10 @@ function createTraversalStep(
     return {
       ...edge,
       status: isCurrentEdge 
-        ? 'visited'
+        ? 'visited' as GraphEdge['status']
         : (visited.has(edge.source) && visited.has(edge.target)) 
-          ? 'visited'
-          : 'default'
+          ? 'visited' as GraphEdge['status']
+          : 'default' as GraphEdge['status']
     };
   });
   
@@ -312,23 +312,23 @@ function createDijkstraStep(
   
   // Create copies with updated statuses
   const updatedNodes = nodes.map(node => {
-    if (node.id === currentNodeId) return { ...node, status: 'processing' };
-    if (node.id === neighborId) return { ...node, status: 'comparing' };
-    if (!unvisited.has(node.id)) return { ...node, status: 'visited' };
-    return { ...node, status: 'default' };
+    if (node.id === currentNodeId) return { ...node, status: 'processing' as GraphNode['status'] };
+    if (node.id === neighborId) return { ...node, status: 'comparing' as GraphNode['status'] };
+    if (!unvisited.has(node.id)) return { ...node, status: 'visited' as GraphNode['status'] };
+    return { ...node, status: 'default' as GraphNode['status'] };
   });
   
   const updatedEdges = edges.map(edge => {
     if (edge.source === currentNodeId && edge.target === neighborId) {
-      return { ...edge, status: 'comparing' };
+      return { ...edge, status: 'comparing' as GraphEdge['status'] };
     }
     
     // Highlight edges in the current shortest paths
     if (previous[edge.target] === edge.source || previous[edge.source] === edge.target) {
-      return { ...edge, status: 'visited' };
+      return { ...edge, status: 'visited' as GraphEdge['status'] };
     }
     
-    return { ...edge, status: 'default' };
+    return { ...edge, status: 'default' as GraphEdge['status'] };
   });
   
   return {
@@ -354,7 +354,7 @@ function createDijkstraPathStep(
   // Create copies with updated statuses
   const updatedNodes = nodes.map(node => ({
     ...node,
-    status: path.includes(node.id) ? 'path' : 'visited'
+    status: path.includes(node.id) ? 'path' as GraphNode['status'] : 'visited' as GraphNode['status']
   }));
   
   const updatedEdges = edges.map(edge => {
@@ -367,7 +367,7 @@ function createDijkstraPathStep(
     
     return {
       ...edge,
-      status: isPathEdge ? 'path' : 'visited'
+      status: isPathEdge ? 'path' as GraphEdge['status'] : 'visited' as GraphEdge['status']
     };
   });
   
