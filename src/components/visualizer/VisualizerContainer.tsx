@@ -10,6 +10,7 @@ import { VisualizerControls } from '../VisualizerControls';
 import { VisualizerCodeSections } from './VisualizerCodeSections';
 import { AlgorithmAnalysis } from './AlgorithmAnalysis';
 import { RealWorldExamples } from './RealWorldExamples';
+import { motion } from 'framer-motion';
 
 interface VisualizerContainerProps {
   algorithm: Algorithm;
@@ -53,7 +54,17 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
 
   return (
     <div className="space-y-6" ref={visualizerRef}>
-      <div className="pixel-card rounded-lg">
+      <motion.div 
+        className="pixel-card rounded-lg neon-border circuit-pattern"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.5,
+          type: "spring",
+          stiffness: 100,
+          damping: 20
+        }}
+      >
         <VisualizerHeader 
           algorithmName={algorithm.name}
           onGenerateNewArray={handleGenerateNewData}
@@ -70,13 +81,20 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
           <CustomArrayInput onSubmit={handleCustomArraySubmit} />
         )}
         
-        <ArrayVisualizer 
-          array={array} 
-          graphData={graphData}
-          treeData={treeData}
-          type={visualizationType}
-          algorithmId={algorithm.id}
-        />
+        <motion.div
+          className="pixel-box my-6 rounded-lg overflow-hidden"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
+          <ArrayVisualizer 
+            array={array} 
+            graphData={graphData}
+            treeData={treeData}
+            type={visualizationType}
+            algorithmId={algorithm.id}
+          />
+        </motion.div>
         
         <VisualizerControls
           isPlaying={isPlaying}
@@ -90,19 +108,37 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
           disableForward={currentStep === totalSteps - 1}
         />
         
-        <div className="mt-6 text-sm text-center text-muted-foreground">
+        <div className="mt-6 text-sm text-center text-muted-foreground neon-text">
           Step {currentStep + 1} of {totalSteps}
         </div>
-      </div>
+      </motion.div>
       
-      <VisualizerCodeSections 
-        algorithm={algorithm} 
-        activeLineIndex={activeLineIndex} 
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
+        <VisualizerCodeSections 
+          algorithm={algorithm} 
+          activeLineIndex={activeLineIndex} 
+        />
+      </motion.div>
       
-      <RealWorldExamples algorithm={algorithm} />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        <RealWorldExamples algorithm={algorithm} />
+      </motion.div>
       
-      <AlgorithmAnalysis algorithm={algorithm} />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      >
+        <AlgorithmAnalysis algorithm={algorithm} />
+      </motion.div>
     </div>
   );
 };

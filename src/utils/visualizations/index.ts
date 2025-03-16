@@ -1,3 +1,4 @@
+
 import { visualizeArrayOperation } from './array-visualizations';
 import { visualizeStackOperation } from './stack-visualizations';
 import { visualizeQueueOperation } from './queue-visualizations';
@@ -17,20 +18,20 @@ export {
 
 // Make sure types from ArrayItem.status are consistently used
 export const ITEM_STATUSES = {
-  DEFAULT: 'default' as const,
-  COMPARING: 'comparing' as const,
-  SWAPPING: 'swapping' as const,
-  SORTED: 'sorted' as const,
-  VISITED: 'visited' as const,
-  FOUND: 'found' as const,
-  REMOVING: 'removing' as const,
-  ADDED: 'added' as const,
-  CURRENT: 'current' as const,
-  PIVOT: 'pivot' as const,
-  ACTIVE: 'active' as const,
-  TARGET: 'target' as const,
-  PATH: 'path' as const,
-  PROCESSING: 'processing' as const
+  DEFAULT: 'default',
+  COMPARING: 'comparing',
+  SWAPPING: 'swapping',
+  SORTED: 'sorted',
+  VISITED: 'visited',
+  FOUND: 'found',
+  REMOVING: 'removing',
+  ADDED: 'added',
+  CURRENT: 'current',
+  PIVOT: 'pivot',
+  ACTIVE: 'active',
+  TARGET: 'target',
+  PATH: 'path',
+  PROCESSING: 'processing'
 };
 
 // Generate visualization steps for different algorithms
@@ -74,7 +75,7 @@ export function generateVisualizationSteps(
 function visualizeBubbleSort(array: any[]): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
   const n = array.length;
-  const arr = array.map(value => ({ value, status: 'default' as const }));
+  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT }));
   
   // Initial state
   steps.push({
@@ -87,7 +88,7 @@ function visualizeBubbleSort(array: any[]): VisualizationStep[] {
       // Comparing elements
       const comparingArray = arr.map((item, idx) => ({
         ...item,
-        status: idx === j || idx === j + 1 ? 'comparing' as const : item.status
+        status: idx === j || idx === j + 1 ? ITEM_STATUSES.COMPARING : item.status
       }));
       
       steps.push({
@@ -100,7 +101,7 @@ function visualizeBubbleSort(array: any[]): VisualizationStep[] {
       if (arr[j].value > arr[j + 1].value) {
         const swappingArray = arr.map((item, idx) => ({
           ...item,
-          status: idx === j || idx === j + 1 ? 'swapping' as const : item.status
+          status: idx === j || idx === j + 1 ? ITEM_STATUSES.SWAPPING : item.status
         }));
         
         steps.push({
@@ -116,7 +117,7 @@ function visualizeBubbleSort(array: any[]): VisualizationStep[] {
     }
     
     // Mark sorted element
-    arr[n - i - 1] = { ...arr[n - i - 1], status: 'sorted' as const };
+    arr[n - i - 1] = { ...arr[n - i - 1], status: ITEM_STATUSES.SORTED };
     
     steps.push({
       array: [...arr],
@@ -127,7 +128,7 @@ function visualizeBubbleSort(array: any[]): VisualizationStep[] {
   
   // Final state - all sorted
   steps.push({
-    array: arr.map(item => ({ ...item, status: 'sorted' as const })),
+    array: arr.map(item => ({ ...item, status: ITEM_STATUSES.SORTED })),
     lineIndex: 4
   });
   
@@ -136,7 +137,7 @@ function visualizeBubbleSort(array: any[]): VisualizationStep[] {
 
 function visualizeQuickSort(array: any[]): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: 'default' as const }));
+  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT }));
   
   // Initial state
   steps.push({
@@ -147,7 +148,7 @@ function visualizeQuickSort(array: any[]): VisualizationStep[] {
   // This is just a placeholder - a real implementation would be more complex
   // Just marking all elements as sorted for now
   steps.push({
-    array: arr.map(item => ({ ...item, status: 'sorted' as const })),
+    array: arr.map(item => ({ ...item, status: ITEM_STATUSES.SORTED })),
     lineIndex: 1
   });
   
@@ -156,7 +157,7 @@ function visualizeQuickSort(array: any[]): VisualizationStep[] {
 
 function visualizeMergeSort(array: any[]): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: 'default' as const }));
+  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT }));
   
   // Initial state
   steps.push({
@@ -167,7 +168,7 @@ function visualizeMergeSort(array: any[]): VisualizationStep[] {
   // This is just a placeholder - a real implementation would be more complex
   // Just marking all elements as sorted for now
   steps.push({
-    array: arr.map(item => ({ ...item, status: 'sorted' as const })),
+    array: arr.map(item => ({ ...item, status: ITEM_STATUSES.SORTED })),
     lineIndex: 1
   });
   
@@ -176,7 +177,7 @@ function visualizeMergeSort(array: any[]): VisualizationStep[] {
 
 function visualizeLinearSearch(array: any[], target: any): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: 'default' as const }));
+  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT }));
   
   // Initial state
   steps.push({
@@ -188,9 +189,9 @@ function visualizeLinearSearch(array: any[], target: any): VisualizationStep[] {
     // Current element being checked
     const currentArray = [...arr];
     for (let j = 0; j < i; j++) {
-      currentArray[j] = { ...currentArray[j], status: 'visited' as const };
+      currentArray[j] = { ...currentArray[j], status: ITEM_STATUSES.VISITED };
     }
-    currentArray[i] = { ...currentArray[i], status: 'comparing' as const };
+    currentArray[i] = { ...currentArray[i], status: ITEM_STATUSES.COMPARING };
     
     steps.push({
       array: currentArray,
@@ -201,7 +202,7 @@ function visualizeLinearSearch(array: any[], target: any): VisualizationStep[] {
     // Check if found
     if (arr[i].value === target) {
       const foundArray = [...currentArray];
-      foundArray[i] = { ...foundArray[i], status: 'found' as const };
+      foundArray[i] = { ...foundArray[i], status: ITEM_STATUSES.FOUND };
       
       steps.push({
         array: foundArray,
@@ -214,7 +215,7 @@ function visualizeLinearSearch(array: any[], target: any): VisualizationStep[] {
     // Not found, continue to next element
     if (i === arr.length - 1) {
       steps.push({
-        array: arr.map(item => ({ ...item, status: 'visited' as const })),
+        array: arr.map(item => ({ ...item, status: ITEM_STATUSES.VISITED })),
         lineIndex: 3
       });
     }
@@ -225,7 +226,7 @@ function visualizeLinearSearch(array: any[], target: any): VisualizationStep[] {
 
 function visualizeBinarySearch(array: any[], target: any): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: 'default' as const }));
+  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT }));
   
   // Initial state
   steps.push({
@@ -242,11 +243,11 @@ function visualizeBinarySearch(array: any[], target: any): VisualizationStep[] {
     // Update display to show current range and mid point
     const currentArray = arr.map((item, idx) => {
       if (idx < left || idx > right) {
-        return { ...item, status: 'visited' as const };
+        return { ...item, status: ITEM_STATUSES.VISITED };
       } else if (idx === mid) {
-        return { ...item, status: 'comparing' as const };
+        return { ...item, status: ITEM_STATUSES.COMPARING };
       } else {
-        return { ...item, status: 'default' as const };
+        return { ...item, status: ITEM_STATUSES.DEFAULT };
       }
     });
     
@@ -259,7 +260,7 @@ function visualizeBinarySearch(array: any[], target: any): VisualizationStep[] {
     // Check if found
     if (arr[mid].value === target) {
       const foundArray = [...currentArray];
-      foundArray[mid] = { ...foundArray[mid], status: 'found' as const };
+      foundArray[mid] = { ...foundArray[mid], status: ITEM_STATUSES.FOUND };
       
       steps.push({
         array: foundArray,
@@ -279,7 +280,7 @@ function visualizeBinarySearch(array: any[], target: any): VisualizationStep[] {
     // If not found
     if (left > right) {
       steps.push({
-        array: arr.map(item => ({ ...item, status: 'visited' as const })),
+        array: arr.map(item => ({ ...item, status: ITEM_STATUSES.VISITED })),
         lineIndex: 3
       });
     }

@@ -1,74 +1,86 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ArrayItem } from '../../../types/visualizer';
 
 interface QueueRendererProps {
-  queue: any[];
+  queue: ArrayItem[];
 }
 
 export const QueueRenderer: React.FC<QueueRendererProps> = ({ queue }) => {
+  // Get status color for animation
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'comparing':
+        return 'bg-yellow-500 border-yellow-600';
+      case 'removing':
+        return 'bg-red-500 border-red-600';
+      case 'added':
+        return 'bg-green-500 border-green-600';
+      case 'default':
+      default:
+        return 'bg-primary/10 border-primary/30';
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center space-y-6 w-full">
       {queue.length > 0 ? (
         <>
-          <div className="flex justify-between w-full max-w-md mb-2">
-            <motion.div 
-              className="px-2 py-1 text-xs font-medium bg-primary/20 rounded-md"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              Front
-            </motion.div>
-            <motion.div 
-              className="px-2 py-1 text-xs font-medium bg-secondary/50 rounded-md"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              Rear
-            </motion.div>
-          </div>
-          <div className="flex flex-row-reverse items-center justify-center">
-            {queue.map((item, index) => (
+          <div className="relative w-full flex justify-center">
+            <div className="relative flex flex-row items-center justify-center gap-2 p-6 border-2 border-dashed border-primary/30 rounded-lg">
               <motion.div 
-                key={index} 
-                className={`w-16 h-12 flex items-center justify-center border border-primary/50 rounded-md mx-1 ${
-                  index === 0 ? 'bg-primary/20' : 
-                  index === queue.length - 1 ? 'bg-secondary/30' : 
-                  'bg-primary/10'
-                }`}
-                initial={{ 
-                  opacity: 0, 
-                  x: index === 0 ? -50 : index === queue.length - 1 ? 50 : 0,
-                  y: 20
-                }}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 260, 
-                  damping: 20, 
-                  delay: index * 0.05 
-                }}
-                whileHover={{ 
-                  scale: 1.1,
-                  zIndex: 10,
-                  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)" 
-                }}
+                className="absolute left-0 px-2 py-1 text-xs font-medium bg-primary/20 rounded-md ml-1"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
               >
-                {item}
+                Front
               </motion.div>
-            ))}
+              
+              <motion.div 
+                className="absolute right-0 px-2 py-1 text-xs font-medium bg-primary/20 rounded-md mr-1"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                Rear
+              </motion.div>
+              
+              <div className="flex items-center space-x-2 pt-6 pb-2">
+                {queue.map((item, index) => (
+                  <motion.div 
+                    key={index} 
+                    className={`w-16 h-12 flex items-center justify-center border-2 rounded-md shadow-md pixel-border ${getStatusColor(item.status)}`}
+                    initial={{ opacity: 0, x: index === queue.length - 1 ? 50 : 0 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ 
+                      type: "spring",
+                      damping: 12,
+                      stiffness: 100,
+                      delay: index * 0.05
+                    }}
+                    whileHover={{ 
+                      scale: 1.05, 
+                      zIndex: 10,
+                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)"
+                    }}
+                  >
+                    <span className="font-mono font-medium">{item.value}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
-          <motion.div 
-            className="w-full max-w-md h-1 bg-gradient-to-r from-primary/50 to-secondary/50 mt-3 rounded-full"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          />
+          
+          <div className="text-sm text-muted-foreground bg-secondary/30 px-3 py-1.5 rounded-full">
+            Queue Size: {queue.length}
+          </div>
         </>
       ) : (
-        <div className="text-muted-foreground">Queue is empty</div>
+        <div className="text-muted-foreground bg-muted p-8 rounded-lg border border-dashed">
+          Queue is empty
+        </div>
       )}
     </div>
   );

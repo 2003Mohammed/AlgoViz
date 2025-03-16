@@ -89,3 +89,116 @@
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.05);
 }
+
+/* Enhanced Visualization Styles */
+.algo-container {
+  background-color: rgba(30, 30, 50, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pixel-box {
+  border: 3px solid #333;
+  box-shadow: 5px 5px 0px #000;
+  position: relative;
+  background-color: rgba(60, 60, 90, 0.7);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s steps(5);
+}
+
+.pixel-box:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0px #000;
+}
+
+.pixel-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #d946ef);
+}
+
+/* Animated code highlighting */
+.code-highlight {
+  background-color: rgba(100, 100, 240, 0.2);
+  animation: highlight-pulse 2s infinite;
+}
+
+@keyframes highlight-pulse {
+  0% { background-color: rgba(100, 100, 240, 0.1); }
+  50% { background-color: rgba(100, 100, 240, 0.3); }
+  100% { background-color: rgba(100, 100, 240, 0.1); }
+}
+
+/* Neon glow effects */
+.neon-border {
+  box-shadow: 0 0 10px rgba(80, 100, 240, 0.5), 
+              0 0 20px rgba(80, 100, 240, 0.3),
+              0 0 30px rgba(80, 100, 240, 0.1);
+  border: 1px solid rgba(100, 120, 255, 0.5);
+}
+
+.neon-text {
+  text-shadow: 0 0 5px rgba(100, 120, 255, 0.8), 
+               0 0 10px rgba(100, 120, 255, 0.4);
+}
+
+/* Retro pixel headers */
+.pixel-header {
+  font-family: monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.pixel-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 2px,
+    currentColor 2px,
+    currentColor 4px
+  );
+}
+
+/* Animated circuit board pattern */
+.circuit-pattern {
+  background-color: rgba(20, 20, 40, 0.8);
+  background-image: 
+    linear-gradient(rgba(60, 60, 180, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60, 60, 180, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.circuit-pattern::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(rgba(100, 100, 255, 0.2) 2px, transparent 2px);
+  background-size: 40px 40px;
+  animation: circuit-move 120s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes circuit-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 1000px 1000px; }
+}

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { Info, PlusCircle, MinusCircle, RotateCcw, Play, Pause, StepForward, StepBack } from 'lucide-react';
+import { Info, PlusCircle, MinusCircle, RotateCcw, Play, Pause, StepForward, StepBack, Code, Layers, Database, ChevronRight } from 'lucide-react';
 import { OperationControls } from './OperationControls';
 import { OperationLog } from './OperationLog';
 import { StructureRenderer } from './StructureRenderer';
@@ -42,18 +42,19 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
   return (
     <div className="space-y-6">
       <motion.div 
-        className="glass-card p-6 overflow-hidden"
+        className="glass-card p-6 overflow-hidden circuit-pattern"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <div className="flex justify-between items-center mb-6">
           <motion.h3 
-            className="text-xl font-semibold relative"
+            className="text-xl font-semibold relative pixel-header"
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
+            <Database className="inline-block mr-2 h-5 w-5 text-primary" />
             <span className="relative z-10">{dataStructure.name} Visualization</span>
             <motion.div 
               className="absolute -bottom-2 left-0 h-2 bg-primary/30 rounded-full"
@@ -71,7 +72,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
               onClick={resetToDefault}
               variant="secondary"
               size="sm"
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 pixel-border"
             >
               <RotateCcw className="h-4 w-4" />
               Reset
@@ -80,7 +81,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
         </div>
         
         <motion.div 
-          className="relative min-h-64 flex flex-col items-center justify-center gap-6 mb-6 perspective-1000"
+          className="relative min-h-64 flex flex-col items-center justify-center gap-6 mb-6 perspective-1000 pixel-box rounded-lg"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -95,7 +96,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
         
         {animationSteps.length > 0 && (
           <motion.div 
-            className="mb-6 space-y-3 py-2 px-4 bg-muted/30 rounded-lg"
+            className="mb-6 space-y-3 py-3 px-4 bg-muted/30 rounded-lg border border-primary/20"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             transition={{ duration: 0.4 }}
@@ -159,7 +160,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
               placeholder="Enter a value..."
               value={customInput}
               onChange={handleInputChange}
-              className="min-w-[200px]"
+              className="min-w-[200px] pixel-border"
             />
           </div>
           
@@ -185,7 +186,14 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <OperationsInfo operations={dataStructure.operations} />
+        <div className="glass-card p-6 overflow-hidden">
+          <h3 className="text-xl font-semibold mb-4 flex items-center pixel-header">
+            <Layers className="inline-block mr-2 h-5 w-5 text-primary" />
+            Operations Reference
+            <ChevronRight className="ml-2 h-4 w-4 text-primary" />
+          </h3>
+          <OperationsInfo operations={dataStructure.operations} />
+        </div>
       </motion.div>
       
       {dataStructure.implementation && (
@@ -194,7 +202,14 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <ImplementationCode code={dataStructure.implementation} />
+          <div className="glass-card p-6 overflow-hidden">
+            <h3 className="text-xl font-semibold mb-4 flex items-center pixel-header">
+              <Code className="inline-block mr-2 h-5 w-5 text-primary" />
+              Implementation Code
+              <ChevronRight className="ml-2 h-4 w-4 text-primary" />
+            </h3>
+            <ImplementationCode code={dataStructure.implementation} />
+          </div>
         </motion.div>
       )}
     </div>

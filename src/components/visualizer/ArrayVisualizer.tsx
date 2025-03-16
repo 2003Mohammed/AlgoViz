@@ -47,14 +47,14 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
   };
 
   const renderArrayVisualization = () => {
-    const maxValue = Math.max(...array.map(item => item.value));
+    const maxValue = Math.max(...array.map(item => typeof item.value === 'number' ? item.value : 0));
     
     return (
       <div className="flex justify-center items-end gap-2 min-h-[200px] p-6">
-        <AnimatePresence>
+        <AnimatePresence mode="sync">
           {array.map((item, idx) => {
             // Calculate height based on value
-            const heightPercent = (item.value / maxValue) * 100;
+            const heightPercent = (typeof item.value === 'number' ? item.value / maxValue : 0.3) * 100;
             const height = Math.max(20, heightPercent * 1.5);
             
             return (
@@ -67,11 +67,16 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
                 transition={{ duration: 0.3, delay: idx * 0.02 }}
               >
                 <motion.div
-                  className={`${getStatusColor(item.status)} text-white flex items-center justify-center text-center text-sm w-12 min-w-10 rounded-md transition-all duration-300`}
+                  className={`${getStatusColor(item.status)} text-white flex items-center justify-center text-center text-sm w-12 min-w-10 rounded-md pixel-border`}
                   style={{ height: `${height}px` }}
                   initial={{ height: 0 }}
                   animate={{ height: `${height}px` }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  whileHover={{ 
+                    scale: 1.1, 
+                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                    zIndex: 10 
+                  }}
                 >
                   {item.value}
                 </motion.div>
@@ -86,9 +91,9 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
 
   const renderGraphVisualization = () => {
     return (
-      <div className="h-96 bg-muted rounded-lg p-4 flex items-center justify-center">
+      <div className="h-96 rounded-lg p-4 flex items-center justify-center">
         {graphData ? (
-          <svg width="100%" height="100%" viewBox="0 0 600 400">
+          <svg width="100%" height="100%" viewBox="0 0 600 400" className="circuit-pattern rounded-lg">
             {/* Draw edges */}
             {graphData.edges.map((edge, idx) => {
               const source = graphData.nodes.find(n => n.id === edge.source);
@@ -108,13 +113,15 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
                     x2={target.x}
                     y2={target.y}
                     className={`${edgeColor} stroke-2`}
+                    strokeDasharray={edge.status === 'path' ? "none" : "5,5"}
+                    marker-end={edge.directed ? "url(#arrowhead)" : undefined}
                   />
                   {edge.weight && (
                     <text
                       x={(source.x + target.x) / 2}
                       y={(source.y + target.y) / 2}
                       dy="-5"
-                      className="text-xs fill-muted-foreground"
+                      className="text-xs fill-yellow-300 font-medium"
                       textAnchor="middle"
                       dominantBaseline="middle"
                     >
@@ -124,6 +131,21 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
                 </g>
               );
             })}
+            
+            {/* Define arrow marker for directed edges */}
+            <defs>
+              <marker
+                id="arrowhead"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255, 255, 255, 0.5)" />
+              </marker>
+            </defs>
             
             {/* Draw nodes */}
             {graphData.nodes.map((node) => {
@@ -142,6 +164,7 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
                     cy={node.y}
                     r="20"
                     className={`${nodeColor} transition-colors duration-300`}
+                    filter="url(#glow)"
                   />
                   <text
                     x={node.x}
@@ -156,6 +179,14 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
                 </g>
               );
             })}
+            
+            {/* Glow filter for nodes */}
+            <defs>
+              <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
           </svg>
         ) : (
           <div className="text-muted-foreground">Graph data not available</div>
@@ -179,7 +210,7 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
   return (
     <div className="relative w-full overflow-x-auto">
       <div className="absolute top-2 right-2 z-10">
-        <div className="flex flex-wrap gap-2 text-xs bg-background/80 backdrop-blur-sm p-2 rounded-md shadow">
+        <div className="flex flex-wrap gap-2 text-xs bg-background/80 backdrop-blur-sm p-2 rounded-md shadow-md pixel-border">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
             <span>Comparing</span>
