@@ -34,8 +34,8 @@ export function generateBubbleSortSteps(initialArray: ArrayItem[]): Visualizatio
       if (arr[j].value > arr[j + 1].value) {
         // Create a swap visualization
         const swapArray = JSON.parse(JSON.stringify(arr));
-        swapArray[j].status = 'current';
-        swapArray[j + 1].status = 'current';
+        swapArray[j].status = 'swapping';
+        swapArray[j + 1].status = 'swapping';
         
         steps.push({
           array: swapArray,
@@ -49,7 +49,11 @@ export function generateBubbleSortSteps(initialArray: ArrayItem[]): Visualizatio
       
       // Reset element status after comparison
       arr[j].status = 'default';
-      arr[j + 1].status = 'default';
+      if (j === n - i - 2) {
+        arr[j + 1].status = 'sorted';
+      } else {
+        arr[j + 1].status = 'default';
+      }
     }
     
     // Mark the last element as sorted since it's in its final position
@@ -63,6 +67,15 @@ export function generateBubbleSortSteps(initialArray: ArrayItem[]): Visualizatio
     
     // If no swaps were made in this pass, the array is sorted
     if (!swapped) {
+      // Mark all remaining elements as sorted
+      for (let k = 0; k < n - i - 1; k++) {
+        arr[k].status = 'sorted';
+      }
+      
+      steps.push({
+        array: JSON.parse(JSON.stringify(arr)),
+        lineIndex: 11 // Early termination
+      });
       break;
     }
   }

@@ -55,7 +55,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
   return (
     <div className="space-y-6" ref={visualizerRef}>
       <motion.div 
-        className="pixel-card rounded-lg neon-border circuit-pattern"
+        className="rounded-lg overflow-hidden tech-background"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ 
@@ -65,51 +65,53 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
           damping: 20
         }}
       >
-        <VisualizerHeader 
-          algorithmName={algorithm.name}
-          onGenerateNewArray={handleGenerateNewData}
-          onExportVisualization={exportVisualization}
-        />
-        
-        <ProgressTracker
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          algorithmId={algorithm.id}
-        />
-        
-        {visualizationType === 'array' && (
-          <CustomArrayInput onSubmit={handleCustomArraySubmit} />
-        )}
-        
-        <motion.div
-          className="pixel-box my-6 rounded-lg overflow-hidden"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-        >
-          <ArrayVisualizer 
-            array={array} 
-            graphData={graphData}
-            treeData={treeData}
-            type={visualizationType}
+        <div className="backdrop-blur-sm p-6 border border-blue-500/20">
+          <VisualizerHeader 
+            algorithmName={algorithm.name}
+            onGenerateNewArray={handleGenerateNewData}
+            onExportVisualization={exportVisualization}
+          />
+          
+          <ProgressTracker
+            currentStep={currentStep}
+            totalSteps={totalSteps}
             algorithmId={algorithm.id}
           />
-        </motion.div>
-        
-        <VisualizerControls
-          isPlaying={isPlaying}
-          onPlayPause={togglePlayPause}
-          onReset={reset}
-          onStepForward={stepForward}
-          onStepBackward={stepBackward}
-          onSpeedChange={changeSpeed}
-          currentSpeed={speed}
-          disableBackward={currentStep === 0}
-          disableForward={currentStep === totalSteps - 1}
-        />
-        
-        <div className="mt-6 text-sm text-center text-muted-foreground neon-text">
-          Step {currentStep + 1} of {totalSteps}
+          
+          {visualizationType === 'array' && (
+            <CustomArrayInput onSubmit={handleCustomArraySubmit} />
+          )}
+          
+          <motion.div
+            className="my-6 rounded-lg overflow-hidden glow-effect digital-rain"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+          >
+            <ArrayVisualizer 
+              array={array} 
+              graphData={graphData}
+              treeData={treeData}
+              type={visualizationType}
+              algorithmId={algorithm.id}
+            />
+          </motion.div>
+          
+          <VisualizerControls
+            isPlaying={isPlaying}
+            onPlayPause={togglePlayPause}
+            onReset={reset}
+            onStepForward={stepForward}
+            onStepBackward={stepBackward}
+            onSpeedChange={changeSpeed}
+            currentSpeed={speed}
+            disableBackward={currentStep === 0}
+            disableForward={currentStep === totalSteps - 1}
+          />
+          
+          <div className="mt-6 text-sm text-center text-blue-300">
+            Step {currentStep + 1} of {totalSteps}
+          </div>
         </div>
       </motion.div>
       
@@ -117,6 +119,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
+        className="glass-card"
       >
         <VisualizerCodeSections 
           algorithm={algorithm} 
@@ -128,6 +131,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
+        className="glass-card"
       >
         <RealWorldExamples algorithm={algorithm} />
       </motion.div>
@@ -136,6 +140,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
+        className="glass-card"
       >
         <AlgorithmAnalysis algorithm={algorithm} />
       </motion.div>
