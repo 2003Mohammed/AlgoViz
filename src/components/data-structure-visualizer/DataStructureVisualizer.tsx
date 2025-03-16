@@ -1,17 +1,14 @@
 
 import React, { useState } from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Info, PlusCircle, MinusCircle, RotateCcw, Play, Pause, StepForward, StepBack, Code, Layers, Database, ChevronRight } from 'lucide-react';
-import { OperationControls } from './OperationControls';
+import { motion } from 'framer-motion';
+import { useDataStructureState } from './useDataStructureState';
 import { OperationLog } from './OperationLog';
 import { StructureRenderer } from './StructureRenderer';
-import { OperationsInfo } from './OperationsInfo';
-import { ImplementationCode } from './ImplementationCode';
-import { useDataStructureState } from './useDataStructureState';
-import { motion } from 'framer-motion';
-import { Slider } from '../ui/slider';
+import { VisualizerHeader } from './components/VisualizerHeader';
+import { AnimationControls } from './components/AnimationControls';
+import { InputSection } from './components/InputSection';
+import { ReferenceSection } from './components/ReferenceSection';
 
 interface DataStructureVisualizerProps {
   dataStructure: DataStructure;
@@ -30,7 +27,8 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     resetToDefault,
     handleOperation,
     handleInputChange,
-    setCurrentStep
+    setCurrentStep,
+    setIsAnimating
   } = useDataStructureState(dataStructure);
   
   const [speed, setSpeed] = useState(1);
@@ -47,38 +45,10 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex justify-between items-center mb-6">
-          <motion.h3 
-            className="text-xl font-semibold relative pixel-header"
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Database className="inline-block mr-2 h-5 w-5 text-primary" />
-            <span className="relative z-10">{dataStructure.name} Visualization</span>
-            <motion.div 
-              className="absolute -bottom-2 left-0 h-2 bg-primary/30 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-            />
-          </motion.h3>
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.3 }}
-          >
-            <Button 
-              onClick={resetToDefault}
-              variant="secondary"
-              size="sm"
-              className="flex items-center gap-1 pixel-border"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Reset
-            </Button>
-          </motion.div>
-        </div>
+        <VisualizerHeader 
+          dataStructureName={dataStructure.name}
+          onReset={resetToDefault}
+        />
         
         <motion.div 
           className="relative min-h-64 flex flex-col items-center justify-center gap-6 mb-6 perspective-1000 pixel-box rounded-lg"
@@ -94,81 +64,20 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           />
         </motion.div>
         
-        {animationSteps.length > 0 && (
-          <motion.div 
-            className="mb-6 space-y-3 py-3 px-4 bg-muted/30 rounded-lg border border-primary/20"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
-                Step {currentStep + 1} of {animationSteps.length}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  size="icon" 
-                  variant="ghost"
-                  className="h-8 w-8"
-                  disabled={currentStep <= 0}
-                  onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
-                >
-                  <StepBack className="h-4 w-4" />
-                </Button>
-                <Button 
-                  size="icon" 
-                  variant="ghost"
-                  className="h-8 w-8"
-                  disabled={currentStep >= animationSteps.length - 1}
-                  onClick={() => setCurrentStep(Math.min(animationSteps.length - 1, currentStep + 1))}
-                >
-                  <StepForward className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-xs">Speed:</span>
-              <Slider
-                defaultValue={[1]}
-                min={0.5}
-                max={2}
-                step={0.5}
-                onValueChange={handleSpeedChange}
-                className="w-32"
-              />
-              <span className="text-xs">{speed}x</span>
-            </div>
-            
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div 
-                className="bg-primary h-2.5 rounded-full" 
-                style={{ width: `${(currentStep / (animationSteps.length - 1)) * 100}%` }}
-              ></div>
-            </div>
-          </motion.div>
-        )}
+        <AnimationControls
+          currentStep={currentStep}
+          animationSteps={animationSteps}
+          speed={speed}
+          setCurrentStep={setCurrentStep}
+          onSpeedChange={handleSpeedChange}
+        />
         
-        <motion.div 
-          className="flex flex-col sm:flex-row gap-4 items-center justify-center"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <div className="w-full sm:w-auto">
-            <Input
-              placeholder="Enter a value..."
-              value={customInput}
-              onChange={handleInputChange}
-              className="min-w-[200px] pixel-border"
-            />
-          </div>
-          
-          <OperationControls 
-            dataStructureId={dataStructure.id} 
-            handleOperation={handleOperation} 
-          />
-        </motion.div>
+        <InputSection
+          customInput={customInput}
+          dataStructureId={dataStructure.id}
+          handleInputChange={handleInputChange}
+          handleOperation={handleOperation}
+        />
         
         {operationLog.length > 0 && (
           <motion.div
@@ -181,37 +90,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
         )}
       </motion.div>
       
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        <div className="glass-card p-6 overflow-hidden">
-          <h3 className="text-xl font-semibold mb-4 flex items-center pixel-header">
-            <Layers className="inline-block mr-2 h-5 w-5 text-primary" />
-            Operations Reference
-            <ChevronRight className="ml-2 h-4 w-4 text-primary" />
-          </h3>
-          <OperationsInfo operations={dataStructure.operations} />
-        </div>
-      </motion.div>
-      
-      {dataStructure.implementation && (
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <div className="glass-card p-6 overflow-hidden">
-            <h3 className="text-xl font-semibold mb-4 flex items-center pixel-header">
-              <Code className="inline-block mr-2 h-5 w-5 text-primary" />
-              Implementation Code
-              <ChevronRight className="ml-2 h-4 w-4 text-primary" />
-            </h3>
-            <ImplementationCode code={dataStructure.implementation} />
-          </div>
-        </motion.div>
-      )}
+      <ReferenceSection dataStructure={dataStructure} />
     </div>
   );
 };

@@ -57,6 +57,7 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     handleOperation,
     handleInputChange,
     addLogEntry,
-    setCurrentStep
+    setCurrentStep,
+    setIsAnimating
   };
 };
