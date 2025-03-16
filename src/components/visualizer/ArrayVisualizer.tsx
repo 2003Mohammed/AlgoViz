@@ -1,7 +1,6 @@
-
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ArrayItem, GraphData, TreeNode } from '../../types/visualizer';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 
 interface ArrayVisualizerProps {
   array: ArrayItem[];
@@ -18,31 +17,77 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
   type,
   algorithmId
 }) => {
+  const containerControls = useAnimation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const sequence = async () => {
+      await containerControls.start({
+        scale: [1, 1.02, 1],
+        transition: { duration: 0.4 }
+      });
+    };
+    
+    sequence();
+  }, [array, containerControls]);
+
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'comparing':
-        return 'bg-yellow-500';
+        return 'bg-yellow-500 dark:bg-yellow-600';
       case 'swapping':
-        return 'bg-blue-500';
+        return 'bg-blue-500 dark:bg-blue-600';
       case 'sorted':
-        return 'bg-green-500';
+        return 'bg-green-500 dark:bg-green-600';
       case 'visited':
-        return 'bg-gray-400';
+        return 'bg-gray-400 dark:bg-gray-600';
       case 'found':
-        return 'bg-green-500';
+        return 'bg-green-500 dark:bg-green-600';
       case 'removing':
-        return 'bg-red-500';
+        return 'bg-red-500 dark:bg-red-600';
       case 'added':
-        return 'bg-green-500';
+        return 'bg-green-500 dark:bg-green-600';
       case 'current':
       case 'active':
-        return 'bg-blue-500';
+        return 'bg-blue-500 dark:bg-blue-600';
       case 'pivot':
-        return 'bg-purple-500';
+        return 'bg-purple-500 dark:bg-purple-600';
       case 'target':
-        return 'bg-orange-500';
+        return 'bg-orange-500 dark:bg-orange-600';
       default:
-        return 'bg-muted-foreground/30';
+        return 'bg-primary/80 dark:bg-primary-600/80';
+    }
+  };
+
+  const getStatusBorderStyle = (status?: string) => {
+    if (status === 'comparing' || status === 'swapping' || status === 'current' || status === 'active') {
+      return 'border-2 border-white dark:border-white/70';
+    }
+    return '';
+  };
+
+  const getStatusAnimation = (status?: string) => {
+    switch (status) {
+      case 'comparing':
+        return {
+          scale: [1, 1.1, 1],
+          borderColor: ['rgba(255,255,255,0.7)', 'rgba(255,255,255,1)', 'rgba(255,255,255,0.7)'],
+          transition: { 
+            repeat: Infinity, 
+            duration: 1.5,
+            ease: "easeInOut" 
+          }
+        };
+      case 'swapping':
+        return {
+          rotate: [0, 5, 0, -5, 0],
+          transition: { 
+            repeat: Infinity, 
+            duration: 1.2 
+          }
+        };
+      default:
+        return {};
     }
   };
 
@@ -50,42 +95,94 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
     const maxValue = Math.max(...array.map(item => typeof item.value === 'number' ? item.value : 0));
     
     return (
-      <div className="flex justify-center items-end gap-2 min-h-[200px] p-6">
+      <motion.div 
+        className="flex justify-center items-end gap-2 min-h-[220px] py-6 px-4 overflow-x-auto circuit-pattern rounded-lg"
+        animate={containerControls}
+        ref={containerRef}
+      >
         <AnimatePresence mode="sync">
-          {array.map((item, idx) => {
-            // Calculate height based on value
-            const heightPercent = (typeof item.value === 'number' ? item.value / maxValue : 0.3) * 100;
-            const height = Math.max(20, heightPercent * 1.5);
-            
-            return (
-              <motion.div
-                key={`${idx}-${item.value}`}
-                className="flex flex-col items-center gap-2"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: idx * 0.02 }}
-              >
+          {array.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-muted-foreground text-center"
+            >
+              No data to visualize
+            </motion.div>
+          ) : (
+            array.map((item, idx) => {
+              // Calculate height based on value
+              const heightPercent = (typeof item.value === 'number' ? item.value / maxValue : 0.3) * 100;
+              const height = Math.max(30, heightPercent * 1.8);
+              
+              return (
                 <motion.div
-                  className={`${getStatusColor(item.status)} text-white flex items-center justify-center text-center text-sm w-12 min-w-10 rounded-md pixel-border`}
-                  style={{ height: `${height}px` }}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${height}px` }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  whileHover={{ 
-                    scale: 1.1, 
-                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-                    zIndex: 10 
+                  key={`${idx}-${item.value}`}
+                  className="flex flex-col items-center gap-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    delay: idx * 0.02,
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 25
                   }}
+                  layout
                 >
-                  {item.value}
+                  <motion.div
+                    className={`${getStatusColor(item.status)} ${getStatusBorderStyle(item.status)} text-white flex items-center justify-center text-center text-sm w-14 min-w-12 rounded-md shadow-[0_0_8px_rgba(0,100,255,0.3)] backdrop-blur-sm transition-all`}
+                    style={{ height: `${height}px` }}
+                    initial={{ height: 0 }}
+                    animate={{
+                      height: `${height}px`,
+                      ...getStatusAnimation(item.status)
+                    }}
+                    transition={{ 
+                      type: "spring", 
+                      stiffness: 300, 
+                      damping: 20 
+                    }}
+                    whileHover={{ 
+                      scale: 1.1, 
+                      boxShadow: "0px 0px 15px rgba(80, 160, 255, 0.8)",
+                      zIndex: 10 
+                    }}
+                    layoutId={`item-${idx}`}
+                  >
+                    <div className="relative z-10 font-mono font-semibold">
+                      {item.value}
+                    </div>
+                    {item.status === 'comparing' && (
+                      <motion.div 
+                        className="absolute inset-0 bg-white/20 rounded-md" 
+                        animate={{ 
+                          opacity: [0.1, 0.3, 0.1] 
+                        }}
+                        transition={{ 
+                          duration: 1.5, 
+                          repeat: Infinity, 
+                          ease: "easeInOut" 
+                        }}
+                      />
+                    )}
+                  </motion.div>
+                  <motion.div 
+                    className="text-xs font-mono text-blue-300 bg-blue-950/50 px-2 py-0.5 rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    {idx}
+                  </motion.div>
                 </motion.div>
-                <div className="text-xs text-muted-foreground">{idx}</div>
-              </motion.div>
-            );
-          })}
+              );
+            })
+          )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     );
   };
 
@@ -208,9 +305,14 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
   };
 
   return (
-    <div className="relative w-full overflow-x-auto">
-      <div className="absolute top-2 right-2 z-10">
-        <div className="flex flex-wrap gap-2 text-xs bg-background/80 backdrop-blur-sm p-2 rounded-md shadow-md pixel-border">
+    <div className="relative w-full overflow-hidden">
+      <motion.div 
+        className="absolute top-2 right-2 z-10"
+        initial={{ opacity: 0, scale: 0.9, y: -10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+      >
+        <div className="flex flex-wrap gap-2 text-xs bg-background/90 backdrop-blur-sm p-2 rounded-md shadow-lg border border-primary/30 pixel-border">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
             <span>Comparing</span>
@@ -230,13 +332,24 @@ export const ArrayVisualizer: React.FC<ArrayVisualizerProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
       
-      <div className="mt-8">
+      <motion.div 
+        className="mt-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.5,
+          delay: 0.3,
+          type: "spring",
+          stiffness: 100,
+          damping: 15
+        }}
+      >
         {type === 'array' && renderArrayVisualization()}
         {type === 'graph' && renderGraphVisualization()}
         {type === 'tree' && renderTreeVisualization()}
-      </div>
+      </motion.div>
     </div>
   );
 };
