@@ -21,28 +21,28 @@ export const ArrayBarComponent: React.FC<ArrayBarComponentProps> = ({
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'comparing':
-        return 'bg-yellow-500 dark:bg-yellow-600';
+        return 'bg-amber-500 dark:bg-amber-500';
       case 'swapping':
-        return 'bg-blue-500 dark:bg-blue-600';
+        return 'bg-indigo-500 dark:bg-indigo-400';
       case 'sorted':
-        return 'bg-green-500 dark:bg-green-600';
+        return 'bg-emerald-500 dark:bg-emerald-400';
       case 'visited':
-        return 'bg-gray-400 dark:bg-gray-600';
+        return 'bg-slate-400 dark:bg-slate-500';
       case 'found':
-        return 'bg-green-500 dark:bg-green-600';
+        return 'bg-emerald-500 dark:bg-emerald-400';
       case 'removing':
-        return 'bg-red-500 dark:bg-red-600';
+        return 'bg-rose-500 dark:bg-rose-400';
       case 'added':
-        return 'bg-green-500 dark:bg-green-600';
+        return 'bg-emerald-500 dark:bg-emerald-400';
       case 'current':
       case 'active':
-        return 'bg-blue-500 dark:bg-blue-600';
+        return 'bg-indigo-500 dark:bg-indigo-400';
       case 'pivot':
-        return 'bg-purple-500 dark:bg-purple-600';
+        return 'bg-violet-500 dark:bg-violet-400';
       case 'target':
-        return 'bg-orange-500 dark:bg-orange-600';
+        return 'bg-orange-500 dark:bg-orange-400';
       default:
-        return 'bg-primary/80 dark:bg-primary-600/80';
+        return 'bg-slate-600 dark:bg-slate-500';
     }
   };
 
@@ -61,16 +61,25 @@ export const ArrayBarComponent: React.FC<ArrayBarComponentProps> = ({
           borderColor: ['rgba(255,255,255,0.7)', 'rgba(255,255,255,1)', 'rgba(255,255,255,0.7)'],
           transition: { 
             repeat: Infinity, 
-            duration: 1.5,
+            duration: 1,
             ease: "easeInOut" 
           }
         };
       case 'swapping':
         return {
-          rotate: [0, 5, 0, -5, 0],
+          rotate: [0, 3, 0, -3, 0],
           transition: { 
             repeat: Infinity, 
-            duration: 1.2 
+            duration: 0.8,
+            ease: "easeInOut"
+          }
+        };
+      case 'sorted':
+        return {
+          y: [0, -5, 0],
+          transition: {
+            duration: 0.5,
+            ease: "easeOut"
           }
         };
       default:
@@ -81,20 +90,13 @@ export const ArrayBarComponent: React.FC<ArrayBarComponentProps> = ({
   return (
     <motion.div
       className="flex flex-col items-center gap-2"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ 
-        duration: 0.3, 
-        delay: idx * 0.02,
-        type: "spring", 
-        stiffness: 300, 
-        damping: 25
-      }}
-      layout
+      initial={{ opacity: 0.8 }}
+      animate={{ opacity: 1 }}
+      layout={true}
+      layoutId={`array-item-${idx}`}
     >
       <motion.div
-        className={`${getStatusColor(item.status)} ${getStatusBorderStyle(item.status)} text-white flex items-center justify-center text-center text-sm w-14 min-w-12 rounded-md shadow-[0_0_8px_rgba(0,100,255,0.3)] backdrop-blur-sm transition-all`}
+        className={`${getStatusColor(item.status)} ${getStatusBorderStyle(item.status)} text-white flex items-center justify-center text-center text-sm w-14 min-w-12 rounded-md shadow-lg backdrop-blur-sm transition-colors`}
         style={{ height: `${height}px` }}
         initial={{ height: 0 }}
         animate={{
@@ -108,10 +110,9 @@ export const ArrayBarComponent: React.FC<ArrayBarComponentProps> = ({
         }}
         whileHover={{ 
           scale: 1.1, 
-          boxShadow: "0px 0px 15px rgba(80, 160, 255, 0.8)",
+          boxShadow: "0px 0px 15px rgba(80, 160, 255, 0.5)",
           zIndex: 10 
         }}
-        layoutId={`item-${idx}`}
       >
         <div className="relative z-10 font-mono font-semibold">
           {item.value}
@@ -123,7 +124,7 @@ export const ArrayBarComponent: React.FC<ArrayBarComponentProps> = ({
               opacity: [0.1, 0.3, 0.1] 
             }}
             transition={{ 
-              duration: 1.5, 
+              duration: 1, 
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
@@ -131,10 +132,7 @@ export const ArrayBarComponent: React.FC<ArrayBarComponentProps> = ({
         )}
       </motion.div>
       <motion.div 
-        className="text-xs font-mono text-blue-300 bg-blue-950/50 px-2 py-0.5 rounded-full"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        className="text-xs font-mono text-slate-300 bg-slate-800/70 px-2 py-0.5 rounded-full"
       >
         {idx}
       </motion.div>

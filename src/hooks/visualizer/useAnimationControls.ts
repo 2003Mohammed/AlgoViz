@@ -39,6 +39,7 @@ export function useAnimationControls(
       
       const step = stepsRef.current[nextStep];
       if (step) {
+        // Apply the next visualization state
         setArray(step.array);
         setActiveLineIndex(step.lineIndex);
       }
@@ -61,6 +62,7 @@ export function useAnimationControls(
       
       const step = stepsRef.current[prevStep];
       if (step) {
+        // Apply the previous visualization state
         setArray(step.array);
         setActiveLineIndex(step.lineIndex);
       }

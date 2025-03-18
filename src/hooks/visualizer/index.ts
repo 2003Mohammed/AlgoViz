@@ -103,10 +103,11 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     };
   }, [algorithmId]); // Re-initialize when algorithm changes
   
-  // Animation effect - optimized with requestAnimationFrame
+  // Animation effect - optimized with requestAnimationFrame and respecting speed setting
   useEffect(() => {
     if (isPlaying) {
       let lastTime = 0;
+      // Adjust interval based on speed (faster speed = shorter interval)
       const interval = 1000 / speed;
       
       const animate = (timestamp: number) => {

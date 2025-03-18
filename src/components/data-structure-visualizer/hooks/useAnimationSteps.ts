@@ -13,9 +13,13 @@ export const useAnimationSteps = (
   useEffect(() => {
     if (isAnimating && animationSteps.length > 0) {
       if (currentStep < animationSteps.length - 1) {
+        // Calculate duration based on speed (faster speed = shorter duration)
+        const duration = 1000 / speed; // milliseconds
+        
         const timer = setTimeout(() => {
           setCurrentStep(prev => prev + 1);
-        }, 800 / speed); // Adjust timing based on speed
+        }, duration);
+        
         return () => clearTimeout(timer);
       } else {
         setIsAnimating(false);
