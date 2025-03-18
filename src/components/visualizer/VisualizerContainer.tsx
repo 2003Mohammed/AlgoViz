@@ -5,7 +5,7 @@ import { useVisualizerState } from '../../hooks/visualizer';
 import { VisualizerHeader } from './VisualizerHeader';
 import { ProgressTracker } from './ProgressTracker';
 import { CustomArrayInput } from './CustomArrayInput';
-import { ArrayVisualizer } from './ArrayVisualizer';
+import { ArrayVisualizer } from './array-visualizer';
 import { VisualizerControls } from '../VisualizerControls';
 import { VisualizerCodeSections } from './VisualizerCodeSections';
 import { AlgorithmAnalysis } from './AlgorithmAnalysis';
