@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Input } from '../../ui/input';
-import { OperationControls } from '../OperationControls';
+import { OperationControls } from '../operation-controls';
 import { motion } from 'framer-motion';
 
 interface InputSectionProps {
