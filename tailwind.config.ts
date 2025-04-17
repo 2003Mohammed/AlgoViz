@@ -76,6 +76,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// New cyberpunk/neon theme colors
+				cyber: {
+					primary: '#00f3ff',
+					secondary: '#ff00a0',
+					tertiary: '#8b00ff',
+					dark: '#080320',
+					light: '#e2f3f5',
+					accent: '#fcee0a'
 				}
 			},
 			borderRadius: {
@@ -124,6 +133,38 @@ export default {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.8' },
 				},
+				'neon-pulse': {
+					'0%, 100%': { 
+						'text-shadow': '0 0 5px rgba(0, 243, 255, 0.8), 0 0 10px rgba(0, 243, 255, 0.5)'
+					},
+					'50%': { 
+						'text-shadow': '0 0 15px rgba(0, 243, 255, 1), 0 0 30px rgba(0, 243, 255, 0.8), 0 0 40px rgba(0, 243, 255, 0.6)'
+					},
+				},
+				'neon-glow': {
+					'0%, 100%': { 
+						'box-shadow': '0 0 5px rgba(0, 243, 255, 0.8), 0 0 10px rgba(0, 243, 255, 0.5)'
+					},
+					'50%': { 
+						'box-shadow': '0 0 15px rgba(0, 243, 255, 1), 0 0 30px rgba(0, 243, 255, 0.8), 0 0 40px rgba(0, 243, 255, 0.6)'
+					},
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' },
+				},
+				'grid-flash': {
+					'0%, 90%, 100%': { opacity: '0.1' },
+					'95%': { opacity: '0.3' },
+				},
+				'data-flow': {
+					'0%': { transform: 'translateY(-100%)' },
+					'100%': { transform: 'translateY(100%)' },
+				},
+				'scan-line': {
+					'0%': { transform: 'translateY(-100%)' },
+					'100%': { transform: 'translateY(100%)' },
+				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -136,12 +177,21 @@ export default {
 				'slide-in-right': 'slide-in-right 0.4s ease-out',
 				'zoom-in': 'zoom-in 0.3s ease-out',
 				'pulse-slow': 'pulse-slow 3s infinite ease-in-out',
+				'neon-pulse': 'neon-pulse 2s infinite ease-in-out',
+				'neon-glow': 'neon-glow 2s infinite ease-in-out',
+				'float': 'float 6s infinite ease-in-out',
+				'grid-flash': 'grid-flash 3s infinite',
+				'data-flow': 'data-flow 10s linear infinite',
+				'scan-line': 'scan-line 4s linear infinite',
 			},
 			transitionTimingFunction: {
 				'in-expo': 'cubic-bezier(0.7, 0, 0.84, 0)',
 				'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
 				'in-out-expo': 'cubic-bezier(0.87, 0, 0.13, 1)',
 			},
+			backgroundImage: {
+				'cyber-grid': "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231a1a2e' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+			}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

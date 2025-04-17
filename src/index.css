@@ -5,116 +5,74 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    --background: 220 70% 2%;
+    --foreground: 180 100% 97%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 222 47% 5%;
+    --card-foreground: 180 100% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 222 47% 5%;
+    --popover-foreground: 180 100% 95%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 184 100% 50%;
+    --primary-foreground: 220 70% 2%;
 
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 326 100% 50%;
+    --secondary-foreground: 180 100% 95%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 222 47% 8%;
+    --muted-foreground: 180 25% 70%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 274 100% 50%;
+    --accent-foreground: 180 100% 95%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 180 100% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222 47% 11%;
+    --border: 222 47% 15%;
+    --input: 222 47% 15%;
+    --ring: 184 100% 50%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
     /* Pixel art background colors */
-    --pixel-bg-1: 220 15% 90%;
-    --pixel-bg-2: 210 20% 85%;
-    --pixel-bg-3: 200 15% 87%;
-    --pixel-bg-4: 215 10% 82%;
+    --pixel-bg-1: 220 70% 3%;
+    --pixel-bg-2: 221 70% 5%;
+    --pixel-bg-3: 222 70% 4%;
+    --pixel-bg-4: 223 70% 2%;
   }
+}
 
-  .dark {
-    --background: 232 14% 9%;
-    --foreground: 210 40% 98%;
-    
-    --card: 232 14% 12%;
-    --card-foreground: 210 40% 98%;
-    
-    --popover: 232 14% 9%;
-    --popover-foreground: 210 40% 98%;
-    
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 98%;
-    
-    --secondary: 232 14% 14%;
-    --secondary-foreground: 210 40% 98%;
-    
-    --muted: 232 14% 16%;
-    --muted-foreground: 215 20% 65%;
-    
-    --accent: 232 14% 20%;
-    --accent-foreground: 210 40% 98%;
-    
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 232 14% 20%;
-    --input: 232 14% 20%;
-    --ring: 212.7 26.8% 83.9%;
-    
-    /* Pixel art background colors - dark mode */
-    --pixel-bg-1: 232 14% 10%;
-    --pixel-bg-2: 232 14% 14%;
-    --pixel-bg-3: 232 14% 12%;
-    --pixel-bg-4: 232 14% 9%;
-  }
+* {
+  @apply border-border selection:bg-cyber-primary/20 selection:text-cyber-primary;
+}
 
-  * {
-    @apply border-border selection:bg-primary/10 selection:text-primary;
-  }
+html {
+  @apply scroll-smooth;
+}
 
-  html {
-    @apply scroll-smooth;
-  }
-  
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-    background-image: linear-gradient(to right,
-      hsl(var(--pixel-bg-1)) 25%, 
-      hsl(var(--pixel-bg-2)) 25%, hsl(var(--pixel-bg-2)) 50%, 
-      hsl(var(--pixel-bg-3)) 50%, hsl(var(--pixel-bg-3)) 75%, 
-      hsl(var(--pixel-bg-4)) 75%);
-    background-size: 24px 24px;
-  }
+body {
+  @apply bg-background text-foreground antialiased;
+  font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+  background-color: #080320;
+}
 
-  ::selection {
-    @apply bg-primary/20 text-primary;
-  }
+::selection {
+  @apply bg-cyber-primary/20 text-cyber-primary;
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/70 backdrop-blur-md shadow-sm border border-white/30 rounded-xl dark:bg-slate-800/40 dark:border-slate-700/20;
+    @apply bg-black/30 backdrop-blur-md shadow-sm border border-white/5 rounded-xl;
   }
   
   .glass-button {
-    @apply bg-white/80 backdrop-blur-md shadow-sm border border-white/30 
-           hover:bg-white/90 hover:border-white/40 transition-all duration-300
-           dark:bg-slate-800/60 dark:border-slate-700/30 dark:hover:bg-slate-800/80;
+    @apply bg-black/50 backdrop-blur-md shadow-sm border border-white/10 
+          hover:bg-black/60 hover:border-white/20 transition-all duration-300;
   }
   
   .hero-gradient {
-    @apply bg-gradient-to-br from-primary/80 via-primary/60 to-primary/40 text-white;
+    @apply bg-gradient-to-br from-cyber-primary/80 via-cyber-primary/60 to-cyber-primary/40 text-cyber-dark;
   }
   
   .text-balance {
@@ -153,71 +111,108 @@
     @apply text-sm text-pretty;
   }
   
-  /* Pixel art UI elements */
-  .pixel-border {
-    @apply border-2 border-foreground/80 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1;
+  /* Cyberpunk UI elements */
+  .cyber-border {
+    @apply border-2 border-cyber-primary shadow-[0_0_10px_rgba(0,243,255,0.7)] relative;
   }
   
-  .pixel-button {
-    @apply px-4 py-2 bg-white dark:bg-slate-800 border-2 border-foreground/80 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1;
+  .cyber-border::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-[2px] bg-cyber-primary opacity-70;
+    box-shadow: 0 0 15px 2px rgba(0, 243, 255, 0.7);
   }
   
-  .pixel-card {
-    @apply bg-white/90 dark:bg-slate-800/90 border-2 border-foreground/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] p-4;
+  .cyber-button {
+    @apply px-4 py-2 bg-transparent border-2 border-cyber-primary text-cyber-primary relative overflow-hidden
+           shadow-[0_0_10px_rgba(0,243,255,0.5)] transition-all duration-300
+           hover:shadow-[0_0_15px_rgba(0,243,255,0.8)] active:translate-y-1;
+  }
+  
+  .cyber-button::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full bg-cyber-primary/10 -z-10;
+  }
+  
+  .cyber-button::after {
+    content: '';
+    @apply absolute top-0 left-[-100%] w-full h-full bg-cyber-primary/20 z-0 skew-x-[45deg] transition-all duration-500;
+  }
+  
+  .cyber-button:hover::after {
+    @apply left-[100%];
+  }
+  
+  .cyber-input {
+    @apply bg-black/50 border-2 border-cyber-primary/50 text-cyber-primary outline-none shadow-[0_0_10px_rgba(0,243,255,0.3)]
+           focus:shadow-[0_0_15px_rgba(0,243,255,0.5)] focus:border-cyber-primary transition-all duration-300;
+  }
+  
+  .cyber-card {
+    @apply bg-black/70 border-l-4 border-t-2 border-cyber-primary/70 border-r-0 border-b-0 shadow-[0_0_20px_rgba(0,243,255,0.3)] p-4 relative;
+  }
+  
+  .cyber-card::before {
+    content: '';
+    @apply absolute top-0 right-0 w-[30%] h-[2px] bg-cyber-primary;
+  }
+  
+  .cyber-card::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-[40%] h-[2px] bg-cyber-primary/70;
+  }
+  
+  .cyber-panel {
+    @apply bg-gradient-to-br from-black/80 to-black/30 backdrop-blur-md border-l-2 border-t-2 
+           border-r-0 border-b-0 border-cyber-primary/50 p-6 relative;
+  }
+  
+  .cyber-panel::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full pointer-events-none;
+    background-image: linear-gradient(to bottom, rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                      linear-gradient(to right, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.2));
   }
   
   /* Visualization elements */
-  .circuit-pattern {
-    background-color: rgba(30, 41, 59, 0.8);
+  .cyber-grid {
+    @apply relative overflow-hidden bg-cyber-dark;
     background-image: 
-      radial-gradient(rgba(56, 189, 248, 0.1) 2px, transparent 2px),
-      linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px), 
-      linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px, 10px 10px, 10px 10px;
-    background-position: 0 0, 0 0, 0 0;
-  }
-}
-
-@layer utilities {
-  .scrollbar-hidden {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hidden::-webkit-scrollbar {
-    display: none;
+      radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%),
+      linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 20px 20px, 20px 20px;
+    background-position: center, center, center;
   }
   
-  .glass-morphism {
-    @apply backdrop-blur-xl bg-white/10 border border-white/10 rounded-xl shadow-md dark:bg-black/20 dark:border-white/5;
+  .cyber-grid::before {
+    content: '';
+    @apply absolute inset-0 w-full h-full pointer-events-none;
+    background: 
+      linear-gradient(to right, rgba(8, 3, 32, 0.9), rgba(8, 3, 32, 0.3) 30%, rgba(8, 3, 32, 0.3) 70%, rgba(8, 3, 32, 0.9));
   }
   
-  .text-gradient {
-    @apply bg-gradient-to-br from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent;
+  .cyber-grid::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-[1px] bg-cyber-primary/50 animate-scan-line;
+    box-shadow: 0 0 10px 2px rgba(0, 243, 255, 0.5);
   }
   
-  /* Pixel art utilities */
-  .pixel-bg {
-    background-color: #f0f0f0;
-    background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%, #e0e0e0),
-                      linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%, #e0e0e0);
-    background-size: 16px 16px;
-    background-position: 0 0, 8px 8px;
+  .algorithm-bar {
+    @apply relative overflow-hidden;
   }
   
-  .pixel-dot {
-    background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
-    background-size: 8px 8px;
+  .algorithm-bar::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full z-0;
+    background: linear-gradient(to bottom, rgba(0, 243, 255, 0.5), rgba(0, 243, 255, 0.1) 70%, rgba(0, 243, 255, 0) 100%);
   }
   
-  .dark .pixel-bg {
-    background-color: #1e293b;
-    background-image: linear-gradient(45deg, #1e2942 25%, transparent 25%, transparent 75%, #1e2942 75%, #1e2942),
-                      linear-gradient(45deg, #1e2942 25%, transparent 25%, transparent 75%, #1e2942 75%, #1e2942);
-  }
-  
-  .dark .pixel-dot {
-    background-image: radial-gradient(#2d3c55 1px, transparent 1px);
+  .algorithm-bar::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-[30%] z-0;
+    box-shadow: 0 0 15px 5px rgba(0, 243, 255, 0.5);
   }
   
   /* Digital rain effect */
@@ -233,11 +228,161 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(0deg, 
-      rgba(30, 41, 59, 0) 0%, 
-      rgba(30, 41, 59, 0.1) 75%, 
-      rgba(56, 189, 248, 0.2) 100%);
+    background: 
+      linear-gradient(0deg, 
+      rgba(0, 243, 255, 0) 0%, 
+      rgba(0, 243, 255, 0.05) 75%, 
+      rgba(0, 243, 255, 0.1) 100%);
     z-index: 0;
     pointer-events: none;
+  }
+  
+  .glitch {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glitch::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 2px;
+    text-shadow: -1px 0 #ff00a0;
+    top: 0;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitch-anim-1 2s infinite linear alternate-reverse;
+  }
+  
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: -2px;
+    text-shadow: -1px 0 #00f3ff;
+    top: 0;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+  }
+  
+  @keyframes glitch-anim-1 {
+    0% {
+      clip: rect(70px, 9999px, 92px, 0);
+    }
+    20% {
+      clip: rect(29px, 9999px, 83px, 0);
+    }
+    40% {
+      clip: rect(5px, 9999px, 16px, 0);
+    }
+    60% {
+      clip: rect(46px, 9999px, 1px, 0);
+    }
+    80% {
+      clip: rect(40px, 9999px, 23px, 0);
+    }
+    100% {
+      clip: rect(20px, 9999px, 33px, 0);
+    }
+  }
+  
+  @keyframes glitch-anim-2 {
+    0% {
+      top: -1px;
+      clip: rect(8px, 9999px, 69px, 0);
+    }
+    20% {
+      top: 1px;
+      clip: rect(37px, 9999px, 32px, 0);
+    }
+    40% {
+      top: -1px;
+      clip: rect(78px, 9999px, 94px, 0);
+    }
+    60% {
+      top: 1px;
+      clip: rect(46px, 9999px, 1px, 0);
+    }
+    80% {
+      top: -1px;
+      clip: rect(28px, 9999px, 75px, 0);
+    }
+    100% {
+      top: 1px;
+      clip: rect(60px, 9999px, 3px, 0);
+    }
+  }
+}
+
+@layer utilities {
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .glass-morphism {
+    @apply backdrop-blur-xl bg-black/40 border border-cyber-primary/20 rounded-xl;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-br from-cyber-primary via-cyber-primary/90 to-cyber-primary/60 bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-secondary {
+    @apply bg-gradient-to-br from-cyber-secondary via-cyber-secondary/90 to-cyber-secondary/60 bg-clip-text text-transparent;
+  }
+  
+  .neon-text {
+    @apply text-cyber-primary animate-neon-pulse;
+  }
+  
+  .neon-text-secondary {
+    @apply text-cyber-secondary;
+    text-shadow: 0 0 5px rgba(255, 0, 160, 0.8), 0 0 10px rgba(255, 0, 160, 0.5);
+  }
+  
+  .neon-box {
+    @apply border-2 border-cyber-primary shadow-[0_0_15px_rgba(0,243,255,0.7)];
+  }
+  
+  .neon-box-secondary {
+    @apply border-2 border-cyber-secondary shadow-[0_0_15px_rgba(255,0,160,0.7)];
+  }
+  
+  .noise-bg {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    pointer-events: none;
+  }
+  
+  .cyber-highlight {
+    @apply relative;
+  }
+  
+  .cyber-highlight::before {
+    content: '';
+    @apply absolute inset-0 bg-cyber-primary/20 opacity-0 transition-opacity duration-300;
+  }
+  
+  .cyber-highlight:hover::before {
+    @apply opacity-100;
+  }
+  
+  .cyber-border-animated {
+    @apply relative border-2 border-cyber-primary overflow-hidden;
+  }
+  
+  .cyber-border-animated::before {
+    content: '';
+    @apply absolute top-0 left-0 w-[100%] h-[3px] bg-gradient-to-r from-cyber-primary via-cyber-tertiary to-cyber-secondary;
+    animation: cyber-border-slide 3s linear infinite;
+  }
+  
+  @keyframes cyber-border-slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 }

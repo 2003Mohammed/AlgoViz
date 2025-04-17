@@ -53,37 +53,44 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
   };
 
   return (
-    <div className="space-y-6" ref={visualizerRef}>
+    <div className="space-y-8" ref={visualizerRef}>
       <motion.div 
-        className="rounded-lg overflow-hidden tech-background"
+        className="cyber-panel overflow-hidden rounded-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ 
-          duration: 0.5,
+          duration: 0.7,
           type: "spring",
           stiffness: 100,
           damping: 20
         }}
       >
-        <div className="backdrop-blur-sm p-6 border border-blue-500/20">
-          <VisualizerHeader 
-            algorithmName={algorithm.name}
-            onGenerateNewArray={handleGenerateNewData}
-            onExportVisualization={exportVisualization}
-          />
-          
-          <ProgressTracker
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-            algorithmId={algorithm.id}
-          />
-          
-          {visualizationType === 'array' && (
-            <CustomArrayInput onSubmit={handleCustomArraySubmit} />
-          )}
+        <div className="p-6">
+          <div className="relative">
+            <div className="absolute -top-6 -left-6 w-16 h-16 border-t-2 border-l-2 border-cyber-primary opacity-70"></div>
+            <div className="absolute -bottom-6 -right-6 w-16 h-16 border-b-2 border-r-2 border-cyber-primary opacity-70"></div>
+            
+            <div className="relative z-10">
+              <VisualizerHeader 
+                algorithmName={algorithm.name}
+                onGenerateNewArray={handleGenerateNewData}
+                onExportVisualization={exportVisualization}
+              />
+              
+              <ProgressTracker
+                currentStep={currentStep}
+                totalSteps={totalSteps}
+                algorithmId={algorithm.id}
+              />
+              
+              {visualizationType === 'array' && (
+                <CustomArrayInput onSubmit={handleCustomArraySubmit} />
+              )}
+            </div>
+          </div>
           
           <motion.div
-            className="my-6 rounded-lg overflow-hidden glow-effect digital-rain"
+            className="my-8 rounded-sm overflow-hidden cyber-grid relative"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.4 }}
@@ -109,7 +116,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
             disableForward={currentStep === totalSteps - 1}
           />
           
-          <div className="mt-6 text-sm text-center text-blue-300">
+          <div className="mt-4 text-sm text-center text-cyber-primary/80">
             Step {currentStep + 1} of {totalSteps}
           </div>
         </div>
@@ -119,7 +126,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="glass-card"
+        className="cyber-panel"
       >
         <VisualizerCodeSections 
           algorithm={algorithm} 
@@ -131,7 +138,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="glass-card"
+        className="cyber-panel"
       >
         <RealWorldExamples algorithm={algorithm} />
       </motion.div>
@@ -140,7 +147,7 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
-        className="glass-card"
+        className="cyber-panel"
       >
         <AlgorithmAnalysis algorithm={algorithm} />
       </motion.div>
