@@ -91,7 +91,7 @@ export const SpeedSlider: React.FC<SpeedSliderProps> = ({
         {speed}x
       </div>
       
-      <style jsx>{`
+      <style>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
           width: 20px;
