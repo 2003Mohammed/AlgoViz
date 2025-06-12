@@ -82,6 +82,13 @@ export default {
 					blue: 'rgba(0, 212, 255, 0.5)',
 					purple: 'rgba(139, 92, 246, 0.5)',
 					pink: 'rgba(236, 72, 153, 0.5)',
+				},
+				// Cyber theme colors for the CSS classes
+				cyber: {
+					primary: '#00f3ff',
+					secondary: '#ff00a0',
+					tertiary: '#8b5cf6',
+					dark: '#080320',
 				}
 			},
 			borderRadius: {
@@ -134,6 +141,18 @@ export default {
 					'50%': { backgroundPosition: '100% 50%' },
 					'100%': { backgroundPosition: '0% 50%' },
 				},
+				'neon-pulse': {
+					'0%, 100%': { 
+						textShadow: '0 0 5px rgba(0, 243, 255, 0.8), 0 0 10px rgba(0, 243, 255, 0.5), 0 0 15px rgba(0, 243, 255, 0.3)'
+					},
+					'50%': { 
+						textShadow: '0 0 8px rgba(0, 243, 255, 1), 0 0 15px rgba(0, 243, 255, 0.8), 0 0 25px rgba(0, 243, 255, 0.5)'
+					},
+				},
+				'scan-line': {
+					'0%': { transform: 'translateY(-100vh)' },
+					'100%': { transform: 'translateY(100vh)' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -145,6 +164,8 @@ export default {
 				'bounce-slow': 'bounce-slow 3s ease-in-out infinite',
 				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
 				'gradient-shift': 'gradient-shift 3s ease infinite',
+				'neon-pulse': 'neon-pulse 2s ease-in-out infinite',
+				'scan-line': 'scan-line 4s linear infinite',
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
