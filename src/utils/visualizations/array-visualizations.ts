@@ -1,4 +1,3 @@
-
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
 import { ITEM_STATUSES } from './constants';
 
@@ -61,6 +60,156 @@ export function visualizeArrayOperation(array: any[], operation: string, value?:
       
       if (i === targetIndex) break;
     }
+  }
+  
+  return steps;
+}
+
+/**
+ * Visualizes array comparison with proper type casting
+ */
+export function visualizeArrayComparison(array1: any[], array2: any[]): VisualizationStep[] {
+  const steps: VisualizationStep[] = [];
+  const maxLength = Math.max(array1.length, array2.length);
+  
+  for (let i = 0; i < maxLength; i++) {
+    const compareArray = [];
+    
+    for (let j = 0; j < maxLength; j++) {
+      const val1 = j < array1.length ? array1[j] : null;
+      const val2 = j < array2.length ? array2[j] : null;
+      
+      let status: ArrayItem['status'] = ITEM_STATUSES.DEFAULT as ArrayItem['status'];
+      if (j === i) {
+        status = ITEM_STATUSES.COMPARING as ArrayItem['status'];
+      } else if (j < i) {
+        status = (val1 === val2 ? ITEM_STATUSES.SORTED : ITEM_STATUSES.FOUND) as ArrayItem['status'];
+      }
+      
+      compareArray.push({
+        value: `${val1 || 'null'} vs ${val2 || 'null'}`,
+        status: status
+      });
+    }
+    
+    steps.push({
+      array: compareArray,
+      lineIndex: i
+    });
+  }
+  
+  return steps;
+}
+
+/**
+ * Visualizes array transformations like reverse, rotate, slice, filter, map
+ */
+export function visualizeArrayTransformation(array: any[], operation: string, params?: any): VisualizationStep[] {
+  const steps: VisualizationStep[] = [];
+  const arr = array.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
+  
+  steps.push({ array: JSON.parse(JSON.stringify(arr)), lineIndex: 0 });
+  
+  switch (operation) {
+    case 'reverse':
+      for (let i = 0; i < Math.floor(arr.length / 2); i++) {
+        const j = arr.length - 1 - i;
+        
+        // Highlight elements being swapped
+        const highlightArray = JSON.parse(JSON.stringify(arr));
+        highlightArray[i].status = ITEM_STATUSES.SWAPPING as ArrayItem['status'];
+        highlightArray[j].status = ITEM_STATUSES.SWAPPING as ArrayItem['status'];
+        steps.push({ array: highlightArray, lineIndex: i + 1 });
+        
+        // Perform swap
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        const swappedArray = JSON.parse(JSON.stringify(arr));
+        swappedArray[i].status = ITEM_STATUSES.SORTED as ArrayItem['status'];
+        swappedArray[j].status = ITEM_STATUSES.SORTED as ArrayItem['status'];
+        steps.push({ array: swappedArray, lineIndex: i + 1 });
+      }
+      break;
+      
+    case 'rotate-left':
+      const rotateSteps = params?.steps || 1;
+      for (let step = 0; step < rotateSteps; step++) {
+        const first = arr.shift();
+        if (first) {
+          arr.push(first);
+          const rotatedArray = JSON.parse(JSON.stringify(arr));
+          rotatedArray[arr.length - 1].status = ITEM_STATUSES.ADDED as ArrayItem['status'];
+          steps.push({ array: rotatedArray, lineIndex: step + 1 });
+        }
+      }
+      break;
+      
+    case 'rotate-right':
+      const rotateRightSteps = params?.steps || 1;
+      for (let step = 0; step < rotateRightSteps; step++) {
+        const last = arr.pop();
+        if (last) {
+          arr.unshift(last);
+          const rotatedArray = JSON.parse(JSON.stringify(arr));
+          rotatedArray[0].status = ITEM_STATUSES.ADDED as ArrayItem['status'];
+          steps.push({ array: rotatedArray, lineIndex: step + 1 });
+        }
+      }
+      break;
+      
+    case 'slice':
+      const start = params?.start || 0;
+      const end = params?.end || arr.length;
+      
+      for (let i = 0; i < arr.length; i++) {
+        const sliceArray = JSON.parse(JSON.stringify(arr));
+        if (i >= start && i < end) {
+          sliceArray[i].status = ITEM_STATUSES.FOUND as ArrayItem['status'];
+        } else {
+          sliceArray[i].status = ITEM_STATUSES.REMOVING as ArrayItem['status'];
+        }
+        steps.push({ array: sliceArray, lineIndex: i + 1 });
+      }
+      
+      const slicedArray = arr.slice(start, end).map(item => ({
+        ...item,
+        status: ITEM_STATUSES.SORTED as ArrayItem['status']
+      }));
+      steps.push({ array: slicedArray, lineIndex: arr.length });
+      break;
+      
+    case 'filter':
+      const filterCondition = params?.condition || ((x: any) => x % 2 === 0);
+      for (let i = 0; i < arr.length; i++) {
+        const filterArray = JSON.parse(JSON.stringify(arr));
+        filterArray[i].status = ITEM_STATUSES.COMPARING as ArrayItem['status'];
+        steps.push({ array: filterArray, lineIndex: i + 1 });
+        
+        if (filterCondition(arr[i].value)) {
+          arr[i].status = ITEM_STATUSES.FOUND as ArrayItem['status'];
+        } else {
+          arr[i].status = ITEM_STATUSES.REMOVING as ArrayItem['status'];
+        }
+      }
+      
+      const filteredArray = arr.filter(item => filterCondition(item.value)).map(item => ({
+        ...item,
+        status: ITEM_STATUSES.SORTED as ArrayItem['status']
+      }));
+      steps.push({ array: filteredArray, lineIndex: arr.length });
+      break;
+      
+    case 'map':
+      const mapFunction = params?.mapFunction || ((x: any) => x * 2);
+      for (let i = 0; i < arr.length; i++) {
+        const mapArray = JSON.parse(JSON.stringify(arr));
+        mapArray[i].status = ITEM_STATUSES.PROCESSING as ArrayItem['status'];
+        steps.push({ array: mapArray, lineIndex: i + 1 });
+        
+        arr[i].value = mapFunction(arr[i].value);
+        arr[i].status = ITEM_STATUSES.SORTED as ArrayItem['status'];
+        steps.push({ array: JSON.parse(JSON.stringify(arr)), lineIndex: i + 1 });
+      }
+      break;
   }
   
   return steps;
@@ -222,122 +371,6 @@ function visualizeQuickSort(arr: ArrayItem[]): VisualizationStep[] {
   
   steps.push({ array: JSON.parse(JSON.stringify(arr)), lineIndex: 0 });
   quickSort(arr, 0, arr.length - 1);
-  
-  return steps;
-}
-
-/**
- * Visualizes array comparison
- */
-export function visualizeArrayComparison(array1: any[], array2: any[]): VisualizationStep[] {
-  const steps: VisualizationStep[] = [];
-  const maxLength = Math.max(array1.length, array2.length);
-  
-  for (let i = 0; i < maxLength; i++) {
-    const compareArray = [];
-    
-    for (let j = 0; j < maxLength; j++) {
-      const val1 = j < array1.length ? array1[j] : null;
-      const val2 = j < array2.length ? array2[j] : null;
-      
-      let status = ITEM_STATUSES.DEFAULT;
-      if (j === i) {
-        status = ITEM_STATUSES.COMPARING;
-      } else if (j < i) {
-        status = val1 === val2 ? ITEM_STATUSES.SORTED : ITEM_STATUSES.FOUND;
-      }
-      
-      compareArray.push({
-        value: `${val1 || 'null'} vs ${val2 || 'null'}`,
-        status: status as ArrayItem['status']
-      });
-    }
-    
-    steps.push({
-      array: compareArray,
-      lineIndex: i
-    });
-  }
-  
-  return steps;
-}
-
-/**
- * Visualizes array operations like reverse, rotate, slice
- */
-export function visualizeArrayTransformation(array: any[], operation: string, params?: any): VisualizationStep[] {
-  const steps: VisualizationStep[] = [];
-  const arr = array.map(item => ({ value: item, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
-  
-  steps.push({ array: JSON.parse(JSON.stringify(arr)), lineIndex: 0 });
-  
-  switch (operation) {
-    case 'reverse':
-      for (let i = 0; i < Math.floor(arr.length / 2); i++) {
-        const j = arr.length - 1 - i;
-        
-        // Highlight elements being swapped
-        const highlightArray = JSON.parse(JSON.stringify(arr));
-        highlightArray[i].status = ITEM_STATUSES.SWAPPING;
-        highlightArray[j].status = ITEM_STATUSES.SWAPPING;
-        steps.push({ array: highlightArray, lineIndex: i + 1 });
-        
-        // Perform swap
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-        const swappedArray = JSON.parse(JSON.stringify(arr));
-        swappedArray[i].status = ITEM_STATUSES.SORTED;
-        swappedArray[j].status = ITEM_STATUSES.SORTED;
-        steps.push({ array: swappedArray, lineIndex: i + 1 });
-      }
-      break;
-      
-    case 'rotate-left':
-      const rotateSteps = params?.steps || 1;
-      for (let step = 0; step < rotateSteps; step++) {
-        const first = arr.shift();
-        if (first) {
-          arr.push(first);
-          const rotatedArray = JSON.parse(JSON.stringify(arr));
-          rotatedArray[arr.length - 1].status = ITEM_STATUSES.ADDED;
-          steps.push({ array: rotatedArray, lineIndex: step + 1 });
-        }
-      }
-      break;
-      
-    case 'rotate-right':
-      const rotateRightSteps = params?.steps || 1;
-      for (let step = 0; step < rotateRightSteps; step++) {
-        const last = arr.pop();
-        if (last) {
-          arr.unshift(last);
-          const rotatedArray = JSON.parse(JSON.stringify(arr));
-          rotatedArray[0].status = ITEM_STATUSES.ADDED;
-          steps.push({ array: rotatedArray, lineIndex: step + 1 });
-        }
-      }
-      break;
-      
-    case 'slice':
-      const start = params?.start || 0;
-      const end = params?.end || arr.length;
-      
-      for (let i = 0; i < arr.length; i++) {
-        const sliceArray = JSON.parse(JSON.stringify(arr));
-        if (i >= start && i < end) {
-          sliceArray[i].status = ITEM_STATUSES.FOUND;
-        } else {
-          sliceArray[i].status = ITEM_STATUSES.REMOVING;
-        }
-        steps.push({ array: sliceArray, lineIndex: i + 1 });
-      }
-      
-      const slicedArray = arr.slice(start, end).map(item => ({
-        ...item,
-        status: ITEM_STATUSES.SORTED as ArrayItem['status']
-      }));
-      steps.push({ array: slicedArray, lineIndex: arr.length });
-      break;
-  }
   
   return steps;
 }

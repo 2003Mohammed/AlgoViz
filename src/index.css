@@ -41,6 +41,42 @@
     --pixel-bg-3: 222 70% 4%;
     --pixel-bg-4: 223 70% 2%;
   }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 84% 4.9%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    /* Light theme pixel art colors */
+    --pixel-bg-1: 210 40% 98%;
+    --pixel-bg-2: 214 32% 91%;
+    --pixel-bg-3: 210 40% 96%;
+    --pixel-bg-4: 215 16% 47%;
+  }
 }
 
 * {
@@ -52,9 +88,8 @@ html {
 }
 
 body {
-  @apply bg-background text-foreground antialiased;
+  @apply bg-background text-foreground antialiased transition-colors duration-300;
   font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-  background-color: #080320;
 }
 
 ::selection {
@@ -111,7 +146,7 @@ body {
     @apply text-sm text-pretty;
   }
   
-  /* Cyberpunk UI elements */
+  /* Cyberpunk UI elements with theme support */
   .cyber-border {
     @apply border-2 border-cyber-primary shadow-[0_0_10px_rgba(0,243,255,0.7)] relative;
   }
@@ -143,12 +178,12 @@ body {
   }
   
   .cyber-input {
-    @apply bg-black/50 border-2 border-cyber-primary/50 text-cyber-primary outline-none shadow-[0_0_10px_rgba(0,243,255,0.3)]
+    @apply bg-background/50 border-2 border-cyber-primary/50 text-foreground outline-none shadow-[0_0_10px_rgba(0,243,255,0.3)]
            focus:shadow-[0_0_15px_rgba(0,243,255,0.5)] focus:border-cyber-primary transition-all duration-300;
   }
   
   .cyber-card {
-    @apply bg-black/70 border-l-4 border-t-2 border-cyber-primary/70 border-r-0 border-b-0 shadow-[0_0_20px_rgba(0,243,255,0.3)] p-4 relative;
+    @apply bg-background/70 border-l-4 border-t-2 border-cyber-primary/70 border-r-0 border-b-0 shadow-[0_0_20px_rgba(0,243,255,0.3)] p-4 relative;
   }
   
   .cyber-card::before {
@@ -162,7 +197,7 @@ body {
   }
   
   .cyber-panel {
-    @apply bg-gradient-to-br from-black/80 to-black/30 backdrop-blur-md border-l-2 border-t-2 
+    @apply bg-gradient-to-br from-background/80 to-background/30 backdrop-blur-md border-l-2 border-t-2 
            border-r-0 border-b-0 border-cyber-primary/50 p-6 relative;
   }
   
@@ -175,9 +210,22 @@ body {
     mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.2));
   }
   
+  /* Light theme adjustments */
+  .light .cyber-panel {
+    @apply bg-gradient-to-br from-background/90 to-background/50;
+  }
+  
+  .light .cyber-card {
+    @apply bg-background/80;
+  }
+  
+  .light .cyber-input {
+    @apply bg-background/80;
+  }
+  
   /* Visualization elements */
   .cyber-grid {
-    @apply relative overflow-hidden bg-cyber-dark;
+    @apply relative overflow-hidden bg-background;
     background-image: 
       radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%),
       linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
@@ -191,6 +239,11 @@ body {
     @apply absolute inset-0 w-full h-full pointer-events-none;
     background: 
       linear-gradient(to right, rgba(8, 3, 32, 0.9), rgba(8, 3, 32, 0.3) 30%, rgba(8, 3, 32, 0.3) 70%, rgba(8, 3, 32, 0.9));
+  }
+  
+  .light .cyber-grid::before {
+    background: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.3) 70%, rgba(255, 255, 255, 0.9));
   }
   
   .cyber-grid::after {
@@ -214,103 +267,6 @@ body {
     @apply absolute bottom-0 left-0 w-full h-[30%] z-0;
     box-shadow: 0 0 15px 5px rgba(0, 243, 255, 0.5);
   }
-  
-  /* Digital rain effect */
-  .digital-rain {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .digital-rain::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-      linear-gradient(0deg, 
-      rgba(0, 243, 255, 0) 0%, 
-      rgba(0, 243, 255, 0.05) 75%, 
-      rgba(0, 243, 255, 0.1) 100%);
-    z-index: 0;
-    pointer-events: none;
-  }
-  
-  .glitch {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .glitch::before {
-    content: attr(data-text);
-    position: absolute;
-    left: 2px;
-    text-shadow: -1px 0 #ff00a0;
-    top: 0;
-    overflow: hidden;
-    clip: rect(0, 900px, 0, 0);
-    animation: glitch-anim-1 2s infinite linear alternate-reverse;
-  }
-  
-  .glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    left: -2px;
-    text-shadow: -1px 0 #00f3ff;
-    top: 0;
-    overflow: hidden;
-    clip: rect(0, 900px, 0, 0);
-    animation: glitch-anim-2 3s infinite linear alternate-reverse;
-  }
-  
-  @keyframes glitch-anim-1 {
-    0% {
-      clip: rect(70px, 9999px, 92px, 0);
-    }
-    20% {
-      clip: rect(29px, 9999px, 83px, 0);
-    }
-    40% {
-      clip: rect(5px, 9999px, 16px, 0);
-    }
-    60% {
-      clip: rect(46px, 9999px, 1px, 0);
-    }
-    80% {
-      clip: rect(40px, 9999px, 23px, 0);
-    }
-    100% {
-      clip: rect(20px, 9999px, 33px, 0);
-    }
-  }
-  
-  @keyframes glitch-anim-2 {
-    0% {
-      top: -1px;
-      clip: rect(8px, 9999px, 69px, 0);
-    }
-    20% {
-      top: 1px;
-      clip: rect(37px, 9999px, 32px, 0);
-    }
-    40% {
-      top: -1px;
-      clip: rect(78px, 9999px, 94px, 0);
-    }
-    60% {
-      top: 1px;
-      clip: rect(46px, 9999px, 1px, 0);
-    }
-    80% {
-      top: -1px;
-      clip: rect(28px, 9999px, 75px, 0);
-    }
-    100% {
-      top: 1px;
-      clip: rect(60px, 9999px, 3px, 0);
-    }
-  }
 }
 
 @layer utilities {
@@ -324,7 +280,7 @@ body {
   }
   
   .glass-morphism {
-    @apply backdrop-blur-xl bg-black/40 border border-cyber-primary/20 rounded-xl;
+    @apply backdrop-blur-xl bg-background/40 border border-cyber-primary/20 rounded-xl;
   }
   
   .text-gradient {
@@ -350,39 +306,5 @@ body {
   
   .neon-box-secondary {
     @apply border-2 border-cyber-secondary shadow-[0_0_15px_rgba(255,0,160,0.7)];
-  }
-  
-  .noise-bg {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.05;
-    pointer-events: none;
-  }
-  
-  .cyber-highlight {
-    @apply relative;
-  }
-  
-  .cyber-highlight::before {
-    content: '';
-    @apply absolute inset-0 bg-cyber-primary/20 opacity-0 transition-opacity duration-300;
-  }
-  
-  .cyber-highlight:hover::before {
-    @apply opacity-100;
-  }
-  
-  .cyber-border-animated {
-    @apply relative border-2 border-cyber-primary overflow-hidden;
-  }
-  
-  .cyber-border-animated::before {
-    content: '';
-    @apply absolute top-0 left-0 w-[100%] h-[3px] bg-gradient-to-r from-cyber-primary via-cyber-tertiary to-cyber-secondary;
-    animation: cyber-border-slide 3s linear infinite;
-  }
-  
-  @keyframes cyber-border-slide {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
   }
 }

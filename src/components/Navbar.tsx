@@ -4,19 +4,15 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Code, BookOpen, Zap, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../hooks/useTheme';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path);
-  };
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
   };
 
   const navigation = [
@@ -108,11 +104,11 @@ export const Navbar: React.FC = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleDarkMode}
+              onClick={toggleTheme}
               className="ml-4 text-muted-foreground hover:text-neon-blue"
             >
               <AnimatePresence mode="wait">
-                {isDarkMode ? (
+                {theme === 'dark' ? (
                   <motion.div
                     key="sun"
                     initial={{ rotate: -90, opacity: 0 }}
@@ -143,10 +139,10 @@ export const Navbar: React.FC = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleDarkMode}
+            onClick={toggleTheme}
             className="text-muted-foreground hover:text-neon-blue"
           >
-            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           <Button
             variant="ghost"

@@ -1,64 +1,30 @@
-import { visualizeArrayOperation } from './array-visualizations';
-import { visualizeStackOperation } from './stack-visualizations';
-import { visualizeQueueOperation } from './queue-visualizations';
-import { visualizeBinaryTreeOperation } from './tree-visualizations';
-import { visualizeGraphOperation } from './graph-visualizations';
-import { visualizeHashTableOperation } from './hash-table-visualizations';
-import { 
-  visualizeBubbleSort, 
-  visualizeQuickSort, 
-  visualizeMergeSort 
-} from './sort-visualizations';
-import { 
-  visualizeLinearSearch,
-  visualizeBinarySearch
-} from './search-visualizations';
-import { ArrayItem, VisualizationStep } from '../../types/visualizer';
-import { ITEM_STATUSES } from './constants';
 
-export {
-  visualizeArrayOperation,
-  visualizeStackOperation,
-  visualizeQueueOperation,
-  visualizeBinaryTreeOperation,
-  visualizeGraphOperation,
-  visualizeHashTableOperation,
-  ITEM_STATUSES
-};
+export * from './array-visualizations';
+export * from './search-visualizations';
+export * from './sort-visualizations';
+export * from './hash-table-visualizations';
+export * from './graph-visualizations';
+export * from './enhanced-visualizations';
+export * from './constants';
 
-// Generate visualization steps for different algorithms
-export function generateVisualizationSteps(
-  algorithmId: string,
-  array: ArrayItem[]
-): VisualizationStep[] {
-  // Extract values from array items
-  const values = array.map(item => item.value);
-  
-  // For sorting algorithms
-  if (algorithmId.includes('bubble')) {
-    return visualizeBubbleSort(values);
-  } 
-  else if (algorithmId.includes('quick')) {
-    return visualizeQuickSort(values);
-  }
-  else if (algorithmId.includes('merge')) {
-    return visualizeMergeSort(values);
-  }
-  // For search algorithms
-  else if (algorithmId.includes('linear')) {
-    return visualizeLinearSearch(values, values[Math.floor(values.length / 2)]);
-  }
-  else if (algorithmId.includes('binary')) {
-    return visualizeBinarySearch(values, values[Math.floor(values.length / 2)]);
-  }
-  // Other algorithms
-  else {
-    // Default basic visualization
-    return [
-      {
-        array: array,
-        lineIndex: 0
-      }
-    ];
+// Main visualization function that routes to appropriate visualizer
+export function generateVisualizationSteps(algorithmId: string, data: any): any[] {
+  switch (algorithmId) {
+    case 'bubble-sort':
+    case 'quick-sort':
+    case 'merge-sort':
+    case 'heap-sort':
+    case 'insertion-sort':
+      return require('./sort-visualizations')[`visualize${algorithmId.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)).join('')}`](data.map((item: any) => item.value));
+    
+    case 'linear-search':
+    case 'binary-search':
+    case 'jump-search':
+      return require('./search-visualizations')[`visualize${algorithmId.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)).join('')}`](data.map((item: any) => item.value), data.target || 0);
+    
+    default:
+      return [{ array: data, lineIndex: 0 }];
   }
 }
