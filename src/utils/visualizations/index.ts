@@ -6,6 +6,8 @@ export * from './hash-table-visualizations';
 export * from './graph-visualizations';
 export * from './enhanced-visualizations';
 export * from './constants';
+export * from './queue-visualizations';  // Added missing export
+export * from './stack-visualizations';  // Added missing export
 
 // Main visualization function that routes to appropriate visualizer
 export function generateVisualizationSteps(algorithmId: string, data: any): any[] {

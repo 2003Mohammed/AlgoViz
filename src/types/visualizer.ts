@@ -15,6 +15,7 @@ export interface VisualizationStep {
   pivotIndex?: number;
   currentIndex?: number;
   graphData?: GraphData;
+  description?: string; // Added description property
 }
 
 // Visualizer steps used by animations
