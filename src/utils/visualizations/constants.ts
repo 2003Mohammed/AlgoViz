@@ -1,5 +1,4 @@
 
-// Make sure types from ArrayItem.status are consistently used
 export const ITEM_STATUSES = {
   DEFAULT: 'default',
   COMPARING: 'comparing',

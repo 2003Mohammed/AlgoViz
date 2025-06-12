@@ -1,16 +1,10 @@
 
 import React from 'react';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  SkipBack, 
-  SkipForward, 
-  ChevronRight,
-  Settings,
-  Zap
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SpeedSlider } from '@/components/ui/speed-slider';
+import { Play, Pause, RotateCcw, StepForward, StepBack, Download, Keyboard } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
 interface VisualizerControlsProps {
   isPlaying: boolean;
@@ -20,8 +14,9 @@ interface VisualizerControlsProps {
   onStepBackward: () => void;
   onSpeedChange: (speed: number) => void;
   currentSpeed: number;
-  disableBackward: boolean;
-  disableForward: boolean;
+  disableBackward?: boolean;
+  disableForward?: boolean;
+  onExport?: () => void;
 }
 
 export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
@@ -32,176 +27,133 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
   onStepBackward,
   onSpeedChange,
   currentSpeed,
-  disableBackward,
-  disableForward
+  disableBackward = false,
+  disableForward = false,
+  onExport
 }) => {
-  const speeds = [0.5, 1, 1.5, 2];
-  
+  // Setup keyboard shortcuts
+  useKeyboardShortcuts({
+    onPlayPause,
+    onReset,
+    onStepForward,
+    onStepBackward,
+    onSpeedUp: () => onSpeedChange(Math.min(currentSpeed + 0.25, 4)),
+    onSpeedDown: () => onSpeedChange(Math.max(currentSpeed - 0.25, 0.25))
+  });
+
+  const buttonVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.2 } },
+    tap: { scale: 0.95, transition: { duration: 0.1 } }
+  };
+
   return (
-    <motion.div 
-      className="glass-card p-4 flex flex-wrap items-center justify-between gap-4 rounded-xl shadow-lg backdrop-blur-sm"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.5,
-        delay: 0.3,
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <motion.button
-          onClick={onReset}
-          className="p-2 rounded-md hover:bg-secondary transition-colors relative overflow-hidden group"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label="Reset"
-        >
-          <motion.div 
-            className="absolute inset-0 bg-secondary/30 rounded-md -z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          />
-          <RotateCcw className="h-5 w-5" />
-        </motion.button>
-        
-        <motion.button
-          onClick={onStepBackward}
-          disabled={disableBackward}
-          className={`p-2 rounded-md transition-colors relative overflow-hidden ${
-            disableBackward
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-secondary'
-          }`}
-          whileHover={!disableBackward ? { scale: 1.05 } : {}}
-          whileTap={!disableBackward ? { scale: 0.95 } : {}}
-          aria-label="Step backward"
-        >
-          <motion.div 
-            className="absolute inset-0 bg-secondary/30 rounded-md -z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          />
-          <SkipBack className="h-5 w-5" />
-        </motion.button>
-        
-        <motion.button
-          onClick={onPlayPause}
-          className="p-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors relative overflow-hidden"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label={isPlaying ? 'Pause' : 'Play'}
-        >
-          <motion.div 
-            className="absolute inset-0 bg-white/20 rounded-md -z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          />
-          {isPlaying ? (
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>
-              <Pause className="h-5 w-5" />
-            </motion.div>
-          ) : (
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>
-              <Play className="h-5 w-5" />
-            </motion.div>
-          )}
-        </motion.button>
-        
-        <motion.button
-          onClick={onStepForward}
-          disabled={disableForward}
-          className={`p-2 rounded-md transition-colors relative overflow-hidden ${
-            disableForward
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-secondary'
-          }`}
-          whileHover={!disableForward ? { scale: 1.05 } : {}}
-          whileTap={!disableForward ? { scale: 0.95 } : {}}
-          aria-label="Step forward"
-        >
-          <motion.div 
-            className="absolute inset-0 bg-secondary/30 rounded-md -z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          />
-          <SkipForward className="h-5 w-5" />
-        </motion.button>
-      </div>
-      
-      <div className="flex items-center gap-3">
-        <div className="flex items-center">
-          <motion.span 
-            className="text-sm text-muted-foreground mr-2 flex items-center gap-1" 
-            whileHover={{ scale: 1.05 }}
+    <div className="space-y-4">
+      {/* Main Controls */}
+      <div className="flex flex-wrap items-center justify-center gap-3 p-4 cyber-panel">
+        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <Button
+            onClick={onStepBackward}
+            disabled={disableBackward || isPlaying}
+            variant="outline"
+            className="cyber-button"
+            title="Step Backward (←)"
           >
-            <Zap className="h-3 w-3" />
-            Speed:
-          </motion.span>
-          <div className="flex border rounded-md overflow-hidden">
-            {speeds.map((speed) => (
-              <motion.button
-                key={speed}
-                onClick={() => onSpeedChange(speed)}
-                className={`px-3 py-1.5 text-xs font-medium relative overflow-hidden ${
-                  currentSpeed === speed
-                    ? 'bg-primary text-white'
-                    : 'hover:bg-secondary transition-colors'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {currentSpeed === speed && (
-                  <motion.div 
-                    layoutId="activeSpeed"
-                    className="absolute inset-0 bg-primary -z-10"
-                    transition={{ type: "spring", duration: 0.3 }}
-                  />
-                )}
-                {speed}x
-              </motion.button>
-            ))}
-          </div>
-        </div>
-        
-        <motion.button
-          className="p-2 rounded-md hover:bg-secondary transition-colors relative overflow-hidden"
-          whileHover={{ scale: 1.05, rotate: 15 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label="Settings"
-        >
-          <motion.div 
-            className="absolute inset-0 bg-secondary/30 rounded-md -z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          />
-          <Settings className="h-5 w-5" />
-        </motion.button>
-      </div>
-      
-      <motion.div 
-        className="absolute -bottom-8 left-0 w-full flex justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        {isPlaying && (
-          <motion.div 
-            className="text-xs text-primary-foreground bg-primary px-2 py-1 rounded-full"
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 10, opacity: 0 }}
+            <StepBack className="h-4 w-4" />
+          </Button>
+        </motion.div>
+
+        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <Button
+            onClick={onPlayPause}
+            className="cyber-button bg-gradient-to-r from-cyber-primary to-cyber-secondary text-white px-6"
+            title="Play/Pause (Space)"
           >
-            Visualization in progress...
+            <motion.div
+              key={isPlaying ? 'pause' : 'play'}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </motion.div>
+            <span className="ml-2">{isPlaying ? 'Pause' : 'Play'}</span>
+          </Button>
+        </motion.div>
+
+        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <Button
+            onClick={onStepForward}
+            disabled={disableForward || isPlaying}
+            variant="outline"
+            className="cyber-button"
+            title="Step Forward (→)"
+          >
+            <StepForward className="h-4 w-4" />
+          </Button>
+        </motion.div>
+
+        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <Button
+            onClick={onReset}
+            variant="outline"
+            className="cyber-button text-cyber-secondary border-cyber-secondary/50 hover:bg-cyber-secondary/10"
+            title="Reset (R)"
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span className="ml-2">Reset</span>
+          </Button>
+        </motion.div>
+
+        {onExport && (
+          <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+            <Button
+              onClick={onExport}
+              variant="ghost"
+              className="cyber-button border border-cyber-primary/30"
+              title="Export Visualization"
+            >
+              <Download className="h-4 w-4" />
+              <span className="ml-2">Export</span>
+            </Button>
           </motion.div>
         )}
+      </div>
+
+      {/* Speed Control */}
+      <SpeedSlider
+        speed={currentSpeed}
+        onSpeedChange={onSpeedChange}
+      />
+
+      {/* Keyboard Shortcuts Help */}
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        className="bg-muted/20 backdrop-blur-sm border border-muted/30 rounded-lg p-3"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <Keyboard className="h-4 w-4 text-cyber-primary" />
+          <span className="text-sm font-medium text-cyber-primary">Keyboard Shortcuts</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Play/Pause:</span>
+            <kbd className="bg-muted px-2 py-1 rounded text-xs">Space</kbd>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Reset:</span>
+            <kbd className="bg-muted px-2 py-1 rounded text-xs">R</kbd>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Step →:</span>
+            <kbd className="bg-muted px-2 py-1 rounded text-xs">→</kbd>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Step ←:</span>
+            <kbd className="bg-muted px-2 py-1 rounded text-xs">←</kbd>
+          </div>
+        </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };

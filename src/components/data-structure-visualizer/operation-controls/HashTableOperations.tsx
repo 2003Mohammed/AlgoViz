@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PlusCircle, MinusCircle, Search } from 'lucide-react';
+import { Hash, Eye, Trash2 } from 'lucide-react';
 import { OperationButton } from './OperationButton';
 
 interface HashTableOperationsProps {
@@ -13,20 +13,20 @@ export const HashTableOperations: React.FC<HashTableOperationsProps> = ({ handle
       <OperationButton 
         operation="set"
         handleOperation={handleOperation}
-        icon={<PlusCircle className="h-4 w-4" />}
+        icon={<Hash className="h-4 w-4" />}
         label="Set"
-      />
-      <OperationButton 
-        operation="delete"
-        handleOperation={handleOperation}
-        icon={<MinusCircle className="h-4 w-4" />}
-        label="Delete"
       />
       <OperationButton 
         operation="get"
         handleOperation={handleOperation}
-        icon={<Search className="h-4 w-4" />}
+        icon={<Eye className="h-4 w-4" />}
         label="Get"
+      />
+      <OperationButton 
+        operation="delete"
+        handleOperation={handleOperation}
+        icon={<Trash2 className="h-4 w-4" />}
+        label="Delete"
       />
     </div>
   );
