@@ -1,153 +1,94 @@
 
 import React from 'react';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Eye, Zap, BookOpen, Star } from 'lucide-react';
-import { Button } from './ui/button';
+import { ArrowRight, Play, BookOpen, Code } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export const Hero: React.FC = () => {
   return (
-    <section className="relative overflow-hidden py-20 md:py-32">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/0 to-primary/5 -z-10" />
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-secondary/20">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+      <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl" />
       
-      {/* Abstract background shapes */}
-      <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse-slow" />
-      <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse-slow" style={{ animationDelay: '1s' }} />
-      
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center text-center space-y-10">
-          <div className="space-y-6 max-w-3xl mx-auto animate-slide-up">
-            <h1 className="heading-xl">
-              Visualize Algorithms,<br />
-              <span className="text-primary">Understand Data Structures</span>
-            </h1>
-            <p className="body-lg text-muted-foreground max-w-2xl mx-auto">
-              A beautiful, interactive way to learn algorithms and data structures.
-              Watch algorithms come to life with step-by-step visualizations and code walkthroughs.
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <Link to="/visualizer">
-              <Button size="lg" className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                Explore Algorithms
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link to="/data-structures">
-              <Button size="lg" variant="outline" className="flex items-center gap-2">
-                <Code className="h-4 w-4" />
-                Explore Data Structures
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="w-full max-w-5xl mx-auto mt-16 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <div className="aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black/5">
-              <div className="w-full h-full bg-gradient-to-br from-black/5 to-black/10 flex items-center justify-center">
-                <div className="glass-card p-8 flex flex-col items-center gap-4">
-                  <Zap size={48} className="text-primary" />
-                  <p className="text-lg font-medium">Interactive Algorithm Visualizations</p>
-                  <div className="flex gap-3 mt-2">
-                    <Link 
-                      to="/visualizer" 
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors"
-                    >
-                      Try Algorithms
-                    </Link>
-                    <Link 
-                      to="/data-structures" 
-                      className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm hover:bg-secondary/90 transition-colors"
-                    >
-                      Try Data Structures
-                    </Link>
-                  </div>
-                </div>
+      <div className="container relative">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] text-center space-y-8">
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
+                <Code className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">Learn Data Structures & Algorithms</span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Features section */}
-      <div id="features" className="container px-4 py-24 md:py-32">
-        <div className="text-center mb-16 animate-slide-up">
-          <h2 className="heading-lg">Why Visualize Algorithms?</h2>
-          <p className="body-md text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Understanding algorithms is easier when you can see them in action.
-            Our visualizer helps you comprehend complex concepts with clarity.
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: <Eye className="h-10 w-10 text-primary" />,
-              title: "Visual Learning",
-              description: "See algorithms in action with step-by-step visualization to understand complex operations intuitively."
-            },
-            {
-              icon: <Code className="h-10 w-10 text-primary" />,
-              title: "Code Highlighting",
-              description: "Follow along with synchronized code highlights that show exactly what's happening at each step."
-            },
-            {
-              icon: <Zap className="h-10 w-10 text-primary" />,
-              title: "Interactive Controls",
-              description: "Control the speed, step forward and backward, or use custom inputs to test different scenarios."
-            },
-            {
-              icon: <BookOpen className="h-10 w-10 text-primary" />,
-              title: "Comprehensive Learning",
-              description: "Access detailed guides, explanations, and real-world examples for each algorithm and data structure."
-            },
-            {
-              icon: <Star className="h-10 w-10 text-primary" />,
-              title: "Premium Features",
-              description: "Unlock advanced visualizations, in-depth tutorials, and personalized learning paths with AlgoViz Pro."
-            },
-            {
-              icon: <ArrowRight className="h-10 w-10 text-primary" />,
-              title: "Get Started Quickly",
-              description: "No setup required. Start visualizing algorithms and data structures right in your browser."
-            }
-          ].map((feature, index) => (
-            <div 
-              key={index} 
-              className="glass-card p-6 flex flex-col items-center text-center animate-zoom-in"
-              style={{ animationDelay: `${0.1 * index}s` }}
-            >
-              <div className="mb-5">{feature.icon}</div>
-              <h3 className="heading-sm mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Call to action */}
-      <div className="container px-4 py-16">
-        <div className="glass-card p-8 md:p-12 flex flex-col items-center text-center">
-          <h2 className="heading-lg mb-4">Ready to Master Algorithms?</h2>
-          <p className="body-md text-muted-foreground max-w-2xl mx-auto mb-8">
-            Start your journey to algorithm mastery with interactive visualizations and comprehensive guides.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+            
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                Visualize
+              </span>
+              <br />
+              <span className="text-foreground">
+                Algorithms
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Master data structures and algorithms through interactive visualizations. 
+              See how sorting, searching, and data manipulation works step by step.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <Link to="/visualizer">
-              <Button size="lg" className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                Start Visualizing Now
+              <Button size="lg" className="flex items-center gap-2 px-8 py-6 text-lg">
+                <Play className="h-5 w-5" />
+                Start Visualizing
               </Button>
             </Link>
-            <Link to="/learn">
-              <Button size="lg" variant="outline" className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                Browse Learning Resources
+            
+            <Link to="/data-structures">
+              <Button variant="outline" size="lg" className="flex items-center gap-2 px-8 py-6 text-lg">
+                <BookOpen className="h-5 w-5" />
+                Explore Data Structures
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <div>
+              <div className="text-2xl font-bold text-primary">15+</div>
+              <div className="text-sm text-muted-foreground">Algorithms</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-primary">8+</div>
+              <div className="text-sm text-muted-foreground">Data Structures</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-primary">100%</div>
+              <div className="text-sm text-muted-foreground">Free</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-primary">∞</div>
+              <div className="text-sm text-muted-foreground">Learning</div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
