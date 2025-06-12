@@ -15,7 +15,13 @@ interface LinkedListRendererProps {
 }
 
 export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ structure }) => {
-  const { nodes, head } = structure;
+  // Add safety checks and default values
+  const nodes = structure?.nodes || [];
+  const head = structure?.head ?? null;
+  
+  console.log('LinkedListRenderer - structure:', structure);
+  console.log('LinkedListRenderer - nodes:', nodes);
+  console.log('LinkedListRenderer - head:', head);
   
   return (
     <div className="flex flex-wrap gap-1 justify-center items-center">
@@ -34,8 +40,10 @@ export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ structur
               const renderedNodes = [];
               let currentIndex = head;
               
-              while (currentIndex !== null) {
+              while (currentIndex !== null && currentIndex < nodes.length) {
                 const node = nodes[currentIndex];
+                if (!node) break; // Safety check for undefined node
+                
                 const isLast = node.next === null;
                 
                 renderedNodes.push(
