@@ -2,58 +2,62 @@
 import { useEffect } from 'react';
 
 interface KeyboardShortcutsProps {
-  onPlayPause?: () => void;
-  onReset?: () => void;
-  onStepForward?: () => void;
-  onStepBackward?: () => void;
+  onPlayPause: () => void;
+  onReset: () => void;
+  onStepForward: () => void;
+  onStepBackward: () => void;
   onSpeedUp?: () => void;
   onSpeedDown?: () => void;
 }
 
-export const useKeyboardShortcuts = ({
+export function useKeyboardShortcuts({
   onPlayPause,
   onReset,
   onStepForward,
   onStepBackward,
   onSpeedUp,
   onSpeedDown
-}: KeyboardShortcutsProps) => {
+}: KeyboardShortcutsProps) {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      // Prevent shortcuts when typing in input fields
+      // Ignore if user is typing in an input field
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return;
       }
 
-      switch (event.key.toLowerCase()) {
-        case ' ':
+      switch (event.code) {
+        case 'Space':
           event.preventDefault();
-          onPlayPause?.();
+          onPlayPause();
           break;
-        case 'r':
+        case 'KeyR':
           event.preventDefault();
-          onReset?.();
+          onReset();
           break;
-        case 'arrowright':
+        case 'ArrowRight':
           event.preventDefault();
-          onStepForward?.();
+          onStepForward();
           break;
-        case 'arrowleft':
+        case 'ArrowLeft':
           event.preventDefault();
-          onStepBackward?.();
+          onStepBackward();
           break;
-        case 'arrowup':
-          event.preventDefault();
-          onSpeedUp?.();
+        case 'ArrowUp':
+          if (onSpeedUp) {
+            event.preventDefault();
+            onSpeedUp();
+          }
           break;
-        case 'arrowdown':
-          event.preventDefault();
-          onSpeedDown?.();
+        case 'ArrowDown':
+          if (onSpeedDown) {
+            event.preventDefault();
+            onSpeedDown();
+          }
           break;
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
   }, [onPlayPause, onReset, onStepForward, onStepBackward, onSpeedUp, onSpeedDown]);
-};
+}

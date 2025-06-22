@@ -1,33 +1,35 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import VisualizerPage from "./pages/VisualizerPage";
-import DataStructuresPage from "./pages/DataStructuresPage";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import VisualizerPage from './pages/VisualizerPage';
+import DataStructuresPage from './pages/DataStructuresPage';
+import PlaygroundPage from './pages/PlaygroundPage';
+import { Toaster } from '@/components/ui/toaster';
+import { useTheme } from './hooks/useTheme';
+import { useEffect } from 'react';
 
-const queryClient = new QueryClient();
+function App() {
+  const { theme } = useTheme();
+  
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+  return (
+    <Router>
+      <div className={`min-h-screen bg-background text-foreground ${theme}`}>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/visualizer" element={<VisualizerPage />} />
           <Route path="/visualizer/:algorithmId" element={<VisualizerPage />} />
           <Route path="/data-structures" element={<DataStructuresPage />} />
-          <Route path="/data-structures/:dataStructureId" element={<DataStructuresPage />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/data-structures/:structureId" element={<DataStructuresPage />} />
+          <Route path="/playground" element={<PlaygroundPage />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        <Toaster />
+      </div>
+    </Router>
+  );
+}
 
 export default App;

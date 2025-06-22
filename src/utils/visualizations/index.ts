@@ -6,27 +6,78 @@ export * from './hash-table-visualizations';
 export * from './graph-visualizations';
 export * from './enhanced-visualizations';
 export * from './constants';
-export * from './queue-visualizations';  // Added missing export
-export * from './stack-visualizations';  // Added missing export
+export * from './queue-visualizations';
+export * from './stack-visualizations';
+
+// Import specific functions for routing
+import { visualizeBubbleSort, visualizeQuickSort, visualizeMergeSort, visualizeHeapSort, visualizeInsertionSort } from './sort-visualizations';
+import { visualizeLinearSearch, visualizeBinarySearch, visualizeJumpSearch } from './search-visualizations';
+import { visualizeQueueOperation } from './queue-visualizations';
+import { visualizeStackOperation } from './stack-visualizations';
+import { visualizeArrayOperation } from './array-visualizations';
 
 // Main visualization function that routes to appropriate visualizer
 export function generateVisualizationSteps(algorithmId: string, data: any): any[] {
-  switch (algorithmId) {
-    case 'bubble-sort':
-    case 'quick-sort':
-    case 'merge-sort':
-    case 'heap-sort':
-    case 'insertion-sort':
-      return require('./sort-visualizations')[`visualize${algorithmId.split('-').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)).join('')}`](data.map((item: any) => item.value));
-    
-    case 'linear-search':
-    case 'binary-search':
-    case 'jump-search':
-      return require('./search-visualizations')[`visualize${algorithmId.split('-').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)).join('')}`](data.map((item: any) => item.value), data.target || 0);
-    
-    default:
-      return [{ array: data, lineIndex: 0 }];
+  console.log('Generating visualization steps for:', algorithmId, data);
+  
+  try {
+    switch (algorithmId) {
+      // Sorting algorithms
+      case 'bubble-sort':
+        return visualizeBubbleSort(data.map((item: any) => item.value || item));
+      case 'quick-sort':
+        return visualizeQuickSort(data.map((item: any) => item.value || item));
+      case 'merge-sort':
+        return visualizeMergeSort(data.map((item: any) => item.value || item));
+      case 'heap-sort':
+        return visualizeHeapSort(data.map((item: any) => item.value || item));
+      case 'insertion-sort':
+        return visualizeInsertionSort(data.map((item: any) => item.value || item));
+      
+      // Search algorithms
+      case 'linear-search':
+        return visualizeLinearSearch(data.map((item: any) => item.value || item), data.target || 0);
+      case 'binary-search':
+        return visualizeBinarySearch(data.map((item: any) => item.value || item), data.target || 0);
+      case 'jump-search':
+        return visualizeJumpSearch(data.map((item: any) => item.value || item), data.target || 0);
+      
+      // Data structure operations
+      case 'queue-enqueue':
+        return visualizeQueueOperation(data.map((item: any) => item.value || item), 'enqueue', data.newValue);
+      case 'queue-dequeue':
+        return visualizeQueueOperation(data.map((item: any) => item.value || item), 'dequeue');
+      case 'stack-push':
+        return visualizeStackOperation(data.map((item: any) => item.value || item), 'push', data.newValue);
+      case 'stack-pop':
+        return visualizeStackOperation(data.map((item: any) => item.value || item), 'pop');
+      case 'stack-peek':
+        return visualizeStackOperation(data.map((item: any) => item.value || item), 'peek');
+      case 'array-add':
+        return visualizeArrayOperation(data.map((item: any) => item.value || item), 'add', data.newValue);
+      case 'array-remove':
+        return visualizeArrayOperation(data.map((item: any) => item.value || item), 'remove');
+      case 'array-search':
+        return visualizeArrayOperation(data.map((item: any) => item.value || item), 'search', data.target);
+      
+      default:
+        console.warn('Unknown algorithm:', algorithmId);
+        return [{ 
+          array: Array.isArray(data) ? data.map((item: any) => ({ 
+            value: item.value || item, 
+            status: 'default' 
+          })) : [], 
+          lineIndex: 0 
+        }];
+    }
+  } catch (error) {
+    console.error('Error generating visualization steps:', error);
+    return [{ 
+      array: Array.isArray(data) ? data.map((item: any) => ({ 
+        value: item.value || item, 
+        status: 'default' 
+      })) : [], 
+      lineIndex: 0 
+    }];
   }
 }

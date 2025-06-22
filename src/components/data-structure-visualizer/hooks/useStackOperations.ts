@@ -57,20 +57,20 @@ export const useStackOperations = (
   const handlePeek = () => {
     if (structure.length === 0) {
       addLogEntry("Stack is empty");
+      setOperationResult(null);
       return null;
     }
     
     const steps = visualizeStackOperation(structure, 'peek');
     const result = structure[0];
-    addLogEntry(`Top element: ${result}`);
+    addLogEntry(`Top element is: ${result}`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
     setOperationResult(result);
-    setCustomInput('');
     
-    return structure;
+    return result;
   };
   
   return { handlePush, handlePop, handlePeek };
