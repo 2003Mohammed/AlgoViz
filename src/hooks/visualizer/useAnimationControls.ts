@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from '../use-toast';
 
 export function useAnimationControls(
@@ -13,9 +13,9 @@ export function useAnimationControls(
   const [currentStep, setCurrentStep] = useState(0);
   const [speed, setSpeed] = useState(1);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
+      clearTimeout(animationRef.current);
       animationRef.current = null;
     }
     setIsPlaying(false);
@@ -26,13 +26,13 @@ export function useAnimationControls(
     if (stepsRef.current.length > 0) {
       setArray(stepsRef.current[0].array);
     }
-  };
+  }, [setArray, setActiveLineIndex, animationRef, stepsRef]);
   
-  const togglePlayPause = () => {
+  const togglePlayPause = useCallback(() => {
     setIsPlaying(!isPlaying);
-  };
+  }, [isPlaying]);
   
-  const stepForward = () => {
+  const stepForward = useCallback(() => {
     if (currentStep < totalSteps - 1) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
@@ -53,9 +53,9 @@ export function useAnimationControls(
       });
       return false; // Could not step forward (end reached)
     }
-  };
+  }, [currentStep, totalSteps, stepsRef, setArray, setActiveLineIndex, setIsPlaying]);
   
-  const stepBackward = () => {
+  const stepBackward = useCallback(() => {
     if (currentStep > 0) {
       const prevStep = currentStep - 1;
       setCurrentStep(prevStep);
@@ -70,15 +70,15 @@ export function useAnimationControls(
       return true; // Successfully stepped backward
     }
     return false; // Could not step backward (beginning reached)
-  };
+  }, [currentStep, stepsRef, setArray, setActiveLineIndex]);
   
-  const changeSpeed = (newSpeed: number) => {
+  const changeSpeed = useCallback((newSpeed: number) => {
     setSpeed(newSpeed);
     toast({
       title: `Speed: ${newSpeed}x`,
       description: newSpeed > 1 ? "Faster animation" : "Slower animation",
     });
-  };
+  }, []);
 
   return {
     isPlaying,

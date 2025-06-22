@@ -1,85 +1,165 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { 
+  Menu, 
+  X, 
+  Home, 
+  Play, 
+  Database, 
+  Code2, 
+  Sun, 
+  Moon,
+  Github,
+  Zap
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../hooks/useTheme';
-import { CircuitBoard, Sun, Moon, Menu } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
   const { theme, toggleTheme } = useTheme();
 
+  const navigation = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Visualizer', href: '/visualizer', icon: Play },
+    { name: 'Data Structures', href: '/data-structures', icon: Database },
+    { name: 'Playground', href: '/playground', icon: Code2 },
+  ];
+
+  const isActivePath = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
   return (
-    <motion.nav 
-      className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <motion.div
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.6 }}
-          >
-            <CircuitBoard className="h-8 w-8 text-primary" />
-          </motion.div>
-          <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            AlgoVisualizer
-          </span>
-        </Link>
-        
-        <div className="flex items-center space-x-2">
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            <Link 
-              to="/visualizer" 
-              className="transition-colors hover:text-primary relative group"
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/40">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2 group">
+            <motion.div
+              className="p-2 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl border border-primary/20"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              transition={{ duration: 0.2 }}
             >
-              Algorithms
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-            </Link>
-            <Link 
-              to="/data-structures" 
-              className="transition-colors hover:text-primary relative group"
-            >
-              Data Structures
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-            </Link>
-            <Link 
-              to="/playground" 
-              className="transition-colors hover:text-primary relative group"
-            >
-              Playground
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-            </Link>
-          </nav>
-          
-          <motion.div whileTap={{ scale: 0.95 }}>
+              <Zap className="h-6 w-6 text-primary" />
+            </motion.div>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              AlgoViz
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-1">
+            {navigation.map((item) => {
+              const isActive = isActivePath(item.href);
+              return (
+                <Link key={item.name} to={item.href}>
+                  <motion.div
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                      isActive
+                        ? 'bg-primary/10 text-primary border border-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.name}
+                  </motion.div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right side controls */}
+          <div className="flex items-center space-x-2">
+            {/* Theme toggle */}
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleTheme}
-              className="h-9 w-9 px-0"
+              className="p-2"
             >
-              <motion.div
-                initial={false}
-                animate={{ rotate: theme === 'dark' ? 0 : 180 }}
-                transition={{ duration: 0.3 }}
-              >
-                {theme === 'dark' ? 
-                  <Moon className="h-4 w-4" /> : 
-                  <Sun className="h-4 w-4" />
-                }
-              </motion.div>
-              <span className="sr-only">Toggle theme</span>
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </Button>
-          </motion.div>
-          
-          <Button variant="ghost" size="sm" className="md:hidden">
-            <Menu className="h-4 w-4" />
-          </Button>
+
+            {/* GitHub link */}
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="p-2"
+            >
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Github className="h-4 w-4" />
+              </a>
+            </Button>
+
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden p-2"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden py-4 border-t border-border/40"
+            >
+              <div className="flex flex-col space-y-2">
+                {navigation.map((item) => {
+                  const isActive = isActivePath(item.href);
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <motion.div
+                        className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-3 ${
+                          isActive
+                            ? 'bg-primary/10 text-primary border border-primary/20'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        }`}
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        {item.name}
+                      </motion.div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </motion.nav>
+    </nav>
   );
 };

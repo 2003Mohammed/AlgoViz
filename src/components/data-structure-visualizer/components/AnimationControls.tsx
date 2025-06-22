@@ -35,18 +35,18 @@ export const AnimationControls: React.FC<AnimationControlsProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <Button 
-            size="icon" 
+            size="sm" 
             variant="ghost"
-            className="h-8 w-8"
+            className="h-8 w-8 p-0"
             disabled={currentStep <= 0}
             onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
           >
             <StepBack className="h-4 w-4" />
           </Button>
           <Button 
-            size="icon" 
+            size="sm" 
             variant="ghost"
-            className="h-8 w-8"
+            className="h-8 w-8 p-0"
             disabled={currentStep >= animationSteps.length - 1}
             onClick={() => setCurrentStep(Math.min(animationSteps.length - 1, currentStep + 1))}
           >
@@ -58,7 +58,7 @@ export const AnimationControls: React.FC<AnimationControlsProps> = ({
       <div className="flex items-center gap-2">
         <span className="text-xs">Speed:</span>
         <Slider
-          defaultValue={[1]}
+          value={[speed]}
           min={0.5}
           max={2}
           step={0.5}
@@ -70,8 +70,8 @@ export const AnimationControls: React.FC<AnimationControlsProps> = ({
       
       <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
         <div 
-          className="bg-primary h-2.5 rounded-full" 
-          style={{ width: `${(currentStep / (animationSteps.length - 1)) * 100}%` }}
+          className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+          style={{ width: `${(currentStep / Math.max(1, animationSteps.length - 1)) * 100}%` }}
         ></div>
       </div>
     </motion.div>

@@ -49,13 +49,12 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
   return (
     <div className="space-y-4">
       {/* Main Controls */}
-      <div className="flex flex-wrap items-center justify-center gap-3 p-4 cyber-panel">
+      <div className="flex flex-wrap items-center justify-center gap-3 p-4 bg-muted/10 rounded-lg border">
         <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
           <Button
             onClick={onStepBackward}
             disabled={disableBackward || isPlaying}
             variant="outline"
-            className="cyber-button"
             title="Step Backward (←)"
           >
             <StepBack className="h-4 w-4" />
@@ -65,7 +64,7 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
         <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
           <Button
             onClick={onPlayPause}
-            className="cyber-button bg-gradient-to-r from-cyber-primary to-cyber-secondary text-white px-6"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
             title="Play/Pause (Space)"
           >
             <motion.div
@@ -85,7 +84,6 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
             onClick={onStepForward}
             disabled={disableForward || isPlaying}
             variant="outline"
-            className="cyber-button"
             title="Step Forward (→)"
           >
             <StepForward className="h-4 w-4" />
@@ -96,7 +94,6 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
           <Button
             onClick={onReset}
             variant="outline"
-            className="cyber-button text-cyber-secondary border-cyber-secondary/50 hover:bg-cyber-secondary/10"
             title="Reset (R)"
           >
             <RotateCcw className="h-4 w-4" />
@@ -109,7 +106,6 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
             <Button
               onClick={onExport}
               variant="ghost"
-              className="cyber-button border border-cyber-primary/30"
               title="Export Visualization"
             >
               <Download className="h-4 w-4" />
@@ -132,8 +128,8 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
         className="bg-muted/20 backdrop-blur-sm border border-muted/30 rounded-lg p-3"
       >
         <div className="flex items-center gap-2 mb-2">
-          <Keyboard className="h-4 w-4 text-cyber-primary" />
-          <span className="text-sm font-medium text-cyber-primary">Keyboard Shortcuts</span>
+          <Keyboard className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-primary">Keyboard Shortcuts</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div className="flex items-center justify-between">
