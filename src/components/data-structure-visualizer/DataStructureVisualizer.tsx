@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { motion } from 'framer-motion';
 import { useDataStructureState } from './useDataStructureState';
@@ -23,19 +23,15 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     animationSteps,
     currentStep,
     isAnimating,
+    speed,
     setCustomInput,
     resetToDefault,
     handleOperation,
     handleInputChange,
     setCurrentStep,
-    setIsAnimating
+    setIsAnimating,
+    handleSpeedChange
   } = useDataStructureState(dataStructure);
-  
-  const [speed, setSpeed] = useState(1);
-  
-  const handleSpeedChange = (value: number[]) => {
-    setSpeed(value[0]);
-  };
   
   return (
     <div className="space-y-6">

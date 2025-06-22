@@ -21,12 +21,18 @@ export const useQueueOperations = (
     const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
     const steps = visualizeQueueOperation(structure, 'enqueue', value);
     const newStructure = [...structure, value];
-    addLogEntry(`Enqueued ${value} to the queue`);
+    
+    addLogEntry(`Enqueuing ${value} to the rear of queue`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
-    setStructure(newStructure);
+    
+    // Update structure after animation completes
+    setTimeout(() => {
+      setStructure(newStructure);
+    }, steps.length * 500);
+    
     setOperationResult(null);
     setCustomInput('');
     
@@ -35,19 +41,26 @@ export const useQueueOperations = (
   
   const handleDequeue = () => {
     if (structure.length === 0) {
-      addLogEntry("Queue is empty");
+      addLogEntry("Queue is empty - cannot dequeue");
+      setOperationResult(null);
       return null;
     }
     
     const steps = visualizeQueueOperation(structure, 'dequeue');
     const newStructure = [...structure];
     const result = newStructure.shift();
-    addLogEntry(`Dequeued ${result} from the queue`);
+    
+    addLogEntry(`Dequeued ${result} from the front of queue`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
-    setStructure(newStructure);
+    
+    // Update structure after animation completes
+    setTimeout(() => {
+      setStructure(newStructure);
+    }, steps.length * 500);
+    
     setOperationResult(result);
     setCustomInput('');
     

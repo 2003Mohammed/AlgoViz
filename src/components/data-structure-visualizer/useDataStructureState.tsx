@@ -4,8 +4,11 @@ import { useStructureState } from './hooks/useStructureState';
 import { useAnimationSteps } from './hooks/useAnimationSteps';
 import { useOperationHandler } from './hooks/useOperationHandler';
 import { toast } from '../../hooks/use-toast';
+import { useState } from 'react';
 
 export const useDataStructureState = (dataStructure: DataStructure) => {
+  const [speed, setSpeed] = useState(1);
+  
   // Initialize base state
   const {
     customInput,
@@ -27,8 +30,8 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     handleInputChange
   } = useStructureState(dataStructure);
   
-  // Set up animation steps
-  useAnimationSteps(isAnimating, currentStep, animationSteps, setCurrentStep, setIsAnimating);
+  // Set up animation steps with speed
+  useAnimationSteps(isAnimating, currentStep, animationSteps, setCurrentStep, setIsAnimating, speed);
   
   // Initialize operation handler
   const { handleOperation } = useOperationHandler(
@@ -44,6 +47,10 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     setCustomInput
   );
 
+  const handleSpeedChange = (value: number[]) => {
+    setSpeed(value[0]);
+  };
+
   return {
     customInput,
     structure,
@@ -52,12 +59,14 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     animationSteps,
     currentStep,
     isAnimating,
+    speed,
     setCustomInput,
     resetToDefault,
     handleOperation,
     handleInputChange,
     addLogEntry,
     setCurrentStep,
-    setIsAnimating
+    setIsAnimating,
+    handleSpeedChange
   };
 };

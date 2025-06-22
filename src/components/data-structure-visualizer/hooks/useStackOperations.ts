@@ -21,12 +21,18 @@ export const useStackOperations = (
     const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
     const steps = visualizeStackOperation(structure, 'push', value);
     const newStructure = [value, ...structure];
-    addLogEntry(`Pushed ${value} onto the stack`);
+    
+    addLogEntry(`Pushing ${value} onto the stack`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
-    setStructure(newStructure);
+    
+    // Update structure after animation completes
+    setTimeout(() => {
+      setStructure(newStructure);
+    }, steps.length * 500); // Adjust timing based on animation speed
+    
     setOperationResult(null);
     setCustomInput('');
     
@@ -35,19 +41,26 @@ export const useStackOperations = (
   
   const handlePop = () => {
     if (structure.length === 0) {
-      addLogEntry("Stack is empty");
+      addLogEntry("Stack is empty - cannot pop");
+      setOperationResult(null);
       return null;
     }
     
     const steps = visualizeStackOperation(structure, 'pop');
     const newStructure = [...structure];
     const result = newStructure.shift();
+    
     addLogEntry(`Popped ${result} from the stack`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
-    setStructure(newStructure);
+    
+    // Update structure after animation completes
+    setTimeout(() => {
+      setStructure(newStructure);
+    }, steps.length * 500);
+    
     setOperationResult(result);
     setCustomInput('');
     
@@ -56,13 +69,14 @@ export const useStackOperations = (
   
   const handlePeek = () => {
     if (structure.length === 0) {
-      addLogEntry("Stack is empty");
+      addLogEntry("Stack is empty - nothing to peek");
       setOperationResult(null);
       return null;
     }
     
     const steps = visualizeStackOperation(structure, 'peek');
     const result = structure[0];
+    
     addLogEntry(`Top element is: ${result}`);
     
     setAnimationSteps(steps);

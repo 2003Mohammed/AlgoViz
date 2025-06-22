@@ -21,12 +21,18 @@ export const useArrayOperations = (
     const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
     const steps = visualizeArrayOperation(structure, 'add', value);
     const newStructure = [...structure, value];
-    addLogEntry(`Added ${value} to the array`);
+    
+    addLogEntry(`Adding ${value} to the array`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
-    setStructure(newStructure);
+    
+    // Update structure after animation completes
+    setTimeout(() => {
+      setStructure(newStructure);
+    }, steps.length * 500);
+    
     setOperationResult(null);
     setCustomInput('');
     
@@ -35,19 +41,26 @@ export const useArrayOperations = (
   
   const handleRemove = () => {
     if (structure.length === 0) {
-      addLogEntry("Array is empty");
+      addLogEntry("Array is empty - nothing to remove");
+      setOperationResult(null);
       return null;
     }
     
-    const steps = visualizeArrayOperation(structure, 'remove', null);
+    const steps = visualizeArrayOperation(structure, 'remove');
     const newStructure = [...structure];
     const result = newStructure.pop();
+    
     addLogEntry(`Removed ${result} from the array`);
     
     setAnimationSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
-    setStructure(newStructure);
+    
+    // Update structure after animation completes
+    setTimeout(() => {
+      setStructure(newStructure);
+    }, steps.length * 500);
+    
     setOperationResult(result);
     setCustomInput('');
     
@@ -63,7 +76,12 @@ export const useArrayOperations = (
     const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
     const steps = visualizeArrayOperation(structure, 'search', value);
     const result = structure.indexOf(value);
-    addLogEntry(`Search result: ${result === -1 ? 'Not found' : `Found at index ${result}`}`);
+    
+    const message = result === -1 ? 
+      `${value} not found in array` : 
+      `Found ${value} at index ${result}`;
+    
+    addLogEntry(message);
     
     setAnimationSteps(steps);
     setCurrentStep(0);

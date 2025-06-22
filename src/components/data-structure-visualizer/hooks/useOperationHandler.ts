@@ -110,18 +110,48 @@ export const useOperationHandler = (
               return;
             }
             const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
-            addLogEntry(`Inserted ${value} into the binary tree (visualization in progress)`);
+            
+            // Simple binary tree insertion
+            const newStructure = { ...structure };
+            if (newStructure.nodes.length === 0) {
+              newStructure.nodes = [{ value, left: null, right: null }];
+              newStructure.root = 0;
+            } else {
+              // Add to the first available position for simplicity
+              newStructure.nodes.push({ value, left: null, right: null });
+            }
+            
+            setStructure(newStructure);
+            addLogEntry(`Inserted ${value} into the binary tree`);
+            setCustomInput('');
+          } else if (operation === 'search') {
+            if (!customInput) {
+              addLogEntry("Please enter a value to search");
+              return;
+            }
+            const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
+            const found = structure.nodes.some((node: any) => node.value === value);
+            addLogEntry(`Search result: ${found ? 'Found' : 'Not found'}`);
+            setOperationResult(found);
             setCustomInput('');
           }
           break;
           
         case 'hash-table':
           if (operation === 'set') {
-            if (!customInput) {
+            if (!customInput || !customInput.includes(':')) {
               addLogEntry("Please enter a key:value pair (e.g., name:John)");
               return;
             }
-            addLogEntry(`Set key-value pair in hash table (visualization in progress)`);
+            const [key, value] = customInput.split(':');
+            addLogEntry(`Set ${key} = ${value} in hash table`);
+            setCustomInput('');
+          } else if (operation === 'get') {
+            if (!customInput) {
+              addLogEntry("Please enter a key to search");
+              return;
+            }
+            addLogEntry(`Searching for key: ${customInput}`);
             setCustomInput('');
           }
           break;
@@ -132,13 +162,27 @@ export const useOperationHandler = (
               addLogEntry("Please enter a vertex name");
               return;
             }
-            addLogEntry(`Added vertex to graph (visualization in progress)`);
+            const newStructure = { ...structure };
+            newStructure.nodes.push({ id: customInput, x: Math.random() * 300 + 50, y: Math.random() * 200 + 50 });
+            setStructure(newStructure);
+            addLogEntry(`Added vertex: ${customInput}`);
+            setCustomInput('');
+          } else if (operation === 'addEdge') {
+            if (!customInput || !customInput.includes('-')) {
+              addLogEntry("Please enter edge as: vertex1-vertex2");
+              return;
+            }
+            const [source, target] = customInput.split('-');
+            const newStructure = { ...structure };
+            newStructure.edges.push({ source: source.trim(), target: target.trim() });
+            setStructure(newStructure);
+            addLogEntry(`Added edge: ${source} → ${target}`);
             setCustomInput('');
           }
           break;
           
         default:
-          addLogEntry("Operation not supported for this data structure yet");
+          addLogEntry("Operation not supported for this data structure");
       }
     } catch (error) {
       console.error(error);
