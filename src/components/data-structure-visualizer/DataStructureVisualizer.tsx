@@ -64,7 +64,9 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           currentStep={currentStep}
           animationSteps={animationSteps}
           speed={speed}
+          isAnimating={isAnimating}
           setCurrentStep={setCurrentStep}
+          setIsAnimating={setIsAnimating}
           onSpeedChange={handleSpeedChange}
         />
         

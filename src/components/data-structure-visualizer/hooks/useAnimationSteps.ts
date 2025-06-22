@@ -15,7 +15,7 @@ export const useAnimationSteps = (
       if (currentStep < animationSteps.length - 1) {
         // Calculate duration based on speed (faster speed = shorter duration)
         const baseDelay = 1000; // Base delay in milliseconds
-        const duration = baseDelay / speed; // Linear decrease for speed control
+        const duration = Math.max(100, baseDelay / speed); // Minimum 100ms, max based on speed
         
         const timer = setTimeout(() => {
           setCurrentStep(prev => prev + 1);
@@ -24,7 +24,10 @@ export const useAnimationSteps = (
         return () => clearTimeout(timer);
       } else {
         // When reaching the end of animation
-        setIsAnimating(false);
+        const timer = setTimeout(() => {
+          setIsAnimating(false);
+        }, 500);
+        return () => clearTimeout(timer);
       }
     }
   }, [isAnimating, currentStep, animationSteps, setCurrentStep, setIsAnimating, speed]);

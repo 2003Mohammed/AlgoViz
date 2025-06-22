@@ -13,12 +13,14 @@ export const useArrayOperations = (
   setCustomInput: React.Dispatch<React.SetStateAction<string>>
 ) => {
   const handleAdd = () => {
-    if (!customInput) {
+    if (!customInput.trim()) {
       addLogEntry("Please enter a value to add");
       return null;
     }
     
     const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
+    console.log('Adding value:', value, 'to array:', structure);
+    
     const steps = visualizeArrayOperation(structure, 'add', value);
     const newStructure = [...structure, value];
     
@@ -28,11 +30,8 @@ export const useArrayOperations = (
     setCurrentStep(0);
     setIsAnimating(true);
     
-    // Update structure after animation completes
-    setTimeout(() => {
-      setStructure(newStructure);
-    }, steps.length * 500);
-    
+    // Update structure immediately for immediate visual feedback
+    setStructure(newStructure);
     setOperationResult(null);
     setCustomInput('');
     
@@ -56,11 +55,8 @@ export const useArrayOperations = (
     setCurrentStep(0);
     setIsAnimating(true);
     
-    // Update structure after animation completes
-    setTimeout(() => {
-      setStructure(newStructure);
-    }, steps.length * 500);
-    
+    // Update structure immediately
+    setStructure(newStructure);
     setOperationResult(result);
     setCustomInput('');
     
@@ -68,7 +64,7 @@ export const useArrayOperations = (
   };
   
   const handleSearch = () => {
-    if (!customInput) {
+    if (!customInput.trim()) {
       addLogEntry("Please enter a value to search");
       return null;
     }

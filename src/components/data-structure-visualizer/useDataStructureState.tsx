@@ -3,8 +3,7 @@ import { DataStructure } from '../../utils/dataStructureData';
 import { useStructureState } from './hooks/useStructureState';
 import { useAnimationSteps } from './hooks/useAnimationSteps';
 import { useOperationHandler } from './hooks/useOperationHandler';
-import { toast } from '../../hooks/use-toast';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 export const useDataStructureState = (dataStructure: DataStructure) => {
   const [speed, setSpeed] = useState(1);
@@ -47,9 +46,16 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     setCustomInput
   );
 
-  const handleSpeedChange = (value: number[]) => {
-    setSpeed(value[0]);
-  };
+  const handleSpeedChange = useCallback((value: number[]) => {
+    const newSpeed = value[0];
+    setSpeed(newSpeed);
+    console.log('Speed changed to:', newSpeed);
+  }, []);
+
+  const handleOperationWithLogging = useCallback((operation: string) => {
+    console.log('Executing operation:', operation, 'on structure:', dataStructure.id);
+    handleOperation(operation);
+  }, [handleOperation, dataStructure.id]);
 
   return {
     customInput,
@@ -62,7 +68,7 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     speed,
     setCustomInput,
     resetToDefault,
-    handleOperation,
+    handleOperation: handleOperationWithLogging,
     handleInputChange,
     addLogEntry,
     setCurrentStep,

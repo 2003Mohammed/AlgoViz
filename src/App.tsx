@@ -12,12 +12,13 @@ function App() {
   const { theme } = useTheme();
   
   useEffect(() => {
+    document.documentElement.className = theme;
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   return (
     <Router>
-      <div className={`min-h-screen bg-background text-foreground ${theme}`}>
+      <div className={`min-h-screen transition-colors duration-300 ${theme}`}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/visualizer" element={<VisualizerPage />} />
