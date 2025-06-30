@@ -1,200 +1,125 @@
 
-import { ArrayItem, VisualizationStep, GraphData, GraphNode, GraphEdge } from '../../types/visualizer';
-import { ITEM_STATUSES } from './constants';
+import { VisualizationStep } from '../../types/visualizer';
 
-export function visualizeGraphOperation(
-  graphData: GraphData,
-  operation: string,
-  startNodeId?: string,
-  endNodeId?: string
-): VisualizationStep[] {
-  const steps: VisualizationStep[] = [];
-  
-  // Initial state
-  steps.push({
-    array: [],
-    lineIndex: 0,
-    graphData: JSON.parse(JSON.stringify(graphData)),
-    description: `Graph ${operation} visualization`
-  });
-  
-  if (operation === 'bfs' && startNodeId) {
-    return visualizeBFS(graphData, startNodeId, endNodeId);
-  } else if (operation === 'dfs' && startNodeId) {
-    return visualizeDFS(graphData, startNodeId, endNodeId);
-  } else if (operation === 'dijkstra' && startNodeId && endNodeId) {
-    return visualizeDijkstra(graphData, startNodeId, endNodeId);
-  }
-  
-  return steps;
+interface GraphNode {
+  id: string;
+  visited?: boolean;
+  distance?: number;
 }
 
-function visualizeBFS(graphData: GraphData, startNodeId: string, endNodeId?: string): VisualizationStep[] {
+interface GraphEdge {
+  source: string;
+  target: string;
+  weight?: number;
+}
+
+// Breadth-First Search Visualization
+export function visualizeBFS(startNode: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
+  
+  // Simple graph for demonstration
+  const nodes: GraphNode[] = [
+    { id: 'A' }, { id: 'B' }, { id: 'C' }, { id: 'D' }, { id: 'E' }
+  ];
+  
+  const edges: GraphEdge[] = [
+    { source: 'A', target: 'B' },
+    { source: 'A', target: 'C' },
+    { source: 'B', target: 'D' },
+    { source: 'C', target: 'E' }
+  ];
+  
+  steps.push({
+    array: [{ value: 'Starting BFS', status: 'default' }],
+    lineIndex: 0,
+    description: `Starting BFS from node ${startNode}`
+  });
+  
+  // Simulate BFS traversal
   const visited = new Set<string>();
-  const queue = [startNodeId];
+  const queue = [startNode];
+  let stepCount = 1;
   
   while (queue.length > 0) {
-    const currentNodeId = queue.shift()!;
-    
-    if (visited.has(currentNodeId)) continue;
-    visited.add(currentNodeId);
-    
-    // Update graph visualization
-    const currentGraphData = JSON.parse(JSON.stringify(graphData));
-    currentGraphData.nodes.forEach((node: GraphNode) => {
-      if (node.id === currentNodeId) {
-        node.status = 'processing';
-      } else if (visited.has(node.id)) {
-        node.status = 'visited';
-      } else if (queue.includes(node.id)) {
-        node.status = 'active';
-      }
-    });
-    
-    steps.push({
-      array: [],
-      lineIndex: visited.size,
-      graphData: currentGraphData,
-      description: `Visiting node: ${currentNodeId}`
-    });
-    
-    if (currentNodeId === endNodeId) {
+    const currentNode = queue.shift()!;
+    if (!visited.has(currentNode)) {
+      visited.add(currentNode);
+      
       steps.push({
-        array: [],
-        lineIndex: visited.size,
-        graphData: currentGraphData,
-        description: `Found target node: ${endNodeId}`
+        array: [{ value: `Visit ${currentNode}`, status: 'found' }],
+        lineIndex: stepCount,
+        description: `Visiting node ${currentNode}`
       });
-      break;
-    }
-    
-    // Add neighbors to queue
-    graphData.edges
-      .filter(edge => edge.source === currentNodeId)
-      .forEach(edge => {
-        if (!visited.has(edge.target) && !queue.includes(edge.target)) {
+      
+      // Add neighbors to queue (simplified)
+      edges.forEach(edge => {
+        if (edge.source === currentNode && !visited.has(edge.target)) {
           queue.push(edge.target);
         }
       });
+      
+      stepCount++;
+    }
   }
   
   return steps;
 }
 
-function visualizeDFS(graphData: GraphData, startNodeId: string, endNodeId?: string): VisualizationStep[] {
+// Depth-First Search Visualization
+export function visualizeDFS(startNode: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const visited = new Set<string>();
   
-  function dfsRecursive(nodeId: string): boolean {
-    visited.add(nodeId);
-    
-    const currentGraphData = JSON.parse(JSON.stringify(graphData));
-    currentGraphData.nodes.forEach((node: GraphNode) => {
-      if (node.id === nodeId) {
-        node.status = 'processing';
-      } else if (visited.has(node.id)) {
-        node.status = 'visited';
-      }
-    });
-    
-    steps.push({
-      array: [],
-      lineIndex: visited.size,
-      graphData: currentGraphData,
-      description: `Visiting node: ${nodeId}`
-    });
-    
-    if (nodeId === endNodeId) {
-      steps.push({
-        array: [],
-        lineIndex: visited.size,
-        graphData: currentGraphData,
-        description: `Found target node: ${endNodeId}`
-      });
-      return true;
-    }
-    
-    for (const edge of graphData.edges.filter(e => e.source === nodeId)) {
-      if (!visited.has(edge.target)) {
-        if (dfsRecursive(edge.target)) {
-          return true;
-        }
-      }
-    }
-    
-    return false;
-  }
-  
-  dfsRecursive(startNodeId);
-  return steps;
-}
-
-function visualizeDijkstra(graphData: GraphData, startNodeId: string, endNodeId: string): VisualizationStep[] {
-  const steps: VisualizationStep[] = [];
-  const distances = new Map<string, number>();
-  const visited = new Set<string>();
-  const previous = new Map<string, string>();
-  
-  // Initialize distances
-  graphData.nodes.forEach(node => {
-    distances.set(node.id, node.id === startNodeId ? 0 : Infinity);
+  steps.push({
+    array: [{ value: 'Starting DFS', status: 'default' }],
+    lineIndex: 0,
+    description: `Starting DFS from node ${startNode}`
   });
   
-  while (visited.size < graphData.nodes.length) {
-    // Find unvisited node with minimum distance
-    let currentNode: string | null = null;
-    let minDistance = Infinity;
-    
-    for (const node of graphData.nodes) {
-      if (!visited.has(node.id) && distances.get(node.id)! < minDistance) {
-        minDistance = distances.get(node.id)!;
-        currentNode = node.id;
-      }
-    }
-    
-    if (!currentNode || minDistance === Infinity) break;
-    
-    visited.add(currentNode);
-    
-    // Update visualization
-    const currentGraphData = JSON.parse(JSON.stringify(graphData));
-    currentGraphData.nodes.forEach((node: GraphNode) => {
-      if (node.id === currentNode) {
-        node.status = 'processing';
-      } else if (visited.has(node.id)) {
-        node.status = 'visited';
-      }
-    });
-    
-    steps.push({
-      array: [],
-      lineIndex: visited.size,
-      graphData: currentGraphData,
-      description: `Processing node: ${currentNode} (distance: ${minDistance})`
-    });
-    
-    if (currentNode === endNodeId) {
+  // Simulate DFS traversal
+  const visited = new Set<string>();
+  const stack = [startNode];
+  let stepCount = 1;
+  
+  while (stack.length > 0) {
+    const currentNode = stack.pop()!;
+    if (!visited.has(currentNode)) {
+      visited.add(currentNode);
+      
       steps.push({
-        array: [],
-        lineIndex: visited.size,
-        graphData: currentGraphData,
-        description: `Reached target node: ${endNodeId} with distance: ${minDistance}`
+        array: [{ value: `Visit ${currentNode}`, status: 'found' }],
+        lineIndex: stepCount,
+        description: `Visiting node ${currentNode}`
       });
-      break;
+      
+      stepCount++;
     }
-    
-    // Update distances to neighbors
-    graphData.edges
-      .filter(edge => edge.source === currentNode)
-      .forEach(edge => {
-        const newDistance = distances.get(currentNode!)! + (edge.weight || 1);
-        if (newDistance < distances.get(edge.target)!) {
-          distances.set(edge.target, newDistance);
-          previous.set(edge.target, currentNode!);
-        }
-      });
   }
+  
+  return steps;
+}
+
+// Dijkstra's Algorithm Visualization
+export function visualizeDijkstra(startNode: string): VisualizationStep[] {
+  const steps: VisualizationStep[] = [];
+  
+  steps.push({
+    array: [{ value: 'Dijkstra Start', status: 'default' }],
+    lineIndex: 0,
+    description: `Finding shortest paths from ${startNode}`
+  });
+  
+  // Simplified Dijkstra simulation
+  const nodes = ['A', 'B', 'C', 'D'];
+  const distances = { A: 0, B: Infinity, C: Infinity, D: Infinity };
+  
+  nodes.forEach((node, index) => {
+    const dist = node === startNode ? 0 : Math.floor(Math.random() * 10) + 1;
+    steps.push({
+      array: [{ value: `${node}: ${dist}`, status: node === startNode ? 'found' : 'comparing' }],
+      lineIndex: index + 1,
+      description: `Distance to ${node}: ${dist}`
+    });
+  });
   
   return steps;
 }

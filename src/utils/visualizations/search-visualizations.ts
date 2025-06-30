@@ -1,177 +1,176 @@
 
 import { VisualizationStep, ArrayItem } from '../../types/visualizer';
-import { ITEM_STATUSES } from './constants';
 
-/**
- * Visualizes linear search algorithm
- */
+// Linear Search Visualization
 export function visualizeLinearSearch(array: number[], target: number): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
+  const arr: ArrayItem[] = array.map(val => ({ value: val, status: 'default' }));
   
   // Initial state
   steps.push({
-    array: JSON.parse(JSON.stringify(arr)),
-    lineIndex: 0
+    array: [...arr],
+    lineIndex: 0,
+    description: `Searching for ${target} using Linear Search`
   });
   
-  // Search through array
-  for (let i = 0; i < arr.length; i++) {
-    // Highlight current element being checked
-    const searchArray = JSON.parse(JSON.stringify(arr));
-    searchArray[i].status = ITEM_STATUSES.COMPARING;
+  for (let i = 0; i < array.length; i++) {
+    // Mark current element as comparing
+    const currentArr = arr.map((item, index) => ({
+      ...item,
+      status: index === i ? 'comparing' : index < i ? 'visited' : 'default'
+    }));
     
     steps.push({
-      array: searchArray,
-      lineIndex: i + 1
+      array: currentArr,
+      lineIndex: 1,
+      description: `Checking element at index ${i}: ${array[i]}`
     });
     
-    // If found, highlight as found
-    if (arr[i].value === target) {
-      const foundArray = JSON.parse(JSON.stringify(arr));
-      foundArray[i].status = ITEM_STATUSES.FOUND;
+    if (array[i] === target) {
+      // Found the target
+      const foundArr = arr.map((item, index) => ({
+        ...item,
+        status: index === i ? 'found' : index < i ? 'visited' : 'default'
+      }));
       
       steps.push({
-        array: foundArray,
-        lineIndex: i + 1
+        array: foundArr,
+        lineIndex: 2,
+        description: `Found ${target} at index ${i}!`
       });
       break;
-    } else {
-      // Mark as visited
-      arr[i].status = ITEM_STATUSES.VISITED;
     }
   }
   
   return steps;
 }
 
-/**
- * Visualizes binary search algorithm
- */
+// Binary Search Visualization
 export function visualizeBinarySearch(array: number[], target: number): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
+  const sortedArray = [...array].sort((a, b) => a - b);
+  const arr: ArrayItem[] = sortedArray.map(val => ({ value: val, status: 'default' }));
   
   // Initial state
   steps.push({
-    array: JSON.parse(JSON.stringify(arr)),
-    lineIndex: 0
+    array: [...arr],
+    lineIndex: 0,
+    description: `Searching for ${target} using Binary Search`
   });
   
   let left = 0;
-  let right = arr.length - 1;
+  let right = sortedArray.length - 1;
   
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
     
-    // Highlight search bounds
-    const searchArray = JSON.parse(JSON.stringify(arr));
-    for (let i = left; i <= right; i++) {
-      if (i === mid) {
-        searchArray[i].status = ITEM_STATUSES.COMPARING;
-      } else if (i >= left && i <= right) {
-        searchArray[i].status = ITEM_STATUSES.ACTIVE;
-      } else {
-        searchArray[i].status = ITEM_STATUSES.VISITED;
-      }
-    }
+    // Show current search range
+    const currentArr = arr.map((item, index) => ({
+      ...item,
+      status: index === mid ? 'comparing' : 
+              (index >= left && index <= right) ? 'active' : 'visited'
+    }));
     
     steps.push({
-      array: searchArray,
-      lineIndex: mid + 1
+      array: currentArr,
+      lineIndex: 1,
+      description: `Checking middle element at index ${mid}: ${sortedArray[mid]}`
     });
     
-    if (arr[mid].value === target) {
-      // Found target
-      const foundArray = JSON.parse(JSON.stringify(arr));
-      foundArray[mid].status = ITEM_STATUSES.FOUND;
+    if (sortedArray[mid] === target) {
+      // Found the target
+      const foundArr = arr.map((item, index) => ({
+        ...item,
+        status: index === mid ? 'found' : 'default'
+      }));
       
       steps.push({
-        array: foundArray,
-        lineIndex: mid + 1
+        array: foundArr,
+        lineIndex: 2,
+        description: `Found ${target} at index ${mid}!`
       });
       break;
-    } else if (arr[mid].value < target) {
-      // Search right half
-      for (let i = left; i <= mid; i++) {
-        arr[i].status = ITEM_STATUSES.VISITED;
-      }
+    } else if (sortedArray[mid] < target) {
       left = mid + 1;
+      steps.push({
+        array: currentArr,
+        lineIndex: 3,
+        description: `${sortedArray[mid]} < ${target}, searching right half`
+      });
     } else {
-      // Search left half
-      for (let i = mid; i <= right; i++) {
-        arr[i].status = ITEM_STATUSES.VISITED;
-      }
       right = mid - 1;
+      steps.push({
+        array: currentArr,
+        lineIndex: 4,
+        description: `${sortedArray[mid]} > ${target}, searching left half`
+      });
     }
   }
   
   return steps;
 }
 
-/**
- * Visualizes jump search algorithm
- */
+// Jump Search Visualization
 export function visualizeJumpSearch(array: number[], target: number): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
-  const arr = array.map(value => ({ value, status: ITEM_STATUSES.DEFAULT as ArrayItem['status'] }));
-  const n = arr.length;
+  const sortedArray = [...array].sort((a, b) => a - b);
+  const arr: ArrayItem[] = sortedArray.map(val => ({ value: val, status: 'default' }));
+  const n = sortedArray.length;
   const jumpSize = Math.floor(Math.sqrt(n));
   
   // Initial state
   steps.push({
-    array: JSON.parse(JSON.stringify(arr)),
-    lineIndex: 0
+    array: [...arr],
+    lineIndex: 0,
+    description: `Jump Search for ${target} with jump size ${jumpSize}`
   });
   
-  let step = jumpSize;
   let prev = 0;
   
-  // Find the block where element is present
-  while (arr[Math.min(step, n) - 1].value < target) {
-    // Highlight jump
-    const jumpArray = JSON.parse(JSON.stringify(arr));
-    for (let i = prev; i < Math.min(step, n); i++) {
-      jumpArray[i].status = ITEM_STATUSES.ACTIVE;
-    }
+  // Jump phase
+  while (sortedArray[Math.min(jumpSize, n) - 1] < target) {
+    const currentArr = arr.map((item, index) => ({
+      ...item,
+      status: index === Math.min(jumpSize, n) - 1 ? 'comparing' : 
+              index < Math.min(jumpSize, n) ? 'active' : 'default'
+    }));
     
     steps.push({
-      array: jumpArray,
-      lineIndex: step
+      array: currentArr,
+      lineIndex: 1,
+      description: `Jumping to index ${jumpSize - 1}, value: ${sortedArray[Math.min(jumpSize, n) - 1]}`
     });
     
-    // Mark previous block as visited
-    for (let i = prev; i < Math.min(step, n); i++) {
-      arr[i].status = ITEM_STATUSES.VISITED;
-    }
-    
-    prev = step;
-    step += jumpSize;
-    
-    if (prev >= n) break;
+    prev = jumpSize;
+    if (jumpSize >= n) break;
   }
   
-  // Linear search in the identified block
-  for (let i = prev; i < Math.min(step, n); i++) {
-    const searchArray = JSON.parse(JSON.stringify(arr));
-    searchArray[i].status = ITEM_STATUSES.COMPARING;
+  // Linear search phase
+  for (let i = prev; i < Math.min(jumpSize, n); i++) {
+    const currentArr = arr.map((item, index) => ({
+      ...item,
+      status: index === i ? 'comparing' : 
+              (index >= prev && index < i) ? 'visited' : 'default'
+    }));
     
     steps.push({
-      array: searchArray,
-      lineIndex: i + 1
+      array: currentArr,
+      lineIndex: 2,
+      description: `Linear search at index ${i}: ${sortedArray[i]}`
     });
     
-    if (arr[i].value === target) {
-      const foundArray = JSON.parse(JSON.stringify(arr));
-      foundArray[i].status = ITEM_STATUSES.FOUND;
+    if (sortedArray[i] === target) {
+      const foundArr = arr.map((item, index) => ({
+        ...item,
+        status: index === i ? 'found' : 'default'
+      }));
       
       steps.push({
-        array: foundArray,
-        lineIndex: i + 1
+        array: foundArr,
+        lineIndex: 3,
+        description: `Found ${target} at index ${i}!`
       });
       break;
-    } else {
-      arr[i].status = ITEM_STATUSES.VISITED;
     }
   }
   

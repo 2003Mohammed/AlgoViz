@@ -12,6 +12,7 @@ export * from './stack-visualizations';
 // Import specific functions for routing
 import { visualizeBubbleSort, visualizeQuickSort, visualizeMergeSort, visualizeHeapSort, visualizeInsertionSort } from './sort-visualizations';
 import { visualizeLinearSearch, visualizeBinarySearch, visualizeJumpSearch } from './search-visualizations';
+import { visualizeBFS, visualizeDFS, visualizeDijkstra } from './graph-visualizations';
 import { visualizeQueueOperation } from './queue-visualizations';
 import { visualizeStackOperation } from './stack-visualizations';
 import { visualizeArrayOperation } from './array-visualizations';
@@ -36,11 +37,22 @@ export function generateVisualizationSteps(algorithmId: string, data: any): any[
       
       // Search algorithms
       case 'linear-search':
-        return visualizeLinearSearch(data.map((item: any) => item.value || item), data.target || 0);
+        return visualizeLinearSearch(data.map((item: any) => item.value || item), data.target || 5);
       case 'binary-search':
-        return visualizeBinarySearch(data.map((item: any) => item.value || item), data.target || 0);
+        return visualizeBinarySearch(data.map((item: any) => item.value || item), data.target || 5);
       case 'jump-search':
-        return visualizeJumpSearch(data.map((item: any) => item.value || item), data.target || 0);
+        return visualizeJumpSearch(data.map((item: any) => item.value || item), data.target || 5);
+      
+      // Graph algorithms
+      case 'bfs':
+      case 'breadth-first-search':
+        return visualizeBFS('A');
+      case 'dfs':
+      case 'depth-first-search':
+        return visualizeDFS('A');
+      case 'dijkstra':
+      case 'dijkstra-algorithm':
+        return visualizeDijkstra('A');
       
       // Data structure operations
       case 'queue-enqueue':
@@ -66,18 +78,17 @@ export function generateVisualizationSteps(algorithmId: string, data: any): any[
           array: Array.isArray(data) ? data.map((item: any) => ({ 
             value: item.value || item, 
             status: 'default' 
-          })) : [], 
-          lineIndex: 0 
+          })) : [{ value: 'No data', status: 'default' }], 
+          lineIndex: 0,
+          description: 'Algorithm visualization not available'
         }];
     }
   } catch (error) {
     console.error('Error generating visualization steps:', error);
     return [{ 
-      array: Array.isArray(data) ? data.map((item: any) => ({ 
-        value: item.value || item, 
-        status: 'default' 
-      })) : [], 
-      lineIndex: 0 
+      array: [{ value: 'Error', status: 'default' }], 
+      lineIndex: 0,
+      description: 'Error generating visualization'
     }];
   }
 }

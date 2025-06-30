@@ -18,7 +18,7 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
   const animationRef = useRef<number | null>(null);
   const stepsRef = useRef<VisualizerStep[]>([]);
   
-  // Animation controls
+  // Animation controls (removed speed)
   const resetAnimation = () => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
@@ -29,12 +29,10 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
   const {
     isPlaying,
     currentStep,
-    speed,
     reset,
     togglePlayPause,
     stepForward,
     stepBackward,
-    changeSpeed,
     setCurrentStep,
     setIsPlaying
   } = useAnimationControls(
@@ -101,41 +99,22 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [algorithmId]); // Re-initialize when algorithm changes
+  }, [algorithmId]);
   
-  // Animation effect - optimized with requestAnimationFrame and respecting speed setting
+  // Animation effect with medium speed (1000ms interval)
   useEffect(() => {
     if (isPlaying) {
-      let lastTime = 0;
-      // Adjust interval based on speed (faster speed = shorter interval)
-      const interval = 1000 / speed;
-      
-      const animate = (timestamp: number) => {
-        if (!lastTime || timestamp - lastTime >= interval) {
-          lastTime = timestamp;
-          
-          if (currentStep < totalSteps - 1) {
-            stepForward();
-          } else {
-            setIsPlaying(false);
-            return;
-          }
+      const timer = setInterval(() => {
+        if (currentStep < totalSteps - 1) {
+          stepForward();
+        } else {
+          setIsPlaying(false);
         }
-        
-        if (isPlaying) {
-          animationRef.current = requestAnimationFrame(animate);
-        }
-      };
+      }, 1000); // Medium speed - 1 second per step
       
-      animationRef.current = requestAnimationFrame(animate);
-      
-      return () => {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-      };
+      return () => clearInterval(timer);
     }
-  }, [isPlaying, currentStep, speed, totalSteps]);
+  }, [isPlaying, currentStep, totalSteps, stepForward, setIsPlaying]);
 
   // Public API
   return {
@@ -146,7 +125,6 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     isPlaying,
     currentStep,
     totalSteps,
-    speed,
     activeLineIndex,
     handleGenerateRandomArray,
     handleGenerateRandomGraph,
@@ -156,7 +134,6 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     togglePlayPause,
     stepForward,
     stepBackward,
-    changeSpeed,
     exportVisualization
   };
 }

@@ -1,310 +1,154 @@
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 220 70% 2%;
-    --foreground: 180 100% 97%;
-
-    --card: 222 47% 5%;
-    --card-foreground: 180 100% 95%;
-
-    --popover: 222 47% 5%;
-    --popover-foreground: 180 100% 95%;
-
-    --primary: 184 100% 50%;
-    --primary-foreground: 220 70% 2%;
-
-    --secondary: 326 100% 50%;
-    --secondary-foreground: 180 100% 95%;
-
-    --muted: 222 47% 8%;
-    --muted-foreground: 180 25% 70%;
-
-    --accent: 274 100% 50%;
-    --accent-foreground: 180 100% 95%;
-
-    --destructive: 0 85% 60%;
-    --destructive-foreground: 180 100% 95%;
-
-    --border: 222 47% 15%;
-    --input: 222 47% 15%;
-    --ring: 184 100% 50%;
-
-    --radius: 0.5rem;
-    
-    /* Pixel art background colors */
-    --pixel-bg-1: 220 70% 3%;
-    --pixel-bg-2: 221 70% 5%;
-    --pixel-bg-3: 222 70% 4%;
-    --pixel-bg-4: 223 70% 2%;
-  }
-
-  .light {
+    /* Light mode colors */
     --background: 0 0% 100%;
-    --foreground: 222 84% 4.9%;
-
+    --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
-    --card-foreground: 222 84% 4.9%;
-
+    --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 4.9%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.75rem;
+    
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 224 71.4% 4.1%;
+    --sidebar-primary: 220.9 39.3% 11%;
+    --sidebar-primary-foreground: 210 20% 98%;
+    --sidebar-accent: 220 14.3% 95.9%;
+    --sidebar-accent-foreground: 220.9 39.3% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 224 71.4% 4.1%;
+  }
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-
-    --destructive: 0 84% 60%;
+  .dark {
+    /* Dark mode - Navy blue theme */
+    --background: 222 47% 11%;
+    --foreground: 213 31% 91%;
+    --card: 222 84% 5%;
+    --card-foreground: 213 31% 91%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217 32% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
-
-    /* Light theme pixel art colors */
-    --pixel-bg-1: 210 40% 98%;
-    --pixel-bg-2: 214 32% 91%;
-    --pixel-bg-3: 210 40% 96%;
-    --pixel-bg-4: 215 16% 47%;
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 212 72% 59%;
+    
+    /* Sidebar colors for dark mode */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217 32% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 32% 17%;
+    --sidebar-ring: 212 72% 59%;
   }
 }
 
-* {
-  @apply border-border selection:bg-cyber-primary/20 selection:text-cyber-primary;
-}
-
-html {
-  @apply scroll-smooth;
-}
-
-body {
-  @apply bg-background text-foreground antialiased transition-colors duration-300;
-  font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-}
-
-::selection {
-  @apply bg-cyber-primary/20 text-cyber-primary;
-}
-
-@layer components {
-  .glass-card {
-    @apply bg-black/30 backdrop-blur-md shadow-sm border border-white/5 rounded-xl;
+@layer base {
+  * {
+    @apply border-border;
   }
-  
-  .glass-button {
-    @apply bg-black/50 backdrop-blur-md shadow-sm border border-white/10 
-          hover:bg-black/60 hover:border-white/20 transition-all duration-300;
-  }
-  
-  .hero-gradient {
-    @apply bg-gradient-to-br from-cyber-primary/80 via-cyber-primary/60 to-cyber-primary/40 text-cyber-dark;
-  }
-  
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .text-pretty {
-    text-wrap: pretty;
-  }
-  
-  .heading-xl {
-    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance;
-  }
-  
-  .heading-lg {
-    @apply text-3xl md:text-4xl font-bold tracking-tight text-balance;
-  }
-  
-  .heading-md {
-    @apply text-2xl md:text-3xl font-bold tracking-tight text-balance;
-  }
-  
-  .heading-sm {
-    @apply text-xl md:text-2xl font-semibold tracking-tight text-balance;
-  }
-  
-  .body-lg {
-    @apply text-lg text-pretty;
-  }
-  
-  .body-md {
-    @apply text-base text-pretty;
-  }
-  
-  .body-sm {
-    @apply text-sm text-pretty;
-  }
-  
-  /* Cyberpunk UI elements with theme support */
-  .cyber-border {
-    @apply border-2 border-cyber-primary shadow-[0_0_10px_rgba(0,243,255,0.7)] relative;
-  }
-  
-  .cyber-border::before {
-    content: '';
-    @apply absolute top-0 left-0 w-full h-[2px] bg-cyber-primary opacity-70;
-    box-shadow: 0 0 15px 2px rgba(0, 243, 255, 0.7);
-  }
-  
-  .cyber-button {
-    @apply px-4 py-2 bg-transparent border-2 border-cyber-primary text-cyber-primary relative overflow-hidden
-           shadow-[0_0_10px_rgba(0,243,255,0.5)] transition-all duration-300
-           hover:shadow-[0_0_15px_rgba(0,243,255,0.8)] active:translate-y-1;
-  }
-  
-  .cyber-button::before {
-    content: '';
-    @apply absolute top-0 left-0 w-full h-full bg-cyber-primary/10 -z-10;
-  }
-  
-  .cyber-button::after {
-    content: '';
-    @apply absolute top-0 left-[-100%] w-full h-full bg-cyber-primary/20 z-0 skew-x-[45deg] transition-all duration-500;
-  }
-  
-  .cyber-button:hover::after {
-    @apply left-[100%];
-  }
-  
-  .cyber-input {
-    @apply bg-background/50 border-2 border-cyber-primary/50 text-foreground outline-none shadow-[0_0_10px_rgba(0,243,255,0.3)]
-           focus:shadow-[0_0_15px_rgba(0,243,255,0.5)] focus:border-cyber-primary transition-all duration-300;
-  }
-  
-  .cyber-card {
-    @apply bg-background/70 border-l-4 border-t-2 border-cyber-primary/70 border-r-0 border-b-0 shadow-[0_0_20px_rgba(0,243,255,0.3)] p-4 relative;
-  }
-  
-  .cyber-card::before {
-    content: '';
-    @apply absolute top-0 right-0 w-[30%] h-[2px] bg-cyber-primary;
-  }
-  
-  .cyber-card::after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-[40%] h-[2px] bg-cyber-primary/70;
-  }
-  
-  .cyber-panel {
-    @apply bg-gradient-to-br from-background/80 to-background/30 backdrop-blur-md border-l-2 border-t-2 
-           border-r-0 border-b-0 border-cyber-primary/50 p-6 relative;
-  }
-  
-  .cyber-panel::after {
-    content: '';
-    @apply absolute top-0 left-0 w-full h-full pointer-events-none;
-    background-image: linear-gradient(to bottom, rgba(0, 243, 255, 0.1) 1px, transparent 1px),
-                      linear-gradient(to right, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.2));
-  }
-  
-  /* Light theme adjustments */
-  .light .cyber-panel {
-    @apply bg-gradient-to-br from-background/90 to-background/50;
-  }
-  
-  .light .cyber-card {
-    @apply bg-background/80;
-  }
-  
-  .light .cyber-input {
-    @apply bg-background/80;
-  }
-  
-  /* Visualization elements */
-  .cyber-grid {
-    @apply relative overflow-hidden bg-background;
-    background-image: 
-      radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%),
-      linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
-    background-size: 100% 100%, 20px 20px, 20px 20px;
-    background-position: center, center, center;
-  }
-  
-  .cyber-grid::before {
-    content: '';
-    @apply absolute inset-0 w-full h-full pointer-events-none;
-    background: 
-      linear-gradient(to right, rgba(8, 3, 32, 0.9), rgba(8, 3, 32, 0.3) 30%, rgba(8, 3, 32, 0.3) 70%, rgba(8, 3, 32, 0.9));
-  }
-  
-  .light .cyber-grid::before {
-    background: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.3) 70%, rgba(255, 255, 255, 0.9));
-  }
-  
-  .cyber-grid::after {
-    content: '';
-    @apply absolute top-0 left-0 w-full h-[1px] bg-cyber-primary/50 animate-scan-line;
-    box-shadow: 0 0 10px 2px rgba(0, 243, 255, 0.5);
-  }
-  
-  .algorithm-bar {
-    @apply relative overflow-hidden;
-  }
-  
-  .algorithm-bar::before {
-    content: '';
-    @apply absolute top-0 left-0 w-full h-full z-0;
-    background: linear-gradient(to bottom, rgba(0, 243, 255, 0.5), rgba(0, 243, 255, 0.1) 70%, rgba(0, 243, 255, 0) 100%);
-  }
-  
-  .algorithm-bar::after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-full h-[30%] z-0;
-    box-shadow: 0 0 15px 5px rgba(0, 243, 255, 0.5);
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-@layer utilities {
-  .scrollbar-hidden {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+/* Custom theme classes */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
 
-  .scrollbar-hidden::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .glass-morphism {
-    @apply backdrop-blur-xl bg-background/40 border border-cyber-primary/20 rounded-xl;
-  }
-  
-  .text-gradient {
-    @apply bg-gradient-to-br from-cyber-primary via-cyber-primary/90 to-cyber-primary/60 bg-clip-text text-transparent;
-  }
-  
-  .text-gradient-secondary {
-    @apply bg-gradient-to-br from-cyber-secondary via-cyber-secondary/90 to-cyber-secondary/60 bg-clip-text text-transparent;
-  }
-  
-  .neon-text {
-    @apply text-cyber-primary animate-neon-pulse;
-  }
-  
-  .neon-text-secondary {
-    @apply text-cyber-secondary;
-    text-shadow: 0 0 5px rgba(255, 0, 160, 0.8), 0 0 10px rgba(255, 0, 160, 0.5);
-  }
-  
-  .neon-box {
-    @apply border-2 border-cyber-primary shadow-[0_0_15px_rgba(0,243,255,0.7)];
-  }
-  
-  .neon-box-secondary {
-    @apply border-2 border-cyber-secondary shadow-[0_0_15px_rgba(255,0,160,0.7)];
-  }
+/* Cyber theme enhancements */
+.cyber-panel {
+  @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-lg p-6;
+}
+
+.cyber-card {
+  @apply bg-card border border-border rounded-md;
+}
+
+.cyber-primary {
+  color: hsl(var(--primary));
+}
+
+.cyber-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+.dark .cyber-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+}
+
+.pixel-border {
+  border-image: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent))) 1;
+}
+
+.pixel-header {
+  text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+}
+
+.neon-text {
+  color: hsl(var(--primary));
+  text-shadow: 0 0 5px hsl(var(--primary) / 0.5);
+}
+
+/* Ensure all text is visible with proper contrast */
+.text-contrast {
+  color: hsl(var(--foreground));
+}
+
+/* Code highlighting adjustments */
+.hljs {
+  background: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .hljs {
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Glass card effect */
+.glass-card {
+  @apply bg-card/60 backdrop-blur-xl border border-border/30;
+}
+
+/* Animation speed adjustments */
+.animate-slow {
+  animation-duration: 2s;
+}
+
+.animate-medium {
+  animation-duration: 1s;
 }

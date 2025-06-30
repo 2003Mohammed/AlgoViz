@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { Algorithm } from '../../utils/algorithms';
 import { useVisualizerState } from '../../hooks/visualizer';
@@ -27,7 +26,6 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
     isPlaying,
     currentStep,
     totalSteps,
-    speed,
     activeLineIndex,
     handleGenerateRandomArray,
     handleGenerateRandomGraph,
@@ -37,7 +35,6 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
     togglePlayPause,
     stepForward,
     stepBackward,
-    changeSpeed,
     exportVisualization
   } = useVisualizerState(algorithm.id);
 
@@ -110,8 +107,6 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
             onReset={reset}
             onStepForward={stepForward}
             onStepBackward={stepBackward}
-            onSpeedChange={changeSpeed}
-            currentSpeed={speed}
             disableBackward={currentStep === 0}
             disableForward={currentStep === totalSteps - 1}
           />

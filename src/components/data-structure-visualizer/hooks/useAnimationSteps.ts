@@ -12,8 +12,8 @@ export const useAnimationSteps = (
   useEffect(() => {
     if (isAnimating && animationSteps.length > 0) {
       if (currentStep < animationSteps.length - 1) {
-        // Fixed animation timing (removed speed dependency)
-        const duration = 800; // Consistent 800ms per step
+        // Medium speed animation - 1200ms per step
+        const duration = 1200;
         
         const timer = setTimeout(() => {
           setCurrentStep(prev => prev + 1);
@@ -24,7 +24,7 @@ export const useAnimationSteps = (
         // When reaching the end of animation
         const timer = setTimeout(() => {
           setIsAnimating(false);
-        }, 500);
+        }, 800);
         return () => clearTimeout(timer);
       }
     }
