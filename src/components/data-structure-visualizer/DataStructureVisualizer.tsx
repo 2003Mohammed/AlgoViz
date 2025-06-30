@@ -39,7 +39,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     <div className="space-y-8">
       {/* Header */}
       <VisualizerHeader 
-        title={`${dataStructure.name} Visualizer`}
+        dataStructureName={`${dataStructure.name} Visualizer`}
         onReset={resetToDefault}
       />
 
@@ -65,14 +65,14 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           <InputSection
             dataStructureId={dataStructure.id}
             customInput={customInput}
-            onInputChange={handleInputChange}
-            onOperation={handleOperation}
+            handleInputChange={handleInputChange}
+            handleOperation={handleOperation}
           />
           
           <AnimationControls
             isAnimating={isAnimating}
             currentStep={currentStep}
-            totalSteps={animationSteps.length}
+            animationSteps={animationSteps}
             onPlay={() => setIsAnimating(true)}
             onPause={() => setIsAnimating(false)}
             onReset={() => {
@@ -87,17 +87,16 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
         <div className="space-y-4">
           <OperationLog 
             logs={operationLog}
-            operationResult={operationResult}
           />
           
-          <OperationsInfo dataStructure={dataStructure} />
+          <OperationsInfo />
         </div>
       </div>
 
       {/* Code and Reference */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <ImplementationCode dataStructure={dataStructure} />
-        <ReferenceSection dataStructure={dataStructure} />
+        <ImplementationCode />
+        <ReferenceSection />
       </div>
     </div>
   );

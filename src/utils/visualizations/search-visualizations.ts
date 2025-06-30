@@ -17,7 +17,7 @@ export function visualizeLinearSearch(array: number[], target: number): Visualiz
     // Mark current element as comparing
     const currentArr = arr.map((item, index) => ({
       ...item,
-      status: index === i ? 'comparing' : index < i ? 'visited' : 'default'
+      status: index === i ? 'comparing' as const : index < i ? 'visited' as const : 'default' as const
     }));
     
     steps.push({
@@ -30,7 +30,7 @@ export function visualizeLinearSearch(array: number[], target: number): Visualiz
       // Found the target
       const foundArr = arr.map((item, index) => ({
         ...item,
-        status: index === i ? 'found' : index < i ? 'visited' : 'default'
+        status: index === i ? 'found' as const : index < i ? 'visited' as const : 'default' as const
       }));
       
       steps.push({
@@ -67,8 +67,8 @@ export function visualizeBinarySearch(array: number[], target: number): Visualiz
     // Show current search range
     const currentArr = arr.map((item, index) => ({
       ...item,
-      status: index === mid ? 'comparing' : 
-              (index >= left && index <= right) ? 'active' : 'visited'
+      status: index === mid ? 'comparing' as const : 
+              (index >= left && index <= right) ? 'active' as const : 'visited' as const
     }));
     
     steps.push({
@@ -81,7 +81,7 @@ export function visualizeBinarySearch(array: number[], target: number): Visualiz
       // Found the target
       const foundArr = arr.map((item, index) => ({
         ...item,
-        status: index === mid ? 'found' : 'default'
+        status: index === mid ? 'found' as const : 'default' as const
       }));
       
       steps.push({
@@ -126,31 +126,33 @@ export function visualizeJumpSearch(array: number[], target: number): Visualizat
   });
   
   let prev = 0;
+  let step = jumpSize;
   
   // Jump phase
-  while (sortedArray[Math.min(jumpSize, n) - 1] < target) {
+  while (sortedArray[Math.min(step, n) - 1] < target) {
     const currentArr = arr.map((item, index) => ({
       ...item,
-      status: index === Math.min(jumpSize, n) - 1 ? 'comparing' : 
-              index < Math.min(jumpSize, n) ? 'active' : 'default'
+      status: index === Math.min(step, n) - 1 ? 'comparing' as const : 
+              index < Math.min(step, n) ? 'active' as const : 'default' as const
     }));
     
     steps.push({
       array: currentArr,
       lineIndex: 1,
-      description: `Jumping to index ${jumpSize - 1}, value: ${sortedArray[Math.min(jumpSize, n) - 1]}`
+      description: `Jumping to index ${step - 1}, value: ${sortedArray[Math.min(step, n) - 1]}`
     });
     
-    prev = jumpSize;
-    if (jumpSize >= n) break;
+    prev = step;
+    step += jumpSize;
+    if (prev >= n) break;
   }
   
   // Linear search phase
-  for (let i = prev; i < Math.min(jumpSize, n); i++) {
+  for (let i = prev; i < Math.min(step, n); i++) {
     const currentArr = arr.map((item, index) => ({
       ...item,
-      status: index === i ? 'comparing' : 
-              (index >= prev && index < i) ? 'visited' : 'default'
+      status: index === i ? 'comparing' as const : 
+              (index >= prev && index < i) ? 'visited' as const : 'default' as const
     }));
     
     steps.push({
@@ -162,7 +164,7 @@ export function visualizeJumpSearch(array: number[], target: number): Visualizat
     if (sortedArray[i] === target) {
       const foundArr = arr.map((item, index) => ({
         ...item,
-        status: index === i ? 'found' : 'default'
+        status: index === i ? 'found' as const : 'default' as const
       }));
       
       steps.push({

@@ -9,7 +9,6 @@ export interface VisualizerStateReturnType {
   isPlaying: boolean;
   currentStep: number;
   totalSteps: number;
-  speed: number;
   activeLineIndex: number;
   handleGenerateRandomArray: (sorted?: boolean) => void;
   handleGenerateRandomGraph: () => void;
@@ -19,6 +18,5 @@ export interface VisualizerStateReturnType {
   togglePlayPause: () => void;
   stepForward: () => boolean;
   stepBackward: () => boolean;
-  changeSpeed: (newSpeed: number) => void;
   exportVisualization: () => void;
 }

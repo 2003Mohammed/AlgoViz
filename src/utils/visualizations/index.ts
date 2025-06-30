@@ -17,6 +17,28 @@ import { visualizeQueueOperation } from './queue-visualizations';
 import { visualizeStackOperation } from './stack-visualizations';
 import { visualizeArrayOperation } from './array-visualizations';
 
+// Graph operation visualizer for graph algorithms
+export function visualizeGraphOperation(graph: any, operation: string, startNode?: string, endNode?: string): any[] {
+  console.log('Visualizing graph operation:', operation, 'from', startNode, 'to', endNode);
+  
+  switch (operation.toLowerCase()) {
+    case 'bfs':
+    case 'breadthfirst':
+      return visualizeBFS(startNode || 'A');
+    case 'dfs':
+    case 'depthfirst':
+      return visualizeDFS(startNode || 'A');
+    case 'dijkstra':
+      return visualizeDijkstra(startNode || 'A');
+    default:
+      return [{ 
+        array: [{ value: 'Graph visualization', status: 'default' }], 
+        lineIndex: 0,
+        description: `Graph ${operation} visualization`
+      }];
+  }
+}
+
 // Main visualization function that routes to appropriate visualizer
 export function generateVisualizationSteps(algorithmId: string, data: any): any[] {
   console.log('Generating visualization steps for:', algorithmId, data);
