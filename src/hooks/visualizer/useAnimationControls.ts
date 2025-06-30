@@ -11,7 +11,6 @@ export function useAnimationControls(
 ) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [speed, setSpeed] = useState(1);
 
   const reset = useCallback(() => {
     if (animationRef.current) {
@@ -39,19 +38,18 @@ export function useAnimationControls(
       
       const step = stepsRef.current[nextStep];
       if (step) {
-        // Apply the next visualization state
         setArray(step.array);
         setActiveLineIndex(step.lineIndex);
       }
       
-      return true; // Successfully stepped forward
+      return true;
     } else {
       setIsPlaying(false);
       toast({
         title: "End of visualization",
         description: "Reached the final step of the algorithm",
       });
-      return false; // Could not step forward (end reached)
+      return false;
     }
   }, [currentStep, totalSteps, stepsRef, setArray, setActiveLineIndex, setIsPlaying]);
   
@@ -62,33 +60,22 @@ export function useAnimationControls(
       
       const step = stepsRef.current[prevStep];
       if (step) {
-        // Apply the previous visualization state
         setArray(step.array);
         setActiveLineIndex(step.lineIndex);
       }
       
-      return true; // Successfully stepped backward
+      return true;
     }
-    return false; // Could not step backward (beginning reached)
+    return false;
   }, [currentStep, stepsRef, setArray, setActiveLineIndex]);
-  
-  const changeSpeed = useCallback((newSpeed: number) => {
-    setSpeed(newSpeed);
-    toast({
-      title: `Speed: ${newSpeed}x`,
-      description: newSpeed > 1 ? "Faster animation" : "Slower animation",
-    });
-  }, []);
 
   return {
     isPlaying,
     currentStep,
-    speed,
     reset,
     togglePlayPause,
     stepForward,
     stepBackward,
-    changeSpeed,
     setCurrentStep,
     setIsPlaying
   };

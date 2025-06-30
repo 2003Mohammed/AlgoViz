@@ -6,9 +6,10 @@ import { useDataStructureState } from './useDataStructureState';
 import { OperationLog } from './OperationLog';
 import { StructureRenderer } from './StructureRenderer';
 import { VisualizerHeader } from './components/VisualizerHeader';
-import { AnimationControls } from './components/AnimationControls';
 import { InputSection } from './components/InputSection';
 import { ReferenceSection } from './components/ReferenceSection';
+import { Button } from '@/components/ui/button';
+import { Play, Pause, RotateCcw, SkipForward, SkipBack } from 'lucide-react';
 
 interface DataStructureVisualizerProps {
   dataStructure: DataStructure;
@@ -23,15 +24,29 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     animationSteps,
     currentStep,
     isAnimating,
-    speed,
     setCustomInput,
     resetToDefault,
     handleOperation,
     handleInputChange,
     setCurrentStep,
-    setIsAnimating,
-    handleSpeedChange
+    setIsAnimating
   } = useDataStructureState(dataStructure);
+  
+  const handleStepForward = () => {
+    if (currentStep < animationSteps.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const handleStepBackward = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+
+  const toggleAnimation = () => {
+    setIsAnimating(!isAnimating);
+  };
   
   return (
     <div className="space-y-6">
@@ -60,15 +75,52 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           />
         </motion.div>
         
-        <AnimationControls
-          currentStep={currentStep}
-          animationSteps={animationSteps}
-          speed={speed}
-          isAnimating={isAnimating}
-          setCurrentStep={setCurrentStep}
-          setIsAnimating={setIsAnimating}
-          onSpeedChange={handleSpeedChange}
-        />
+        {/* Simple Animation Controls */}
+        {animationSteps.length > 0 && (
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Button
+              onClick={handleStepBackward}
+              disabled={currentStep === 0 || isAnimating}
+              variant="outline"
+              size="sm"
+            >
+              <SkipBack className="h-4 w-4" />
+            </Button>
+            
+            <Button
+              onClick={toggleAnimation}
+              disabled={animationSteps.length === 0}
+              variant="default"
+              size="sm"
+            >
+              {isAnimating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
+            
+            <Button
+              onClick={handleStepForward}
+              disabled={currentStep === animationSteps.length - 1 || isAnimating}
+              variant="outline"
+              size="sm"
+            >
+              <SkipForward className="h-4 w-4" />
+            </Button>
+            
+            <Button
+              onClick={() => {
+                setCurrentStep(0);
+                setIsAnimating(false);
+              }}
+              variant="ghost"
+              size="sm"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            
+            <span className="text-sm text-muted-foreground ml-2">
+              Step {currentStep + 1} of {animationSteps.length}
+            </span>
+          </div>
+        )}
         
         <InputSection
           customInput={customInput}

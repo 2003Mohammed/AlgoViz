@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { SpeedSlider } from '@/components/ui/speed-slider';
-import { Play, Pause, RotateCcw, StepForward, StepBack, Download, Keyboard } from 'lucide-react';
+import { Play, Pause, RotateCcw, StepForward, StepBack, Keyboard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
@@ -12,11 +11,8 @@ interface VisualizerControlsProps {
   onReset: () => void;
   onStepForward: () => void;
   onStepBackward: () => void;
-  onSpeedChange: (speed: number) => void;
-  currentSpeed: number;
   disableBackward?: boolean;
   disableForward?: boolean;
-  onExport?: () => void;
 }
 
 export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
@@ -25,20 +21,17 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
   onReset,
   onStepForward,
   onStepBackward,
-  onSpeedChange,
-  currentSpeed,
   disableBackward = false,
   disableForward = false,
-  onExport
 }) => {
-  // Setup keyboard shortcuts
+  // Setup keyboard shortcuts (removed speed controls)
   useKeyboardShortcuts({
     onPlayPause,
     onReset,
     onStepForward,
     onStepBackward,
-    onSpeedUp: () => onSpeedChange(Math.min(currentSpeed + 0.25, 4)),
-    onSpeedDown: () => onSpeedChange(Math.max(currentSpeed - 0.25, 0.25))
+    onSpeedUp: () => {}, // No-op
+    onSpeedDown: () => {} // No-op
   });
 
   const buttonVariants = {
@@ -100,26 +93,7 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
             <span className="ml-2">Reset</span>
           </Button>
         </motion.div>
-
-        {onExport && (
-          <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-            <Button
-              onClick={onExport}
-              variant="ghost"
-              title="Export Visualization"
-            >
-              <Download className="h-4 w-4" />
-              <span className="ml-2">Export</span>
-            </Button>
-          </motion.div>
-        )}
       </div>
-
-      {/* Speed Control */}
-      <SpeedSlider
-        speed={currentSpeed}
-        onSpeedChange={onSpeedChange}
-      />
 
       {/* Keyboard Shortcuts Help */}
       <motion.div
@@ -131,7 +105,7 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
           <Keyboard className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium text-primary">Keyboard Shortcuts</span>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Play/Pause:</span>
             <kbd className="bg-muted px-2 py-1 rounded text-xs">Space</kbd>
@@ -143,10 +117,6 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Step →:</span>
             <kbd className="bg-muted px-2 py-1 rounded text-xs">→</kbd>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Step ←:</span>
-            <kbd className="bg-muted px-2 py-1 rounded text-xs">←</kbd>
           </div>
         </div>
       </motion.div>

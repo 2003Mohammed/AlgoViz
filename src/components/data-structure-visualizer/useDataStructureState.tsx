@@ -3,12 +3,10 @@ import { DataStructure } from '../../utils/dataStructureData';
 import { useStructureState } from './hooks/useStructureState';
 import { useAnimationSteps } from './hooks/useAnimationSteps';
 import { useOperationHandler } from './hooks/useOperationHandler';
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 
 export const useDataStructureState = (dataStructure: DataStructure) => {
-  const [speed, setSpeed] = useState(1);
-  
-  // Initialize base state
+  // Initialize base state (removed speed state)
   const {
     customInput,
     structure,
@@ -29,8 +27,8 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     handleInputChange
   } = useStructureState(dataStructure);
   
-  // Set up animation steps with speed
-  useAnimationSteps(isAnimating, currentStep, animationSteps, setCurrentStep, setIsAnimating, speed);
+  // Set up animation steps (removed speed parameter)
+  useAnimationSteps(isAnimating, currentStep, animationSteps, setCurrentStep, setIsAnimating);
   
   // Initialize operation handler
   const { handleOperation } = useOperationHandler(
@@ -46,12 +44,6 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     setCustomInput
   );
 
-  const handleSpeedChange = useCallback((value: number[]) => {
-    const newSpeed = value[0];
-    setSpeed(newSpeed);
-    console.log('Speed changed to:', newSpeed);
-  }, []);
-
   const handleOperationWithLogging = useCallback((operation: string) => {
     console.log('Executing operation:', operation, 'on structure:', dataStructure.id);
     handleOperation(operation);
@@ -65,14 +57,12 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     animationSteps,
     currentStep,
     isAnimating,
-    speed,
     setCustomInput,
     resetToDefault,
     handleOperation: handleOperationWithLogging,
     handleInputChange,
     addLogEntry,
     setCurrentStep,
-    setIsAnimating,
-    handleSpeedChange
+    setIsAnimating
   };
 };

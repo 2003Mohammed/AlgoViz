@@ -21,19 +21,23 @@ export const useArrayOperations = (
     const value = isNaN(Number(customInput)) ? customInput : Number(customInput);
     console.log('Adding value:', value, 'to array:', structure);
     
+    // Generate visualization steps
     const steps = visualizeArrayOperation(structure, 'add', value);
     const newStructure = [...structure, value];
     
     addLogEntry(`Adding ${value} to the array`);
     
+    // Set up animation
     setAnimationSteps(steps);
     setCurrentStep(0);
-    setIsAnimating(true);
-    
-    // Update structure immediately for immediate visual feedback
     setStructure(newStructure);
     setOperationResult(null);
     setCustomInput('');
+    
+    // Start animation after a brief delay
+    setTimeout(() => {
+      setIsAnimating(true);
+    }, 100);
     
     return newStructure;
   };
@@ -53,12 +57,13 @@ export const useArrayOperations = (
     
     setAnimationSteps(steps);
     setCurrentStep(0);
-    setIsAnimating(true);
-    
-    // Update structure immediately
     setStructure(newStructure);
     setOperationResult(result);
     setCustomInput('');
+    
+    setTimeout(() => {
+      setIsAnimating(true);
+    }, 100);
     
     return newStructure;
   };
@@ -81,9 +86,12 @@ export const useArrayOperations = (
     
     setAnimationSteps(steps);
     setCurrentStep(0);
-    setIsAnimating(true);
     setOperationResult(result);
     setCustomInput('');
+    
+    setTimeout(() => {
+      setIsAnimating(true);
+    }, 100);
     
     return structure;
   };

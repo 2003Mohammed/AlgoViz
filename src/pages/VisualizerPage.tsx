@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { Visualizer } from '../components/Visualizer';
 import { AlgorithmGuide } from '../components/visualizer/AlgorithmGuide';
+import { LearnMoreLink } from '../components/LearnMoreLink';
 import { algorithms } from '../utils/algorithms';
 import { ArrowLeft, ChevronRight, Info, CircuitBoard, Zap, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -19,7 +20,6 @@ const VisualizerPage = () => {
       const found = algorithms.find(algo => algo.id === algorithmId);
       if (found) {
         setAlgorithm(found);
-        // Check if the user has chosen to not see the guide again
         setShowGuide(localStorage.getItem(`algo-guide-${found.id}-completed`) !== 'true');
       } else {
         navigate(`/visualizer/${algorithms[0].id}`, { replace: true });
@@ -72,6 +72,7 @@ const VisualizerPage = () => {
                   {algorithm.name}
                 </motion.h1>
                 <div className="flex items-center gap-4">
+                  <LearnMoreLink algorithmName={algorithm.name} />
                   {!showGuide && (
                     <motion.button
                       onClick={handleShowGuide}

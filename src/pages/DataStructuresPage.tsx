@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { dataStructures } from '../utils/dataStructureData';
 import { DataStructureGrid } from '../components/DataStructureGrid';
 import { DataStructureVisualizer } from '../components/data-structure-visualizer';
+import { LearnMoreLink } from '../components/LearnMoreLink';
 import { ArrowLeft, ChevronRight, Info } from 'lucide-react';
 
 const DataStructuresPage = () => {
@@ -17,7 +19,6 @@ const DataStructuresPage = () => {
       if (found) {
         setDataStructure(found);
       } else {
-        // If data structure not found, navigate to the data structures page
         navigate('/data-structures', { replace: true });
       }
     }
@@ -44,9 +45,12 @@ const DataStructuresPage = () => {
               
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="heading-lg">{dataStructure.name}</h1>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-                  <Info className="h-4 w-4" />
-                  <span>Category: {dataStructure.category.charAt(0).toUpperCase() + dataStructure.category.slice(1)}</span>
+                <div className="flex items-center gap-4">
+                  <LearnMoreLink algorithmName={dataStructure.name} isDataStructure={true} />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
+                    <Info className="h-4 w-4" />
+                    <span>Category: {dataStructure.category.charAt(0).toUpperCase() + dataStructure.category.slice(1)}</span>
+                  </div>
                 </div>
               </div>
               
