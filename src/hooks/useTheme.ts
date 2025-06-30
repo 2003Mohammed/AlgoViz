@@ -25,14 +25,23 @@ export function useTheme() {
     // Update meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0a1628' : '#f8fafc');
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
     }
 
-    // Apply additional body styling for theme consistency
+    // Apply theme styling for better visibility
     document.body.className = `${theme} theme-transition`;
     
-    // Force re-render of all styled elements
+    // Force re-render of styled elements
     document.body.style.setProperty('--theme-applied', theme);
+    
+    // Ensure all text is visible with proper contrast
+    if (theme === 'light') {
+      document.body.style.color = 'hsl(220, 100%, 10%)';
+      document.body.style.backgroundColor = 'hsl(0, 0%, 100%)';
+    } else {
+      document.body.style.color = 'hsl(210, 20%, 95%)';
+      document.body.style.backgroundColor = 'hsl(210, 50%, 8%)';
+    }
   }, [theme]);
 
   const toggleTheme = () => {

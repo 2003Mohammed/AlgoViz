@@ -69,15 +69,17 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
             handleOperation={handleOperation}
           />
           
-          <AnimationControls
-            isAnimating={isAnimating}
-            currentStep={currentStep}
-            animationSteps={animationSteps}
-            speed={1}
-            setCurrentStep={setCurrentStep}
-            setIsAnimating={setIsAnimating}
-            onSpeedChange={() => {}}
-          />
+          {animationSteps.length > 0 && (
+            <AnimationControls
+              isAnimating={isAnimating}
+              currentStep={currentStep}
+              animationSteps={animationSteps}
+              speed={1}
+              setCurrentStep={setCurrentStep}
+              setIsAnimating={setIsAnimating}
+              onSpeedChange={() => {}}
+            />
+          )}
         </div>
 
         {/* Right Column - Logs and Info */}

@@ -6,69 +6,69 @@
 
 @layer base {
   :root {
-    /* Light mode colors - bright and high contrast */
-    --background: 0 0% 98%;
-    --foreground: 215 28% 17%;
+    /* Light mode colors - bright white with high contrast */
+    --background: 0 0% 100%;
+    --foreground: 220 100% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 220 100% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
-    --primary: 215 100% 50%;
+    --popover-foreground: 220 100% 10%;
+    --primary: 210 100% 40%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 16% 92%;
-    --secondary-foreground: 215 28% 17%;
-    --muted: 215 16% 95%;
-    --muted-foreground: 215 16% 45%;
-    --accent: 215 16% 92%;
-    --accent-foreground: 215 28% 17%;
+    --secondary: 210 40% 95%;
+    --secondary-foreground: 220 100% 10%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 220 50% 40%;
+    --accent: 210 40% 95%;
+    --accent-foreground: 220 100% 10%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 215 14% 89%;
-    --input: 215 14% 89%;
-    --ring: 215 100% 50%;
+    --border: 220 40% 85%;
+    --input: 220 40% 85%;
+    --ring: 210 100% 40%;
     --radius: 0.75rem;
     
     /* Sidebar colors */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 215 28% 17%;
-    --sidebar-primary: 215 100% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 100% 10%;
+    --sidebar-primary: 210 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 16% 92%;
-    --sidebar-accent-foreground: 215 28% 17%;
-    --sidebar-border: 215 14% 89%;
-    --sidebar-ring: 215 100% 50%;
+    --sidebar-accent: 210 40% 95%;
+    --sidebar-accent-foreground: 220 100% 10%;
+    --sidebar-border: 220 40% 85%;
+    --sidebar-ring: 210 100% 40%;
   }
 
   .dark {
     /* Dark mode - Navy blue theme matching footer */
     --background: 210 50% 8%;
-    --foreground: 210 20% 90%;
-    --card: 210 40% 12%;
-    --card-foreground: 210 20% 90%;
+    --foreground: 210 20% 95%;
+    --card: 210 45% 12%;
+    --card-foreground: 210 20% 95%;
     --popover: 210 50% 8%;
-    --popover-foreground: 210 20% 90%;
+    --popover-foreground: 210 20% 95%;
     --primary: 210 100% 70%;
     --primary-foreground: 210 50% 8%;
     --secondary: 210 30% 18%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary-foreground: 210 20% 95%;
     --muted: 210 30% 15%;
-    --muted-foreground: 210 15% 65%;
+    --muted-foreground: 210 15% 70%;
     --accent: 210 30% 18%;
-    --accent-foreground: 210 20% 90%;
+    --accent-foreground: 210 20% 95%;
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 30% 18%;
-    --input: 210 30% 18%;
+    --border: 210 30% 22%;
+    --input: 210 30% 22%;
     --ring: 210 100% 70%;
     
     /* Sidebar colors for dark mode */
     --sidebar-background: 210 50% 8%;
-    --sidebar-foreground: 210 20% 90%;
+    --sidebar-foreground: 210 20% 95%;
     --sidebar-primary: 210 100% 70%;
     --sidebar-primary-foreground: 210 50% 8%;
     --sidebar-accent: 210 30% 18%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 210 30% 18%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 210 30% 22%;
     --sidebar-ring: 210 100% 70%;
   }
 }
@@ -119,7 +119,7 @@
 
 /* Cyber theme enhancements with better contrast */
 .cyber-panel {
-  @apply bg-card/90 backdrop-blur-xl border border-border rounded-lg p-6 text-card-foreground;
+  @apply bg-card/95 backdrop-blur-xl border border-border rounded-lg p-6 text-card-foreground shadow-lg;
 }
 
 .cyber-card {
@@ -174,7 +174,7 @@
 
 /* Glass card effect */
 .glass-card {
-  @apply bg-card/70 backdrop-blur-xl border border-border/40 text-card-foreground;
+  @apply bg-card/80 backdrop-blur-xl border border-border/50 text-card-foreground;
 }
 
 /* Enhanced navbar and footer styling */
@@ -184,7 +184,7 @@ nav, footer {
 
 /* Logo and brand text visibility */
 .logo, .brand-text {
-  @apply text-primary;
+  @apply text-primary font-bold;
 }
 
 /* Enhanced button styling */
@@ -233,11 +233,11 @@ nav, footer {
   @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
 }
 
-/* Ensure all text has proper contrast */
-.dark * {
-  color: hsl(var(--foreground));
+/* Cyber button styling */
+.cyber-button {
+  @apply bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary;
 }
 
-.light * {
-  color: hsl(var(--foreground));
+.dark .cyber-button {
+  @apply bg-primary/20 hover:bg-primary/30 border-primary/50 text-primary;
 }
