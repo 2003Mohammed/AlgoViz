@@ -5,7 +5,7 @@ type Theme = 'light' | 'dark';
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check system preference first, then localStorage
+    // Check localStorage first, then system preference
     const stored = localStorage.getItem('theme') as Theme;
     if (stored) return stored;
     
@@ -25,8 +25,14 @@ export function useTheme() {
     // Update meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0a1628' : '#f8fafc');
     }
+
+    // Apply additional body styling for theme consistency
+    document.body.className = `${theme} theme-transition`;
+    
+    // Force re-render of all styled elements
+    document.body.style.setProperty('--theme-applied', theme);
   }, [theme]);
 
   const toggleTheme = () => {

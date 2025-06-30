@@ -6,70 +6,70 @@
 
 @layer base {
   :root {
-    /* Light mode colors */
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    /* Light mode colors - bright and high contrast */
+    --background: 0 0% 98%;
+    --foreground: 215 28% 17%;
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 215 28% 17%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
+    --popover-foreground: 215 28% 17%;
+    --primary: 215 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 16% 92%;
+    --secondary-foreground: 215 28% 17%;
+    --muted: 215 16% 95%;
+    --muted-foreground: 215 16% 45%;
+    --accent: 215 16% 92%;
+    --accent-foreground: 215 28% 17%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 14% 89%;
+    --input: 215 14% 89%;
+    --ring: 215 100% 50%;
     --radius: 0.75rem;
     
     /* Sidebar colors */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 224 71.4% 4.1%;
-    --sidebar-primary: 220.9 39.3% 11%;
-    --sidebar-primary-foreground: 210 20% 98%;
-    --sidebar-accent: 220 14.3% 95.9%;
-    --sidebar-accent-foreground: 220.9 39.3% 11%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 224 71.4% 4.1%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 215 28% 17%;
+    --sidebar-primary: 215 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 16% 92%;
+    --sidebar-accent-foreground: 215 28% 17%;
+    --sidebar-border: 215 14% 89%;
+    --sidebar-ring: 215 100% 50%;
   }
 
   .dark {
-    /* Dark mode - Navy blue theme */
-    --background: 222 47% 11%;
-    --foreground: 213 31% 91%;
-    --card: 222 84% 5%;
-    --card-foreground: 213 31% 91%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 212 72% 59%;
+    /* Dark mode - Navy blue theme matching footer */
+    --background: 210 50% 8%;
+    --foreground: 210 20% 90%;
+    --card: 210 40% 12%;
+    --card-foreground: 210 20% 90%;
+    --popover: 210 50% 8%;
+    --popover-foreground: 210 20% 90%;
+    --primary: 210 100% 70%;
+    --primary-foreground: 210 50% 8%;
+    --secondary: 210 30% 18%;
+    --secondary-foreground: 210 20% 90%;
+    --muted: 210 30% 15%;
+    --muted-foreground: 210 15% 65%;
+    --accent: 210 30% 18%;
+    --accent-foreground: 210 20% 90%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 30% 18%;
+    --input: 210 30% 18%;
+    --ring: 210 100% 70%;
     
     /* Sidebar colors for dark mode */
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 213 31% 91%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 32% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 32% 17%;
-    --sidebar-ring: 212 72% 59%;
+    --sidebar-background: 210 50% 8%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 210 100% 70%;
+    --sidebar-primary-foreground: 210 50% 8%;
+    --sidebar-accent: 210 30% 18%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 210 30% 18%;
+    --sidebar-ring: 210 100% 70%;
   }
 }
 
@@ -81,6 +81,35 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Enhanced text visibility */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground font-semibold;
+  }
+
+  p, span, div {
+    @apply text-foreground;
+  }
+
+  /* Button improvements */
+  button {
+    @apply text-foreground;
+  }
+
+  /* Link improvements */
+  a {
+    @apply text-primary hover:text-primary/80;
+  }
+
+  /* Input improvements */
+  input, textarea, select {
+    @apply text-foreground bg-background border-border;
+  }
+
+  /* Code block improvements */
+  code, pre {
+    @apply text-foreground bg-muted;
+  }
 }
 
 /* Custom theme classes */
@@ -88,26 +117,27 @@
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Cyber theme enhancements */
+/* Cyber theme enhancements with better contrast */
 .cyber-panel {
-  @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-lg p-6;
+  @apply bg-card/90 backdrop-blur-xl border border-border rounded-lg p-6 text-card-foreground;
 }
 
 .cyber-card {
-  @apply bg-card border border-border rounded-md;
+  @apply bg-card border border-border rounded-md text-card-foreground;
 }
 
 .cyber-primary {
   color: hsl(var(--primary));
 }
 
+/* Grid pattern with better visibility */
 .cyber-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.3) 1px, transparent 0);
   background-size: 20px 20px;
 }
 
 .dark .cyber-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.4) 1px, transparent 0);
 }
 
 .pixel-border {
@@ -115,33 +145,60 @@
 }
 
 .pixel-header {
-  text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+  text-shadow: 0 0 10px hsl(var(--primary) / 0.6);
+  color: hsl(var(--primary));
 }
 
 .neon-text {
   color: hsl(var(--primary));
-  text-shadow: 0 0 5px hsl(var(--primary) / 0.5);
+  text-shadow: 0 0 8px hsl(var(--primary) / 0.6);
 }
 
-/* Ensure all text is visible with proper contrast */
+/* Enhanced visibility for all text */
 .text-contrast {
   color: hsl(var(--foreground));
 }
 
-/* Code highlighting adjustments */
+/* Code highlighting with better contrast */
 .hljs {
   background: hsl(var(--muted)) !important;
   color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
 }
 
 .dark .hljs {
   background: hsl(var(--card)) !important;
-  color: hsl(var(--foreground)) !important;
+  color: hsl(var(--card-foreground)) !important;
 }
 
 /* Glass card effect */
 .glass-card {
-  @apply bg-card/60 backdrop-blur-xl border border-border/30;
+  @apply bg-card/70 backdrop-blur-xl border border-border/40 text-card-foreground;
+}
+
+/* Enhanced navbar and footer styling */
+nav, footer {
+  @apply bg-background/95 backdrop-blur-md border-border text-foreground;
+}
+
+/* Logo and brand text visibility */
+.logo, .brand-text {
+  @apply text-primary;
+}
+
+/* Enhanced button styling */
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+}
+
+/* Card enhancements */
+.algorithm-card, .data-structure-card {
+  @apply bg-card text-card-foreground border-border hover:border-primary/50 transition-all duration-200;
 }
 
 /* Animation speed adjustments */
@@ -151,4 +208,36 @@
 
 .animate-medium {
   animation-duration: 1s;
+}
+
+/* Enhanced visibility for all interactive elements */
+.interactive-element {
+  @apply text-foreground bg-background border-border hover:bg-accent hover:text-accent-foreground;
+}
+
+/* Visualization elements with better contrast */
+.array-bar {
+  @apply border-2 border-primary/30;
+}
+
+.array-bar.active {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+.array-bar.comparing {
+  @apply bg-destructive text-destructive-foreground border-destructive;
+}
+
+/* Enhanced focus states */
+*:focus-visible {
+  @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
+}
+
+/* Ensure all text has proper contrast */
+.dark * {
+  color: hsl(var(--foreground));
+}
+
+.light * {
+  color: hsl(var(--foreground));
 }
