@@ -39,7 +39,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     <div className="space-y-8">
       {/* Header */}
       <VisualizerHeader 
-        algorithmName={`${dataStructure.name} Visualizer`}
+        dataStructureName={dataStructure.name}
         onReset={resetToDefault}
       />
 
@@ -73,12 +73,10 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
             isAnimating={isAnimating}
             currentStep={currentStep}
             animationSteps={animationSteps}
-            onToggle={() => setIsAnimating(!isAnimating)}
-            onReset={() => {
-              setCurrentStep(0);
-              setIsAnimating(false);
-            }}
-            onStepChange={setCurrentStep}
+            speed={1}
+            setCurrentStep={setCurrentStep}
+            setIsAnimating={setIsAnimating}
+            onSpeedChange={() => {}}
           />
         </div>
 
@@ -97,7 +95,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
       {/* Code and Reference */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <ImplementationCode 
-          code={dataStructure.code || ''}
+          code={dataStructure.implementation || ''}
         />
         <ReferenceSection 
           dataStructure={dataStructure}
