@@ -2,52 +2,77 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+interface HashTableEntry {
+  key: string;
+  value: any;
+}
+
+interface HashTableStructure {
+  buckets: HashTableEntry[][];
+  size: number;
+}
+
 interface HashTableRendererProps {
-  table: Array<Array<{ key: string; value: any }>>;
+  table: HashTableStructure;
 }
 
 export const HashTableRenderer: React.FC<HashTableRendererProps> = ({ table }) => {
+  const { buckets = [], size = 8 } = table;
+
+  // Create default empty buckets if not provided
+  const displayBuckets = Array.from({ length: size }, (_, index) => 
+    buckets[index] || []
+  );
+
   return (
-    <div className="flex flex-col items-center max-w-lg mx-auto">
-      {table.map((bucket, index) => (
-        <motion.div 
-          key={index}
-          className="w-full border border-primary/30 rounded-md mb-2 overflow-hidden bg-gradient-to-r from-background to-muted/20"
-          initial={{ opacity: 0, y: 20, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.3, delay: index * 0.05 }}
-          whileHover={{ 
-            scale: 1.02, 
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-            borderColor: "hsl(var(--primary) / 0.5)"
-          }}
-        >
-          <div className="bg-secondary/20 px-3 py-1 border-b border-primary/20">
-            <span className="text-xs font-mono">Bucket {index}</span>
-          </div>
-          <div className="p-2">
-            {bucket.length > 0 ? (
-              <div className="flex flex-col gap-1">
-                {bucket.map((item, itemIndex) => (
-                  <motion.div 
-                    key={itemIndex}
-                    className="flex items-center px-2 py-1 bg-primary/5 rounded"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 + itemIndex * 0.05 }}
-                    whileHover={{ backgroundColor: "hsl(var(--primary) / 0.1)" }}
-                  >
-                    <span className="text-sm font-medium mr-2">{item.key}:</span>
-                    <span className="text-sm text-muted-foreground">{item.value}</span>
-                  </motion.div>
-                ))}
+    <div className="flex items-center justify-center min-h-64 p-8">
+      <div className="space-y-4">
+        <div className="text-center text-sm text-muted-foreground">
+          Hash Table (Size: {size})
+        </div>
+        
+        <div className="grid gap-2">
+          {displayBuckets.map((bucket, index) => (
+            <motion.div
+              key={index}
+              className="flex items-center space-x-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+            >
+              {/* Bucket index */}
+              <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center text-xs font-bold">
+                {index}
               </div>
-            ) : (
-              <div className="text-xs text-muted-foreground italic">Empty</div>
-            )}
-          </div>
-        </motion.div>
-      ))}
+              
+              {/* Bucket contents */}
+              <div className="flex-1 min-h-8 border-2 border-dashed border-muted rounded-md p-1">
+                {bucket.length === 0 ? (
+                  <div className="text-xs text-muted-foreground text-center py-1">
+                    Empty
+                  </div>
+                ) : (
+                  <div className="flex space-x-1">
+                    {bucket.map((entry, entryIndex) => (
+                      <div
+                        key={entryIndex}
+                        className="bg-primary text-primary-foreground px-2 py-1 rounded text-xs"
+                      >
+                        {entry.key}:{entry.value}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        {/* Legend */}
+        <div className="text-center text-xs text-muted-foreground">
+          Each row represents a hash bucket. Collisions are shown as multiple entries in the same bucket.
+        </div>
+      </div>
     </div>
   );
 };

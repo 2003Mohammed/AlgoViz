@@ -1,17 +1,18 @@
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface LinkedListNode {
   value: any;
   next: number | null;
-  status?: string;
+  prev?: number | null;
 }
 
 interface LinkedListStructure {
   nodes: LinkedListNode[];
   head: number | null;
+  tail?: number | null;
+  type?: 'singly' | 'doubly' | 'circular' | 'circular-doubly';
 }
 
 interface LinkedListRendererProps {
@@ -19,147 +20,114 @@ interface LinkedListRendererProps {
 }
 
 export const LinkedListRenderer: React.FC<LinkedListRendererProps> = ({ structure }) => {
-  const nodes = structure?.nodes || [];
-  const head = structure?.head ?? null;
-  
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'comparing':
-      case 'active':
-        return 'bg-yellow-400 border-yellow-500 text-yellow-900';
-      case 'removing':
-        return 'bg-red-400 border-red-500 text-red-900';
-      case 'added':
-        return 'bg-emerald-400 border-emerald-500 text-emerald-900';
-      case 'found':
-        return 'bg-green-400 border-green-500 text-green-900';
-      default:
-        return 'bg-cyan-100 dark:bg-cyan-900 border-cyan-300 dark:border-cyan-700 text-cyan-900 dark:text-cyan-100';
-    }
-  };
+  const { nodes, head, type = 'singly' } = structure;
 
-  if (nodes.length === 0) {
+  if (nodes.length === 0 || head === null) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <motion.div 
-          className="text-center p-8 border-2 border-dashed border-muted-foreground/30 rounded-lg"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="text-muted-foreground text-lg mb-2">Empty Linked List</div>
-          <div className="text-sm text-muted-foreground">Add nodes to see the connections</div>
-        </motion.div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center text-muted-foreground">
+          <p className="text-lg font-medium">Empty Linked List</p>
+          <p className="text-sm">Insert nodes to see visualization</p>
+        </div>
       </div>
     );
   }
 
+  const renderNode = (nodeIndex: number, position: number) => {
+    const node = nodes[nodeIndex];
+    if (!node) return null;
+
+    const isHead = nodeIndex === head;
+    const hasNext = node.next !== null;
+    const hasPrev = type.includes('doubly') && node.prev !== null;
+
+    return (
+      <motion.div
+        key={`node-${nodeIndex}-${position}`}
+        className="flex items-center"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: position * 0.1 }}
+      >
+        {/* Previous pointer for doubly linked lists */}
+        {hasPrev && (
+          <div className="flex items-center mr-2">
+            <div className="w-6 h-0.5 bg-blue-400"></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+          </div>
+        )}
+
+        {/* Node */}
+        <div className={`flex items-center ${isHead ? 'ring-2 ring-yellow-400' : ''}`}>
+          <div className="bg-primary text-primary-foreground w-12 h-12 rounded-lg flex items-center justify-center font-bold text-sm shadow-lg">
+            {node.value}
+          </div>
+          
+          {/* Next pointer */}
+          {hasNext && (
+            <div className="flex items-center ml-2">
+              <div className="w-6 h-0.5 bg-green-400"></div>
+              <div className="w-0 h-0 border-l-4 border-l-green-400 border-t-2 border-b-2 border-t-transparent border-b-transparent"></div>
+            </div>
+          )}
+        </div>
+
+        {/* Circular connection indicator */}
+        {type.includes('circular') && !hasNext && nodes.length > 1 && (
+          <div className="ml-4 text-xs text-muted-foreground">
+            ↻ to head
+          </div>
+        )}
+      </motion.div>
+    );
+  };
+
   const renderLinkedList = () => {
     const renderedNodes = [];
     let current = head;
-    let index = 0;
+    let position = 0;
+    const visited = new Set<number>();
 
-    while (current !== null && index < nodes.length) {
-      const node = nodes[current];
-      if (!node) break;
-      
-      renderedNodes.push(
-        <motion.div
-          key={`node-${current}-${index}`}
-          className="flex items-center gap-3"
-          initial={{ opacity: 0, x: -20, scale: 0.8 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ 
-            delay: index * 0.2,
-            type: "spring",
-            stiffness: 200,
-            damping: 20
-          }}
-        >
-          {/* Node */}
-          <motion.div 
-            className={`
-              flex items-center justify-center w-16 h-16 border-2 rounded-lg font-mono font-bold text-sm
-              shadow-lg transition-all duration-300 ${getStatusColor(node.status)}
-            `}
-            whileHover={{ 
-              scale: 1.1,
-              boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)"
-            }}
-          >
-            {node.value}
-          </motion.div>
-          
-          {/* Arrow to next node */}
-          {node.next !== null && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.2 + 0.1 }}
-              className="flex items-center gap-1"
-            >
-              <div className="w-8 h-0.5 bg-primary"></div>
-              <ArrowRight className="h-4 w-4 text-primary" />
-            </motion.div>
-          )}
-          
-          {/* NULL pointer */}
-          {node.next === null && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: index * 0.2 + 0.2 }}
-              className="flex items-center gap-1 text-muted-foreground"
-            >
-              <div className="w-8 h-0.5 bg-muted-foreground"></div>
-              <div className="text-xs bg-muted px-2 py-1 rounded">NULL</div>
-            </motion.div>
-          )}
-        </motion.div>
-      );
-      
-      current = node.next;
-      index++;
-      
-      if (index > 20) break; // Prevent infinite loops
+    while (current !== null && !visited.has(current) && position < nodes.length) {
+      visited.add(current);
+      renderedNodes.push(renderNode(current, position));
+      current = nodes[current]?.next || null;
+      position++;
     }
 
     return renderedNodes;
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-      {/* Head Pointer */}
-      <motion.div 
-        className="mb-6 flex items-center gap-2"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div className="bg-primary text-primary-foreground px-3 py-1 rounded text-sm font-medium">
-          HEAD
+    <div className="flex items-center justify-center min-h-64 p-8">
+      <div className="space-y-4">
+        <div className="text-center text-sm text-muted-foreground">
+          {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')} Linked List
         </div>
-        <div className="w-4 h-0.5 bg-primary"></div>
-        <ArrowRight className="h-4 w-4 text-primary" />
-      </motion.div>
-      
-      {/* Linked List Chain */}
-      <div className="flex items-center flex-wrap gap-3 justify-center max-w-4xl">
-        {renderLinkedList()}
+        
+        <div className="flex items-center space-x-4 overflow-x-auto">
+          {head !== null && (
+            <div className="text-xs text-yellow-600 mr-2">
+              HEAD →
+            </div>
+          )}
+          {renderLinkedList()}
+        </div>
+        
+        {/* Legend */}
+        <div className="flex justify-center space-x-4 text-xs text-muted-foreground">
+          <div className="flex items-center">
+            <div className="w-3 h-0.5 bg-green-400 mr-1"></div>
+            <span>Next</span>
+          </div>
+          {type.includes('doubly') && (
+            <div className="flex items-center">
+              <div className="w-3 h-0.5 bg-blue-400 mr-1"></div>
+              <span>Prev</span>
+            </div>
+          )}
+        </div>
       </div>
-      
-      {/* Info Panel */}
-      <motion.div 
-        className="mt-8 flex items-center gap-4 text-sm bg-muted/50 rounded-full px-6 py-3"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <span>Nodes: <strong>{nodes.length}</strong></span>
-        <span className="text-muted-foreground">•</span>
-        <span>Head: <strong>{head !== null && nodes[head] ? nodes[head].value : 'None'}</strong></span>
-        <span className="text-muted-foreground">•</span>
-        <span className="text-xs text-muted-foreground">Dynamic size, pointer-based structure</span>
-      </motion.div>
     </div>
   );
 };
