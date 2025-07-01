@@ -6,70 +6,70 @@
 
 @layer base {
   :root {
-    /* Light mode colors - bright white with high contrast */
-    --background: 0 0% 100%;
-    --foreground: 220 100% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 100% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 100% 10%;
-    --primary: 210 100% 40%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 95%;
-    --secondary-foreground: 220 100% 10%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 220 50% 40%;
-    --accent: 210 40% 95%;
-    --accent-foreground: 220 100% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 40% 85%;
-    --input: 220 40% 85%;
-    --ring: 210 100% 40%;
+    /* Enhanced Light mode - Soft, readable colors with high contrast */
+    --background: 248 250 252; /* Very light gray-blue */
+    --foreground: 15 23 42; /* Dark slate */
+    --card: 255 255 255; /* Pure white for cards */
+    --card-foreground: 15 23 42;
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+    --primary: 59 130 246; /* Clear blue */
+    --primary-foreground: 255 255 255;
+    --secondary: 241 245 249; /* Light gray */
+    --secondary-foreground: 51 65 85;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139; /* Medium gray */
+    --accent: 236 254 255; /* Very light cyan */
+    --accent-foreground: 22 78 99;
+    --destructive: 239 68 68; /* Clear red */
+    --destructive-foreground: 255 255 255;
+    --border: 226 232 240; /* Light border */
+    --input: 226 232 240;
+    --ring: 59 130 246;
     --radius: 0.75rem;
     
     /* Sidebar colors */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 100% 10%;
-    --sidebar-primary: 210 100% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 95%;
-    --sidebar-accent-foreground: 220 100% 10%;
-    --sidebar-border: 220 40% 85%;
-    --sidebar-ring: 210 100% 40%;
+    --sidebar-background: 255 255 255;
+    --sidebar-foreground: 15 23 42;
+    --sidebar-primary: 59 130 246;
+    --sidebar-primary-foreground: 255 255 255;
+    --sidebar-accent: 241 245 249;
+    --sidebar-accent-foreground: 51 65 85;
+    --sidebar-border: 226 232 240;
+    --sidebar-ring: 59 130 246;
   }
 
   .dark {
-    /* Dark mode - Navy blue theme matching footer */
-    --background: 210 50% 8%;
-    --foreground: 210 20% 95%;
-    --card: 210 45% 12%;
-    --card-foreground: 210 20% 95%;
-    --popover: 210 50% 8%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 210 100% 70%;
-    --primary-foreground: 210 50% 8%;
-    --secondary: 210 30% 18%;
-    --secondary-foreground: 210 20% 95%;
-    --muted: 210 30% 15%;
-    --muted-foreground: 210 15% 70%;
-    --accent: 210 30% 18%;
-    --accent-foreground: 210 20% 95%;
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 210 30% 22%;
-    --input: 210 30% 22%;
-    --ring: 210 100% 70%;
+    /* Enhanced Dark mode - Navy blue theme with improved contrast */
+    --background: 15 23 42; /* Dark slate */
+    --foreground: 248 250 252; /* Very light gray */
+    --card: 30 41 59; /* Darker slate */
+    --card-foreground: 248 250 252;
+    --popover: 15 23 42;
+    --popover-foreground: 248 250 252;
+    --primary: 96 165 250; /* Lighter blue for dark mode */
+    --primary-foreground: 15 23 42;
+    --secondary: 51 65 85; /* Medium slate */
+    --secondary-foreground: 226 232 240;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184; /* Light slate gray */
+    --accent: 30 58 138; /* Dark blue */
+    --accent-foreground: 226 232 240;
+    --destructive: 248 113 113; /* Light red for dark mode */
+    --destructive-foreground: 15 23 42;
+    --border: 71 85 105; /* Medium slate */
+    --input: 71 85 105;
+    --ring: 96 165 250;
     
     /* Sidebar colors for dark mode */
-    --sidebar-background: 210 50% 8%;
-    --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 210 100% 70%;
-    --sidebar-primary-foreground: 210 50% 8%;
-    --sidebar-accent: 210 30% 18%;
-    --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 210 30% 22%;
-    --sidebar-ring: 210 100% 70%;
+    --sidebar-background: 15 23 42;
+    --sidebar-foreground: 248 250 252;
+    --sidebar-primary: 96 165 250;
+    --sidebar-primary-foreground: 15 23 42;
+    --sidebar-accent: 51 65 85;
+    --sidebar-accent-foreground: 226 232 240;
+    --sidebar-border: 71 85 105;
+    --sidebar-ring: 96 165 250;
   }
 }
 
@@ -77,94 +77,99 @@
   * {
     @apply border-border;
   }
+  
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
   }
 
-  /* Enhanced text visibility */
+  /* Enhanced typography with better contrast */
   h1, h2, h3, h4, h5, h6 {
-    @apply text-foreground font-semibold;
+    @apply text-foreground font-semibold leading-tight;
   }
 
   p, span, div {
     @apply text-foreground;
   }
 
-  /* Button improvements */
+  /* Improved button styling */
   button {
-    @apply text-foreground;
+    @apply text-foreground transition-all duration-200;
   }
 
-  /* Link improvements */
+  /* Enhanced link styling */
   a {
-    @apply text-primary hover:text-primary/80;
+    @apply text-primary hover:text-primary/80 transition-colors duration-200;
   }
 
-  /* Input improvements */
+  /* Better form controls */
   input, textarea, select {
-    @apply text-foreground bg-background border-border;
+    @apply text-foreground bg-background border-border placeholder:text-muted-foreground;
   }
 
-  /* Code block improvements */
+  /* Code styling improvements */
   code, pre {
-    @apply text-foreground bg-muted;
+    @apply text-foreground bg-muted rounded px-2 py-1 font-mono text-sm;
   }
 }
 
-/* Custom theme classes */
+/* Theme transition for smooth switching */
 .theme-transition {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
 
-/* Cyber theme enhancements with better contrast */
+/* Enhanced component styling */
 .cyber-panel {
-  @apply bg-card/95 backdrop-blur-xl border border-border rounded-lg p-6 text-card-foreground shadow-lg;
+  @apply bg-card/95 backdrop-blur-xl border border-border rounded-xl p-6 text-card-foreground shadow-lg transition-all duration-300;
 }
 
 .cyber-card {
-  @apply bg-card border border-border rounded-md text-card-foreground;
+  @apply bg-card border border-border rounded-lg text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-200;
 }
 
 .cyber-primary {
   color: hsl(var(--primary));
 }
 
-/* Grid pattern with better visibility */
+/* Improved grid pattern */
 .cyber-grid {
-  background-image: radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.3) 1px, transparent 0);
-  background-size: 20px 20px;
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.15) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 
 .dark .cyber-grid {
-  background-image: radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.4) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--muted-foreground) / 0.25) 1px, transparent 0);
 }
 
+/* Enhanced visual effects */
 .pixel-border {
   border-image: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent))) 1;
 }
 
 .pixel-header {
-  text-shadow: 0 0 10px hsl(var(--primary) / 0.6);
+  text-shadow: 0 0 12px hsl(var(--primary) / 0.3);
   color: hsl(var(--primary));
 }
 
 .neon-text {
   color: hsl(var(--primary));
-  text-shadow: 0 0 8px hsl(var(--primary) / 0.6);
+  text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
 }
 
-/* Enhanced visibility for all text */
+/* Accessibility improvements */
 .text-contrast {
   color: hsl(var(--foreground));
+  font-weight: 500;
 }
 
-/* Code highlighting with better contrast */
+/* Better code highlighting */
 .hljs {
   background: hsl(var(--muted)) !important;
   color: hsl(var(--foreground)) !important;
   border: 1px solid hsl(var(--border));
-  border-radius: 6px;
+  border-radius: 8px;
+  padding: 1rem;
 }
 
 .dark .hljs {
@@ -172,72 +177,87 @@
   color: hsl(var(--card-foreground)) !important;
 }
 
-/* Glass card effect */
+/* Glass effect for modern look */
 .glass-card {
-  @apply bg-card/80 backdrop-blur-xl border border-border/50 text-card-foreground;
+  @apply bg-card/90 backdrop-blur-xl border border-border/60 text-card-foreground;
 }
 
-/* Enhanced navbar and footer styling */
+/* Enhanced navigation styling */
 nav, footer {
-  @apply bg-background/95 backdrop-blur-md border-border text-foreground;
+  @apply bg-background/95 backdrop-blur-md border-border text-foreground shadow-sm;
 }
 
-/* Logo and brand text visibility */
-.logo, .brand-text {
-  @apply text-primary font-bold;
-}
-
-/* Enhanced button styling */
+/* Improved interactive elements */
 .btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all duration-200;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border transition-all duration-200;
 }
 
-/* Card enhancements */
+/* Card enhancements with better hover states */
 .algorithm-card, .data-structure-card {
-  @apply bg-card text-card-foreground border-border hover:border-primary/50 transition-all duration-200;
+  @apply bg-card text-card-foreground border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02];
 }
 
-/* Animation speed adjustments */
-.animate-slow {
-  animation-duration: 2s;
-}
-
-.animate-medium {
-  animation-duration: 1s;
-}
-
-/* Enhanced visibility for all interactive elements */
-.interactive-element {
-  @apply text-foreground bg-background border-border hover:bg-accent hover:text-accent-foreground;
-}
-
-/* Visualization elements with better contrast */
-.array-bar {
-  @apply border-2 border-primary/30;
-}
-
-.array-bar.active {
-  @apply bg-primary text-primary-foreground border-primary;
-}
-
-.array-bar.comparing {
-  @apply bg-destructive text-destructive-foreground border-destructive;
-}
-
-/* Enhanced focus states */
+/* Enhanced focus states for accessibility */
 *:focus-visible {
   @apply ring-2 ring-ring ring-offset-2 ring-offset-background outline-none;
 }
 
-/* Cyber button styling */
-.cyber-button {
-  @apply bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary;
+/* Improved visualization elements */
+.array-bar {
+  @apply border-2 border-primary/40 transition-all duration-300;
 }
 
-.dark .cyber-button {
-  @apply bg-primary/20 hover:bg-primary/30 border-primary/50 text-primary;
+.array-bar.active {
+  @apply bg-primary text-primary-foreground border-primary shadow-lg;
+}
+
+.array-bar.comparing {
+  @apply bg-yellow-400 text-yellow-900 border-yellow-500 shadow-lg;
+}
+
+/* Circuit pattern for tech aesthetic */
+.circuit-pattern {
+  background-image: 
+    linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px),
+    linear-gradient(180deg, hsl(var(--border)) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Animation enhancements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Improved scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }

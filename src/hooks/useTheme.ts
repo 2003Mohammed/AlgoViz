@@ -7,7 +7,9 @@ export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     // Check localStorage first, then system preference
     const stored = localStorage.getItem('theme') as Theme;
-    if (stored) return stored;
+    if (stored && (stored === 'light' || stored === 'dark')) {
+      return stored;
+    }
     
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
@@ -25,22 +27,23 @@ export function useTheme() {
     // Update meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+      metaThemeColor.setAttribute('content', 
+        theme === 'dark' ? '#1e293b' : '#f8fafc'
+      );
     }
 
-    // Apply theme styling for better visibility
+    // Apply theme styling with improved colors
     document.body.className = `${theme} theme-transition`;
     
-    // Force re-render of styled elements
-    document.body.style.setProperty('--theme-applied', theme);
-    
-    // Ensure all text is visible with proper contrast
+    // Enhanced theme variables
     if (theme === 'light') {
-      document.body.style.color = 'hsl(220, 100%, 10%)';
-      document.body.style.backgroundColor = 'hsl(0, 0%, 100%)';
+      document.body.style.setProperty('--theme-bg', '#f8fafc');
+      document.body.style.setProperty('--theme-text', '#0f172a');
+      document.body.style.setProperty('--theme-primary', '#3b82f6');
     } else {
-      document.body.style.color = 'hsl(210, 20%, 95%)';
-      document.body.style.backgroundColor = 'hsl(210, 50%, 8%)';
+      document.body.style.setProperty('--theme-bg', '#0f172a');
+      document.body.style.setProperty('--theme-text', '#f8fafc');
+      document.body.style.setProperty('--theme-primary', '#60a5fa');
     }
   }, [theme]);
 
@@ -48,5 +51,15 @@ export function useTheme() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  return { theme, toggleTheme };
+  const setThemeMode = (newTheme: Theme) => {
+    setTheme(newTheme);
+  };
+
+  return { 
+    theme, 
+    toggleTheme, 
+    setThemeMode,
+    isDark: theme === 'dark',
+    isLight: theme === 'light'
+  };
 }
