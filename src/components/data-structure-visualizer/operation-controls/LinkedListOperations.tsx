@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PlusCircle, MinusCircle, Search } from 'lucide-react';
+import { Plus, Minus, Search } from 'lucide-react';
 import { OperationButton } from './OperationButton';
 
 interface LinkedListOperationsProps {
@@ -13,14 +13,14 @@ export const LinkedListOperations: React.FC<LinkedListOperationsProps> = ({ hand
       <OperationButton 
         operation="add"
         handleOperation={handleOperation}
-        icon={<PlusCircle className="h-4 w-4" />}
-        label="Add"
+        icon={<Plus className="h-4 w-4" />}
+        label="Add Node"
       />
       <OperationButton 
         operation="remove"
         handleOperation={handleOperation}
-        icon={<MinusCircle className="h-4 w-4" />}
-        label="Remove"
+        icon={<Minus className="h-4 w-4" />}
+        label="Remove Node"
       />
       <OperationButton 
         operation="search"

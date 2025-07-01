@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { Layers, ChevronRight, Code } from 'lucide-react';
-import { OperationsInfo } from '../OperationsInfo';
-import { ImplementationCode } from '../ImplementationCode';
-import { motion } from 'framer-motion';
+import { BookOpen, Clock, Zap } from 'lucide-react';
 import { DataStructure } from '../../../utils/dataStructureData';
+import { motion } from 'framer-motion';
 
 interface ReferenceSectionProps {
   dataStructure: DataStructure;
@@ -12,38 +10,45 @@ interface ReferenceSectionProps {
 
 export const ReferenceSection: React.FC<ReferenceSectionProps> = ({ dataStructure }) => {
   return (
-    <>
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        <div className="glass-card p-6 overflow-hidden">
-          <h3 className="text-xl font-semibold mb-4 flex items-center pixel-header">
-            <Layers className="inline-block mr-2 h-5 w-5 text-primary" />
-            Operations Reference
-            <ChevronRight className="ml-2 h-4 w-4 text-primary" />
-          </h3>
-          <OperationsInfo operations={dataStructure.operations} />
-        </div>
-      </motion.div>
+    <motion.div 
+      className="cyber-panel p-4"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <BookOpen className="h-5 w-5 text-primary" />
+        <h3 className="text-lg font-semibold text-primary">Reference</h3>
+      </div>
       
-      {dataStructure.implementation && (
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <div className="glass-card p-6 overflow-hidden">
-            <h3 className="text-xl font-semibold mb-4 flex items-center pixel-header">
-              <Code className="inline-block mr-2 h-5 w-5 text-primary" />
-              Implementation Code
-              <ChevronRight className="ml-2 h-4 w-4 text-primary" />
-            </h3>
-            <ImplementationCode code={dataStructure.implementation} />
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-medium mb-2 flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Time Complexity
+          </h4>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {dataStructure.operations.slice(0, 4).map((op, index) => (
+              <div key={index} className="flex justify-between p-2 bg-muted/20 rounded">
+                <span>{op.name}:</span>
+                <span className="text-primary">{op.timeComplexity}</span>
+              </div>
+            ))}
           </div>
-        </motion.div>
-      )}
-    </>
+        </div>
+        
+        <div>
+          <h4 className="font-medium mb-2 flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Key Features
+          </h4>
+          <ul className="text-sm text-muted-foreground space-y-1">
+            <li>• {dataStructure.description}</li>
+            <li>• Category: {dataStructure.category}</li>
+            <li>• Interactive visualization with real-time updates</li>
+          </ul>
+        </div>
+      </div>
+    </motion.div>
   );
 };

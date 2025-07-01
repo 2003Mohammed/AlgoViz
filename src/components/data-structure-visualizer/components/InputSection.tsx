@@ -5,38 +5,41 @@ import { OperationControls } from '../operation-controls';
 import { motion } from 'framer-motion';
 
 interface InputSectionProps {
-  customInput: string;
   dataStructureId: string;
+  customInput: string;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleOperation: (operation: string) => void;
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
-  customInput,
   dataStructureId,
+  customInput,
   handleInputChange,
   handleOperation
 }) => {
   return (
     <motion.div 
-      className="flex flex-col sm:flex-row gap-4 items-center justify-center"
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+      className="cyber-panel p-4 space-y-4"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.4 }}
     >
-      <div className="w-full sm:w-auto">
+      <h3 className="text-lg font-semibold text-primary">Operations</h3>
+      
+      <div className="space-y-3">
         <Input
-          placeholder="Enter a value..."
+          type="text"
+          placeholder="Enter value..."
           value={customInput}
           onChange={handleInputChange}
-          className="min-w-[200px] pixel-border"
+          className="w-full"
+        />
+        
+        <OperationControls
+          dataStructureId={dataStructureId}
+          handleOperation={handleOperation}
         />
       </div>
-      
-      <OperationControls 
-        dataStructureId={dataStructureId} 
-        handleOperation={handleOperation} 
-      />
     </motion.div>
   );
 };

@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Button } from '../../ui/button';
-import { PlusCircle, MinusCircle, Search } from 'lucide-react';
+import { Plus, Minus, Search } from 'lucide-react';
 import { OperationButton } from './OperationButton';
 
 interface ArrayOperationsProps {
@@ -14,13 +13,13 @@ export const ArrayOperations: React.FC<ArrayOperationsProps> = ({ handleOperatio
       <OperationButton 
         operation="add"
         handleOperation={handleOperation}
-        icon={<PlusCircle className="h-4 w-4" />}
+        icon={<Plus className="h-4 w-4" />}
         label="Add"
       />
       <OperationButton 
         operation="remove"
         handleOperation={handleOperation}
-        icon={<MinusCircle className="h-4 w-4" />}
+        icon={<Minus className="h-4 w-4" />}
         label="Remove"
       />
       <OperationButton 

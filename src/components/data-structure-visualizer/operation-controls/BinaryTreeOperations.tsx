@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PlusCircle, MinusCircle, Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { OperationButton } from './OperationButton';
 
 interface BinaryTreeOperationsProps {
@@ -13,14 +13,8 @@ export const BinaryTreeOperations: React.FC<BinaryTreeOperationsProps> = ({ hand
       <OperationButton 
         operation="insert"
         handleOperation={handleOperation}
-        icon={<PlusCircle className="h-4 w-4" />}
+        icon={<Plus className="h-4 w-4" />}
         label="Insert"
-      />
-      <OperationButton 
-        operation="delete"
-        handleOperation={handleOperation}
-        icon={<MinusCircle className="h-4 w-4" />}
-        label="Delete"
       />
       <OperationButton 
         operation="search"

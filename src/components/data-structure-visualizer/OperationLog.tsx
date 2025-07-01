@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Info } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface OperationLogProps {
   logs: string[];
@@ -8,21 +9,30 @@ interface OperationLogProps {
 
 export const OperationLog: React.FC<OperationLogProps> = ({ logs }) => {
   return (
-    <div className="mt-6 p-4 bg-secondary/30 rounded-md max-h-40 overflow-y-auto">
-      <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
-        <Info className="h-4 w-4" />
-        Operation Log
-      </h4>
-      <div className="space-y-1">
-        {logs.map((log, index) => (
-          <div 
-            key={index} 
-            className="text-sm text-muted-foreground"
-          >
-            {log}
-          </div>
-        ))}
-      </div>
+    <div className="cyber-panel p-4">
+      <h3 className="text-lg font-semibold mb-3 text-primary">Operation Log</h3>
+      <ScrollArea className="h-32">
+        <AnimatePresence>
+          {logs.length > 0 ? (
+            logs.map((log, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="text-sm text-muted-foreground mb-2 p-2 bg-muted/20 rounded"
+              >
+                {log}
+              </motion.div>
+            ))
+          ) : (
+            <div className="text-sm text-muted-foreground italic">
+              No operations performed yet
+            </div>
+          )}
+        </AnimatePresence>
+      </ScrollArea>
     </div>
   );
 };

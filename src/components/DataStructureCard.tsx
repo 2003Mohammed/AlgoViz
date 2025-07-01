@@ -34,7 +34,7 @@ export const DataStructureCard: React.FC<DataStructureCardProps> = ({ dataStruct
             to={`/data-structures/${dataStructure.id}`}
             className="inline-flex items-center text-sm font-medium text-primary group-hover:underline"
           >
-            Explore
+            Visualize
             <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
