@@ -1,10 +1,9 @@
-
 import { Database } from 'lucide-react';
 
 export interface Operation {
   name: string;
   timeComplexity: string;
-  description?: string;
+  description: string; // Made required instead of optional
 }
 
 export interface DataStructure {
@@ -40,10 +39,10 @@ export const dataStructures: DataStructure[] = [
     icon: null,
     defaultExample: [10, 20, 30, 40, 50],
     operations: [
-      { name: 'Access', timeComplexity: 'O(1)' },
-      { name: 'Search', timeComplexity: 'O(n)' },
-      { name: 'Insert', timeComplexity: 'O(n)' },
-      { name: 'Delete', timeComplexity: 'O(n)' }
+      { name: 'Access', timeComplexity: 'O(1)', description: 'Access element by index' },
+      { name: 'Search', timeComplexity: 'O(n)', description: 'Search for element value' },
+      { name: 'Insert', timeComplexity: 'O(n)', description: 'Insert element at position' },
+      { name: 'Delete', timeComplexity: 'O(n)', description: 'Delete element at position' }
     ],
     implementation: `
 class Array {
@@ -80,10 +79,10 @@ class Array {
       head: 0
     },
     operations: [
-      { name: 'Insert', timeComplexity: 'O(1)' },
-      { name: 'Delete', timeComplexity: 'O(n)' },
-      { name: 'Search', timeComplexity: 'O(n)' },
-      { name: 'Traverse', timeComplexity: 'O(n)' }
+      { name: 'Insert', timeComplexity: 'O(1)', description: 'Insert at head or tail' },
+      { name: 'Delete', timeComplexity: 'O(n)', description: 'Delete node by value' },
+      { name: 'Search', timeComplexity: 'O(n)', description: 'Search for node value' },
+      { name: 'Traverse', timeComplexity: 'O(n)', description: 'Visit all nodes' }
     ],
     implementation: `
 class Node {
@@ -114,10 +113,10 @@ class LinkedList {
     icon: null,
     defaultExample: [30, 20, 10],
     operations: [
-      { name: 'Push', timeComplexity: 'O(1)' },
-      { name: 'Pop', timeComplexity: 'O(1)' },
-      { name: 'Peek', timeComplexity: 'O(1)' },
-      { name: 'IsEmpty', timeComplexity: 'O(1)' }
+      { name: 'Push', timeComplexity: 'O(1)', description: 'Add element to top' },
+      { name: 'Pop', timeComplexity: 'O(1)', description: 'Remove top element' },
+      { name: 'Peek', timeComplexity: 'O(1)', description: 'View top element' },
+      { name: 'IsEmpty', timeComplexity: 'O(1)', description: 'Check if stack is empty' }
     ],
     implementation: `
 class Stack {
@@ -147,10 +146,10 @@ class Stack {
     icon: null,
     defaultExample: [10, 20, 30],
     operations: [
-      { name: 'Enqueue', timeComplexity: 'O(1)' },
-      { name: 'Dequeue', timeComplexity: 'O(1)' },
-      { name: 'Front', timeComplexity: 'O(1)' },
-      { name: 'IsEmpty', timeComplexity: 'O(1)' }
+      { name: 'Enqueue', timeComplexity: 'O(1)', description: 'Add element to rear' },
+      { name: 'Dequeue', timeComplexity: 'O(1)', description: 'Remove element from front' },
+      { name: 'Front', timeComplexity: 'O(1)', description: 'View front element' },
+      { name: 'IsEmpty', timeComplexity: 'O(1)', description: 'Check if queue is empty' }
     ],
     implementation: `
 class Queue {
@@ -189,10 +188,10 @@ class Queue {
       root: 0
     },
     operations: [
-      { name: 'Insert', timeComplexity: 'O(log n)' },
-      { name: 'Delete', timeComplexity: 'O(log n)' },
-      { name: 'Search', timeComplexity: 'O(log n)' },
-      { name: 'Traverse', timeComplexity: 'O(n)' }
+      { name: 'Insert', timeComplexity: 'O(log n)', description: 'Insert node in correct position' },
+      { name: 'Delete', timeComplexity: 'O(log n)', description: 'Remove node from tree' },
+      { name: 'Search', timeComplexity: 'O(log n)', description: 'Find node by value' },
+      { name: 'Traverse', timeComplexity: 'O(n)', description: 'Visit all nodes in order' }
     ],
     implementation: `
 class TreeNode {
@@ -238,10 +237,10 @@ class BinaryTree {
       []
     ],
     operations: [
-      { name: 'Set', timeComplexity: 'O(1)' },
-      { name: 'Get', timeComplexity: 'O(1)' },
-      { name: 'Delete', timeComplexity: 'O(1)' },
-      { name: 'Keys', timeComplexity: 'O(n)' }
+      { name: 'Set', timeComplexity: 'O(1)', description: 'Insert or update key-value pair' },
+      { name: 'Get', timeComplexity: 'O(1)', description: 'Retrieve value by key' },
+      { name: 'Delete', timeComplexity: 'O(1)', description: 'Remove key-value pair' },
+      { name: 'Keys', timeComplexity: 'O(n)', description: 'Get all keys in table' }
     ],
     implementation: `
 class HashTable {
@@ -291,10 +290,10 @@ class HashTable {
       ]
     },
     operations: [
-      { name: 'Add Vertex', timeComplexity: 'O(1)' },
-      { name: 'Add Edge', timeComplexity: 'O(1)' },
-      { name: 'BFS', timeComplexity: 'O(V+E)' },
-      { name: 'DFS', timeComplexity: 'O(V+E)' }
+      { name: 'Add Vertex', timeComplexity: 'O(1)', description: 'Add new vertex to graph' },
+      { name: 'Add Edge', timeComplexity: 'O(1)', description: 'Connect two vertices' },
+      { name: 'BFS', timeComplexity: 'O(V+E)', description: 'Breadth-first search traversal' },
+      { name: 'DFS', timeComplexity: 'O(V+E)', description: 'Depth-first search traversal' }
     ],
     implementation: `
 class Graph {
