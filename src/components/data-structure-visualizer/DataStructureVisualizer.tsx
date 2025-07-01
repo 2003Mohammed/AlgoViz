@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { useDataStructureState } from './useDataStructureState';
@@ -10,6 +9,7 @@ import { OperationLog } from './OperationLog';
 import { OperationsInfo } from './OperationsInfo';
 import { ImplementationCode } from './ImplementationCode';
 import { ReferenceSection } from './components/ReferenceSection';
+import { RealWorldApplications } from './components/RealWorldApplications';
 import { motion } from 'framer-motion';
 
 export interface DataStructureVisualizerProps {
@@ -93,6 +93,9 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
           />
         </div>
       </div>
+
+      {/* Real World Applications */}
+      <RealWorldApplications dataStructure={dataStructure} />
 
       {/* Code and Reference */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

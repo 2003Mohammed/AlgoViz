@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowDownToLine, ArrowUpFromLine, Eye } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye } from 'lucide-react';
 import { OperationButton } from './OperationButton';
 
 interface StackOperationsProps {
@@ -13,13 +13,13 @@ export const StackOperations: React.FC<StackOperationsProps> = ({ handleOperatio
       <OperationButton 
         operation="push"
         handleOperation={handleOperation}
-        icon={<ArrowDownToLine className="h-4 w-4" />}
+        icon={<ArrowDown className="h-4 w-4" />}
         label="Push"
       />
       <OperationButton 
         operation="pop"
         handleOperation={handleOperation}
-        icon={<ArrowUpFromLine className="h-4 w-4" />}
+        icon={<ArrowUp className="h-4 w-4" />}
         label="Pop"
       />
       <OperationButton 

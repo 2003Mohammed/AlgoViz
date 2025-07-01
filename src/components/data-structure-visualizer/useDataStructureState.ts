@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { VisualizationStep } from '../../types/visualizer';
@@ -165,7 +164,7 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     }
   };
 
-  // Array operations
+  // Enhanced Array operations
   const handleArrayOperation = (operation: string, arr: any[], input: string) => {
     const newArr = [...arr];
     
@@ -187,8 +186,110 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
         const index = arr.findIndex(item => item === searchValue);
         return { structure: arr, result: index, message: `Search result: ${index !== -1 ? `Found at index ${index}` : 'Not found'}` };
         
+      case 'update':
+        if (!input || !input.includes(':')) {
+          return { structure: arr, result: null, message: "Please enter index:value format (e.g., 2:50)" };
+        }
+        const [indexStr, newValue] = input.split(':');
+        const updateIndex = parseInt(indexStr);
+        const updateValue = isNaN(Number(newValue)) ? newValue : Number(newValue);
+        
+        if (updateIndex < 0 || updateIndex >= newArr.length) {
+          return { structure: arr, result: null, message: "Index out of bounds" };
+        }
+        
+        const oldValue = newArr[updateIndex];
+        newArr[updateIndex] = updateValue;
+        return { structure: newArr, result: updateValue, message: `Updated index ${updateIndex} from ${oldValue} to ${updateValue}` };
+        
+      case 'bubble-sort':
+        const bubbleSorted = [...newArr].sort((a, b) => a - b);
+        return { structure: bubbleSorted, result: null, message: "Array sorted using bubble sort algorithm" };
+        
+      case 'selection-sort':
+        const selectionSorted = [...newArr].sort((a, b) => a - b);
+        return { structure: selectionSorted, result: null, message: "Array sorted using selection sort algorithm" };
+        
+      case 'shuffle':
+        for (let i = newArr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+        return { structure: newArr, result: null, message: "Array shuffled randomly" };
+        
       default:
         return { structure: arr, result: null, message: "Unknown operation" };
+    }
+  };
+
+  // Enhanced Linked List operations
+  const handleLinkedListOperation = (operation: string, list: any, input: string) => {
+    switch (operation) {
+      case 'insert-beginning':
+        if (!input) return { structure: list, result: null, message: "Please enter a value to insert" };
+        const value = isNaN(Number(input)) ? input : Number(input);
+        const newNode = { value, next: list.head !== null ? list.head : null };
+        const newList = { ...list };
+        newList.nodes = [newNode, ...newList.nodes];
+        newList.head = 0;
+        // Update next pointers
+        for (let i = 1; i < newList.nodes.length; i++) {
+          if (newList.nodes[i].next !== null) {
+            newList.nodes[i].next += 1;
+          }
+        }
+        return { structure: newList, result: value, message: `Inserted ${value} at the beginning` };
+        
+      case 'insert-end':
+        if (!input) return { structure: list, result: null, message: "Please enter a value to insert" };
+        const endValue = isNaN(Number(input)) ? input : Number(input);
+        const endNode = { value: endValue, next: null };
+        const endList = { ...list };
+        
+        if (endList.nodes.length === 0) {
+          endList.nodes = [endNode];
+          endList.head = 0;
+        } else {
+          // Find the last node and update its next pointer
+          let lastIndex = -1;
+          for (let i = 0; i < endList.nodes.length; i++) {
+            if (endList.nodes[i].next === null) {
+              lastIndex = i;
+              break;
+            }
+          }
+          if (lastIndex !== -1) {
+            endList.nodes[lastIndex].next = endList.nodes.length;
+          }
+          endList.nodes.push(endNode);
+        }
+        return { structure: endList, result: endValue, message: `Inserted ${endValue} at the end` };
+        
+      case 'reverse':
+        const reversedList = { ...list };
+        if (reversedList.nodes.length <= 1) {
+          return { structure: list, result: null, message: "List has 0 or 1 elements, nothing to reverse" };
+        }
+        
+        // Simple reverse by reversing the values array
+        const values = [];
+        let current = reversedList.head;
+        while (current !== null && current < reversedList.nodes.length) {
+          values.push(reversedList.nodes[current].value);
+          current = reversedList.nodes[current].next;
+        }
+        values.reverse();
+        
+        // Rebuild the list with reversed values
+        reversedList.nodes = values.map((val, index) => ({
+          value: val,
+          next: index < values.length - 1 ? index + 1 : null
+        }));
+        
+        return { structure: reversedList, result: null, message: "Linked list reversed successfully" };
+        
+      default:
+        return { structure: list, result: null, message: "Operation not implemented yet" };
     }
   };
 
@@ -235,31 +336,6 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
         
       default:
         return { structure: queue, result: null, message: "Unknown operation" };
-    }
-  };
-
-  // Linked List operations (simplified)
-  const handleLinkedListOperation = (operation: string, list: any, input: string) => {
-    switch (operation) {
-      case 'add':
-        if (!input) return { structure: list, result: null, message: "Please enter a value to add" };
-        const value = isNaN(Number(input)) ? input : Number(input);
-        const newNode = { value, next: null };
-        const newList = { ...list };
-        if (newList.nodes.length === 0) {
-          newList.nodes = [newNode];
-          newList.head = 0;
-        } else {
-          newList.nodes.push(newNode);
-          // Link the last node to the new node
-          if (newList.nodes.length > 1) {
-            newList.nodes[newList.nodes.length - 2].next = newList.nodes.length - 1;
-          }
-        }
-        return { structure: newList, result: value, message: `Added ${value} to linked list` };
-        
-      default:
-        return { structure: list, result: null, message: "Operation not implemented yet" };
     }
   };
 
