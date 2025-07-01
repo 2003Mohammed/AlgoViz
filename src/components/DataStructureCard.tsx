@@ -4,19 +4,14 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Database, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { DataStructure } from '../utils/dataStructureData';
 
 interface DataStructureCardProps {
-  id: string;
-  name: string;
-  description: string;
-  icon?: React.ReactNode;
+  dataStructure: DataStructure;
 }
 
 export const DataStructureCard: React.FC<DataStructureCardProps> = ({
-  id,
-  name,
-  description,
-  icon
+  dataStructure
 }) => {
   return (
     <motion.div
@@ -26,18 +21,18 @@ export const DataStructureCard: React.FC<DataStructureCardProps> = ({
     >
       <div className="flex items-start gap-4 mb-4">
         <div className="p-3 bg-primary/10 rounded-lg">
-          {icon || <Database className="h-6 w-6 text-primary" />}
+          {dataStructure.icon || <Database className="h-6 w-6 text-primary" />}
         </div>
         <div className="flex-1">
-          <h3 className="text-xl font-semibold mb-2">{name}</h3>
+          <h3 className="text-xl font-semibold mb-2">{dataStructure.name}</h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            {description}
+            {dataStructure.description}
           </p>
         </div>
       </div>
       
       <div className="flex items-center justify-between pt-4 border-t border-border/50">
-        <Link to={`/data-structures/${id}`}>
+        <Link to={`/data-structures/${dataStructure.id}`}>
           <Button 
             variant="outline" 
             size="sm"

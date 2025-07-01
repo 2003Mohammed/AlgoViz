@@ -28,7 +28,8 @@ export interface GraphNode {
   y: number;
   value?: any;
   color?: string;
-  status?: 'default' | 'visited' | 'processing' | 'path' | 'active' | 'target' | 'comparing';
+  status?: 'default' | 'visited' | 'processing' | 'path' | 'active' | 'target' | 'comparing' | 'found';
+  distance?: number;
 }
 
 export interface GraphEdge {

@@ -1,22 +1,50 @@
 
+import { Database } from 'lucide-react';
+
+export interface Operation {
+  name: string;
+  timeComplexity: string;
+  description?: string;
+}
+
 export interface DataStructure {
   id: string;
   name: string;
   description: string;
+  category: string;
   icon: any;
   defaultExample: any;
-  operations?: string[];
+  operations: Operation[];
   implementation?: string;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+  icon: any;
+}
+
+export const dsCategories: Category[] = [
+  { id: 'linear', name: 'Linear', icon: Database },
+  { id: 'hierarchical', name: 'Trees', icon: Database },
+  { id: 'graph', name: 'Graphs', icon: Database },
+  { id: 'hashing', name: 'Hashing', icon: Database }
+];
 
 export const dataStructures: DataStructure[] = [
   {
     id: 'array',
     name: 'Array',
     description: 'A collection of elements stored in contiguous memory locations',
+    category: 'linear',
     icon: null,
     defaultExample: [10, 20, 30, 40, 50],
-    operations: ['Add Element', 'Remove Element', 'Search Element', 'Access by Index'],
+    operations: [
+      { name: 'Access', timeComplexity: 'O(1)' },
+      { name: 'Search', timeComplexity: 'O(n)' },
+      { name: 'Insert', timeComplexity: 'O(n)' },
+      { name: 'Delete', timeComplexity: 'O(n)' }
+    ],
     implementation: `
 class Array {
   constructor() {
@@ -41,6 +69,7 @@ class Array {
     id: 'linked-list',
     name: 'Linked List',
     description: 'A linear data structure where elements are stored in nodes',
+    category: 'linear',
     icon: null,
     defaultExample: {
       nodes: [
@@ -50,7 +79,12 @@ class Array {
       ],
       head: 0
     },
-    operations: ['Insert Node', 'Delete Node', 'Search Node', 'Traverse'],
+    operations: [
+      { name: 'Insert', timeComplexity: 'O(1)' },
+      { name: 'Delete', timeComplexity: 'O(n)' },
+      { name: 'Search', timeComplexity: 'O(n)' },
+      { name: 'Traverse', timeComplexity: 'O(n)' }
+    ],
     implementation: `
 class Node {
   constructor(data) {
@@ -76,9 +110,15 @@ class LinkedList {
     id: 'stack',
     name: 'Stack',
     description: 'LIFO (Last In, First Out) data structure',
+    category: 'linear',
     icon: null,
     defaultExample: [30, 20, 10],
-    operations: ['Push', 'Pop', 'Peek', 'IsEmpty'],
+    operations: [
+      { name: 'Push', timeComplexity: 'O(1)' },
+      { name: 'Pop', timeComplexity: 'O(1)' },
+      { name: 'Peek', timeComplexity: 'O(1)' },
+      { name: 'IsEmpty', timeComplexity: 'O(1)' }
+    ],
     implementation: `
 class Stack {
   constructor() {
@@ -103,9 +143,15 @@ class Stack {
     id: 'queue',
     name: 'Queue',
     description: 'FIFO (First In, First Out) data structure',
+    category: 'linear',
     icon: null,
     defaultExample: [10, 20, 30],
-    operations: ['Enqueue', 'Dequeue', 'Front', 'IsEmpty'],
+    operations: [
+      { name: 'Enqueue', timeComplexity: 'O(1)' },
+      { name: 'Dequeue', timeComplexity: 'O(1)' },
+      { name: 'Front', timeComplexity: 'O(1)' },
+      { name: 'IsEmpty', timeComplexity: 'O(1)' }
+    ],
     implementation: `
 class Queue {
   constructor() {
@@ -130,6 +176,7 @@ class Queue {
     id: 'binary-tree',
     name: 'Binary Tree',
     description: 'A hierarchical data structure with at most two children per node',
+    category: 'hierarchical',
     icon: null,
     defaultExample: {
       nodes: [
@@ -141,7 +188,12 @@ class Queue {
       ],
       root: 0
     },
-    operations: ['Insert', 'Delete', 'Search', 'Traverse'],
+    operations: [
+      { name: 'Insert', timeComplexity: 'O(log n)' },
+      { name: 'Delete', timeComplexity: 'O(log n)' },
+      { name: 'Search', timeComplexity: 'O(log n)' },
+      { name: 'Traverse', timeComplexity: 'O(n)' }
+    ],
     implementation: `
 class TreeNode {
   constructor(val) {
@@ -176,6 +228,7 @@ class BinaryTree {
     id: 'hash-table',
     name: 'Hash Table',
     description: 'Key-value pairs with fast lookup using hash functions',
+    category: 'hashing',
     icon: null,
     defaultExample: [
       [{ key: 'name', value: 'John' }],
@@ -184,7 +237,12 @@ class BinaryTree {
       [{ key: 'city', value: 'NYC' }],
       []
     ],
-    operations: ['Set', 'Get', 'Delete', 'Keys'],
+    operations: [
+      { name: 'Set', timeComplexity: 'O(1)' },
+      { name: 'Get', timeComplexity: 'O(1)' },
+      { name: 'Delete', timeComplexity: 'O(1)' },
+      { name: 'Keys', timeComplexity: 'O(n)' }
+    ],
     implementation: `
 class HashTable {
   constructor(size = 10) {
@@ -211,6 +269,7 @@ class HashTable {
     id: 'graph',
     name: 'Graph',
     description: 'A collection of vertices connected by edges',
+    category: 'graph',
     icon: null,
     defaultExample: {
       nodes: [
@@ -231,7 +290,12 @@ class HashTable {
         { source: 'E', target: 'F', weight: 1 }
       ]
     },
-    operations: ['Add Vertex', 'Add Edge', 'Remove Vertex', 'Remove Edge', 'BFS', 'DFS'],
+    operations: [
+      { name: 'Add Vertex', timeComplexity: 'O(1)' },
+      { name: 'Add Edge', timeComplexity: 'O(1)' },
+      { name: 'BFS', timeComplexity: 'O(V+E)' },
+      { name: 'DFS', timeComplexity: 'O(V+E)' }
+    ],
     implementation: `
 class Graph {
   constructor() {

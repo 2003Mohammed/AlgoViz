@@ -8,21 +8,21 @@ export function visualizeBFS(startNode: string = 'A'): VisualizationStep[] {
   // Create a proper graph with multiple nodes and edges
   const graphData = {
     nodes: [
-      { id: 'A', x: 100, y: 100, status: 'default' },
-      { id: 'B', x: 200, y: 50, status: 'default' },
-      { id: 'C', x: 300, y: 100, status: 'default' },
-      { id: 'D', x: 200, y: 150, status: 'default' },
-      { id: 'E', x: 150, y: 200, status: 'default' },
-      { id: 'F', x: 250, y: 200, status: 'default' }
+      { id: 'A', x: 100, y: 100, status: 'default' as const },
+      { id: 'B', x: 200, y: 50, status: 'default' as const },
+      { id: 'C', x: 300, y: 100, status: 'default' as const },
+      { id: 'D', x: 200, y: 150, status: 'default' as const },
+      { id: 'E', x: 150, y: 200, status: 'default' as const },
+      { id: 'F', x: 250, y: 200, status: 'default' as const }
     ],
     edges: [
-      { source: 'A', target: 'B', status: 'default' },
-      { source: 'A', target: 'D', status: 'default' },
-      { source: 'B', target: 'C', status: 'default' },
-      { source: 'B', target: 'D', status: 'default' },
-      { source: 'C', target: 'F', status: 'default' },
-      { source: 'D', target: 'E', status: 'default' },
-      { source: 'E', target: 'F', status: 'default' }
+      { source: 'A', target: 'B', status: 'default' as const },
+      { source: 'A', target: 'D', status: 'default' as const },
+      { source: 'B', target: 'C', status: 'default' as const },
+      { source: 'B', target: 'D', status: 'default' as const },
+      { source: 'C', target: 'F', status: 'default' as const },
+      { source: 'D', target: 'E', status: 'default' as const },
+      { source: 'E', target: 'F', status: 'default' as const }
     ]
   };
 
@@ -49,12 +49,12 @@ export function visualizeBFS(startNode: string = 'A'): VisualizationStep[] {
       const updatedGraphData = {
         nodes: graphData.nodes.map(node => ({
           ...node,
-          status: visited.has(node.id) ? 'visited' : 
-                  node.id === currentNode ? 'processing' : 'default'
+          status: visited.has(node.id) ? ('visited' as const) : 
+                  node.id === currentNode ? ('processing' as const) : ('default' as const)
         })),
         edges: graphData.edges.map(edge => ({
           ...edge,
-          status: (visited.has(edge.source) && visited.has(edge.target)) ? 'visited' : 'default'
+          status: (visited.has(edge.source) && visited.has(edge.target)) ? ('visited' as const) : ('default' as const)
         }))
       };
       
@@ -92,11 +92,11 @@ export function visualizeBFS(startNode: string = 'A'): VisualizationStep[] {
     graphData: {
       nodes: graphData.nodes.map(node => ({
         ...node,
-        status: visited.has(node.id) ? 'found' : 'default'
+        status: visited.has(node.id) ? ('found' as const) : ('default' as const)
       })),
       edges: graphData.edges.map(edge => ({
         ...edge,
-        status: 'visited'
+        status: 'visited' as const
       }))
     },
     description: 'BFS traversal completed'
@@ -111,20 +111,20 @@ export function visualizeDFS(startNode: string = 'A'): VisualizationStep[] {
   
   const graphData = {
     nodes: [
-      { id: 'A', x: 150, y: 50, status: 'default' },
-      { id: 'B', x: 100, y: 150, status: 'default' },
-      { id: 'C', x: 200, y: 150, status: 'default' },
-      { id: 'D', x: 50, y: 250, status: 'default' },
-      { id: 'E', x: 150, y: 250, status: 'default' },
-      { id: 'F', x: 250, y: 250, status: 'default' }
+      { id: 'A', x: 150, y: 50, status: 'default' as const },
+      { id: 'B', x: 100, y: 150, status: 'default' as const },
+      { id: 'C', x: 200, y: 150, status: 'default' as const },
+      { id: 'D', x: 50, y: 250, status: 'default' as const },
+      { id: 'E', x: 150, y: 250, status: 'default' as const },
+      { id: 'F', x: 250, y: 250, status: 'default' as const }
     ],
     edges: [
-      { source: 'A', target: 'B', status: 'default' },
-      { source: 'A', target: 'C', status: 'default' },
-      { source: 'B', target: 'D', status: 'default' },
-      { source: 'B', target: 'E', status: 'default' },
-      { source: 'C', target: 'E', status: 'default' },
-      { source: 'C', target: 'F', status: 'default' }
+      { source: 'A', target: 'B', status: 'default' as const },
+      { source: 'A', target: 'C', status: 'default' as const },
+      { source: 'B', target: 'D', status: 'default' as const },
+      { source: 'B', target: 'E', status: 'default' as const },
+      { source: 'C', target: 'E', status: 'default' as const },
+      { source: 'C', target: 'F', status: 'default' as const }
     ]
   };
 
@@ -148,12 +148,12 @@ export function visualizeDFS(startNode: string = 'A'): VisualizationStep[] {
       const updatedGraphData = {
         nodes: graphData.nodes.map(node => ({
           ...node,
-          status: visited.has(node.id) ? 'visited' : 
-                  node.id === currentNode ? 'processing' : 'default'
+          status: visited.has(node.id) ? ('visited' as const) : 
+                  node.id === currentNode ? ('processing' as const) : ('default' as const)
         })),
         edges: graphData.edges.map(edge => ({
           ...edge,
-          status: (visited.has(edge.source) && visited.has(edge.target)) ? 'path' : 'default'
+          status: (visited.has(edge.source) && visited.has(edge.target)) ? ('path' as const) : ('default' as const)
         }))
       };
       
@@ -190,19 +190,19 @@ export function visualizeDijkstra(startNode: string = 'A'): VisualizationStep[] 
   
   const graphData = {
     nodes: [
-      { id: 'A', x: 100, y: 100, distance: 0, status: 'source' },
-      { id: 'B', x: 200, y: 50, distance: Infinity, status: 'default' },
-      { id: 'C', x: 300, y: 100, distance: Infinity, status: 'default' },
-      { id: 'D', x: 200, y: 150, distance: Infinity, status: 'default' },
-      { id: 'E', x: 150, y: 200, distance: Infinity, status: 'default' }
+      { id: 'A', x: 100, y: 100, distance: 0, status: 'target' as const },
+      { id: 'B', x: 200, y: 50, distance: Infinity, status: 'default' as const },
+      { id: 'C', x: 300, y: 100, distance: Infinity, status: 'default' as const },
+      { id: 'D', x: 200, y: 150, distance: Infinity, status: 'default' as const },
+      { id: 'E', x: 150, y: 200, distance: Infinity, status: 'default' as const }
     ],
     edges: [
-      { source: 'A', target: 'B', weight: 4, status: 'default' },
-      { source: 'A', target: 'D', weight: 2, status: 'default' },
-      { source: 'B', target: 'C', weight: 3, status: 'default' },
-      { source: 'B', target: 'D', weight: 1, status: 'default' },
-      { source: 'C', target: 'E', weight: 2, status: 'default' },
-      { source: 'D', target: 'E', weight: 3, status: 'default' }
+      { source: 'A', target: 'B', weight: 4, status: 'default' as const },
+      { source: 'A', target: 'D', weight: 2, status: 'default' as const },
+      { source: 'B', target: 'C', weight: 3, status: 'default' as const },
+      { source: 'B', target: 'D', weight: 1, status: 'default' as const },
+      { source: 'C', target: 'E', weight: 2, status: 'default' as const },
+      { source: 'D', target: 'E', weight: 3, status: 'default' as const }
     ]
   };
 
@@ -259,12 +259,12 @@ export function visualizeDijkstra(startNode: string = 'A'): VisualizationStep[] 
       nodes: graphData.nodes.map(node => ({
         ...node,
         distance: distances[node.id],
-        status: visited.has(node.id) ? 'visited' : 
-                node.id === currentNode ? 'processing' : 'default'
+        status: visited.has(node.id) ? ('visited' as const) : 
+                node.id === currentNode ? ('processing' as const) : ('default' as const)
       })),
       edges: graphData.edges.map(edge => ({
         ...edge,
-        status: visited.has(edge.source) && visited.has(edge.target) ? 'path' : 'default'
+        status: visited.has(edge.source) && visited.has(edge.target) ? ('path' as const) : ('default' as const)
       }))
     };
     
