@@ -3,13 +3,13 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '../hooks/useTheme';
-import { Moon, Sun, Menu, X, Activity } from 'lucide-react';
+import { Moon, Menu, X, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 export const Navbar = () => {
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -60,31 +60,17 @@ export const Navbar = () => {
           ))}
         </div>
 
-        {/* Theme Toggle & Mobile Menu */}
+        {/* Theme Display & Mobile Menu */}
         <div className="flex items-center space-x-2">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Button
               variant="ghost"
               size="sm"
-              onClick={toggleTheme}
               className="theme-transition"
-              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              aria-label="Dark mode enabled"
+              disabled
             >
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={theme}
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 20, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {theme === 'light' ? (
-                    <Moon className="h-4 w-4" />
-                  ) : (
-                    <Sun className="h-4 w-4" />
-                  )}
-                </motion.div>
-              </AnimatePresence>
+              <Moon className="h-4 w-4" />
             </Button>
           </motion.div>
 
