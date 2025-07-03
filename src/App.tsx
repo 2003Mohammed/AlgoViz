@@ -2,10 +2,10 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
-import { HomePage } from './pages/HomePage';
-import { VisualizerPage } from './pages/VisualizerPage';
-import { DataStructuresPage } from './pages/DataStructuresPage';
-import { LearnPage } from './pages/LearnPage';
+import HomePage from './pages/HomePage';
+import VisualizerPage from './pages/VisualizerPage';
+import DataStructuresPage from './pages/DataStructuresPage';
+import LearnPage from './pages/LearnPage';
 import { useTheme } from './hooks/useTheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataStructureVisualizer } from './components/data-structure-visualizer/DataStructureVisualizer';
