@@ -21,7 +21,7 @@ export function visualizeGraphOperation(
   return steps;
 }
 
-function visualizeBFS(graph: GraphData, startNode: string): VisualizationStep[] {
+export function visualizeBFS(graph: GraphData, startNode: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
   const visited = new Set<string>();
   const queue = [startNode];
@@ -76,7 +76,7 @@ function visualizeBFS(graph: GraphData, startNode: string): VisualizationStep[] 
   return steps;
 }
 
-function visualizeDFS(graph: GraphData, startNode: string): VisualizationStep[] {
+export function visualizeDFS(graph: GraphData, startNode: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
   const visited = new Set<string>();
   const stack = [startNode];
@@ -136,7 +136,7 @@ function visualizeDFS(graph: GraphData, startNode: string): VisualizationStep[] 
   return steps;
 }
 
-function visualizeDijkstra(graph: GraphData, startNode: string, endNode?: string): VisualizationStep[] {
+export function visualizeDijkstra(graph: GraphData, startNode: string, endNode?: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
   const distances: { [key: string]: number } = {};
   const visited = new Set<string>();
