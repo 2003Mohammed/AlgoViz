@@ -1,14 +1,13 @@
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
-import { Home } from './pages/Home';
-import { Algorithms } from './pages/Algorithms';
-import { DataStructures } from './pages/DataStructures';
-import { Guides } from './pages/Guides';
-import { AlgorithmGuide } from './components/guides/AlgorithmGuide';
+import { HomePage } from './pages/HomePage';
+import { VisualizerPage } from './pages/VisualizerPage';
+import { DataStructuresPage } from './pages/DataStructuresPage';
+import { LearnPage } from './pages/LearnPage';
 import { useTheme } from './hooks/useTheme';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataStructureVisualizer } from './components/data-structure-visualizer/DataStructureVisualizer';
 import { dataStructures } from './utils/dataStructureData';
 import { BinarySearchPage } from './pages/BinarySearchPage';
@@ -26,10 +25,10 @@ function App() {
       }`}>
         <Layout>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/algorithms" element={<Algorithms />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/algorithms" element={<VisualizerPage />} />
             
-            <Route path="/data-structures" element={<DataStructures />} />
+            <Route path="/data-structures" element={<DataStructuresPage />} />
             {dataStructures.map((ds) => (
               <Route 
                 key={ds.id} 
@@ -38,8 +37,7 @@ function App() {
               />
             ))}
 
-            <Route path="/guides" element={<Guides />} />
-            <Route path="/guides/:algorithmId" element={<AlgorithmGuide />} />
+            <Route path="/guides" element={<LearnPage />} />
             <Route path="/visualizer/array" element={<ArrayVisualizerPage />} />
             <Route path="/visualizer/binary-search" element={<BinarySearchPage />} />
           </Routes>
