@@ -1,111 +1,111 @@
 
 import React from 'react';
-import { StepBack, StepForward, Play, Pause } from 'lucide-react';
 import { Button } from '../../ui/button';
-import { Slider } from '../../ui/slider';
+import { Play, Pause, SkipBack, SkipForward, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface AnimationControlsProps {
+  isAnimating: boolean;
   currentStep: number;
   animationSteps: any[];
   speed: number;
-  isAnimating: boolean;
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
-  setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>;
-  onSpeedChange: (value: number[]) => void;
+  setCurrentStep: (step: number) => void;
+  setIsAnimating: (animating: boolean) => void;
+  onSpeedChange: (speed: number) => void;
 }
 
 export const AnimationControls: React.FC<AnimationControlsProps> = ({
+  isAnimating,
   currentStep,
   animationSteps,
   speed,
-  isAnimating,
   setCurrentStep,
   setIsAnimating,
   onSpeedChange
 }) => {
-  if (animationSteps.length === 0) return null;
-  
-  const handleStepBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+  const handlePlayPause = () => {
+    setIsAnimating(!isAnimating);
   };
-  
+
   const handleStepForward = () => {
     if (currentStep < animationSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
-  
-  const toggleAnimation = () => {
-    setIsAnimating(!isAnimating);
+
+  const handleStepBackward = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
-  
+
+  const handleReset = () => {
+    setIsAnimating(false);
+    setCurrentStep(0);
+  };
+
+  if (animationSteps.length === 0) return null;
+
   return (
     <motion.div 
-      className="mb-6 space-y-4 py-4 px-6 bg-muted/30 rounded-lg border border-primary/20"
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      transition={{ duration: 0.4 }}
+      className="flex items-center justify-center gap-4 p-4 bg-muted rounded-lg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Step {currentStep + 1} of {animationSteps.length}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="outline"
-            className="h-8 w-8 p-0"
-            disabled={currentStep <= 0}
-            onClick={handleStepBack}
-          >
-            <StepBack className="h-4 w-4" />
-          </Button>
-          
-          <Button 
-            size="sm" 
-            variant="outline"
-            className="h-8 px-3"
-            onClick={toggleAnimation}
-          >
-            {isAnimating ? <Pause className="h-4 w-4 mr-1" /> : <Play className="h-4 w-4 mr-1" />}
-            {isAnimating ? 'Pause' : 'Play'}
-          </Button>
-          
-          <Button 
-            size="sm" 
-            variant="outline"
-            className="h-8 w-8 p-0"
-            disabled={currentStep >= animationSteps.length - 1}
-            onClick={handleStepForward}
-          >
-            <StepForward className="h-4 w-4" />
-          </Button>
-        </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleReset}
+        disabled={currentStep === 0 && !isAnimating}
+      >
+        <RotateCcw className="h-4 w-4" />
+      </Button>
+      
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleStepBackward}
+        disabled={currentStep === 0 || isAnimating}
+      >
+        <SkipBack className="h-4 w-4" />
+      </Button>
+      
+      <Button
+        onClick={handlePlayPause}
+        disabled={animationSteps.length === 0}
+        className="px-6"
+      >
+        {isAnimating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+        <span className="ml-2">{isAnimating ? 'Pause' : 'Play'}</span>
+      </Button>
+      
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleStepForward}
+        disabled={currentStep === animationSteps.length - 1 || isAnimating}
+      >
+        <SkipForward className="h-4 w-4" />
+      </Button>
+      
+      <div className="text-sm text-muted-foreground">
+        Step {currentStep + 1} of {animationSteps.length}
       </div>
       
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Animation Speed</span>
-          <span className="text-sm text-muted-foreground">{speed}x</span>
-        </div>
-        <Slider
-          value={[speed]}
-          min={0.25}
-          max={4}
-          step={0.25}
-          onValueChange={onSpeedChange}
-          className="w-full"
-        />
-      </div>
-      
-      <div className="w-full bg-muted rounded-full h-2">
-        <div 
-          className="bg-primary h-2 rounded-full transition-all duration-300" 
-          style={{ width: `${(currentStep / Math.max(1, animationSteps.length - 1)) * 100}%` }}
-        />
+      {/* Speed Control */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm">Speed:</span>
+        <select 
+          value={speed} 
+          onChange={(e) => onSpeedChange(Number(e.target.value))}
+          className="text-sm border rounded px-2 py-1"
+        >
+          <option value={0.5}>0.5x</option>
+          <option value={1}>1x</option>
+          <option value={1.5}>1.5x</option>
+          <option value={2}>2x</option>
+        </select>
       </div>
     </motion.div>
   );

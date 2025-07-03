@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { RefreshCw } from 'lucide-react';
 import { Button } from '../../ui/button';
+import { RotateCcw, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface VisualizerHeaderProps {
@@ -15,23 +15,26 @@ export const VisualizerHeader: React.FC<VisualizerHeaderProps> = ({
 }) => {
   return (
     <motion.div 
-      className="flex items-center justify-between p-4 bg-muted/20 rounded-lg"
-      initial={{ opacity: 0, y: -10 }}
+      className="flex items-center justify-between mb-6"
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-semibold text-primary">
-        {dataStructureName} Visualizer
-      </h2>
-      <Button
-        onClick={onReset}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-      >
-        <RefreshCw className="h-4 w-4" />
-        Reset
-      </Button>
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">
+          {dataStructureName} Visualizer
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Interactive visualization and operations
+        </p>
+      </div>
+      
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={onReset}>
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Reset
+        </Button>
+      </div>
     </motion.div>
   );
 };

@@ -1,42 +1,41 @@
 
-import { VisualizationStep } from '../../types/visualizer';
+import { ArrayItem, VisualizationStep, GraphData } from '../../types/visualizer';
+import { ITEM_STATUSES } from './constants';
 
-// Enhanced BFS Visualization with proper multi-node graph
-export function visualizeBFS(startNode: string = 'A'): VisualizationStep[] {
+export function visualizeGraphOperation(
+  graph: GraphData,
+  operation: string,
+  startNode?: string,
+  endNode?: string
+): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
   
-  // Create a proper graph with multiple nodes and edges
-  const graphData = {
-    nodes: [
-      { id: 'A', x: 100, y: 100, status: 'default' as const },
-      { id: 'B', x: 200, y: 50, status: 'default' as const },
-      { id: 'C', x: 300, y: 100, status: 'default' as const },
-      { id: 'D', x: 200, y: 150, status: 'default' as const },
-      { id: 'E', x: 150, y: 200, status: 'default' as const },
-      { id: 'F', x: 250, y: 200, status: 'default' as const }
-    ],
-    edges: [
-      { source: 'A', target: 'B', status: 'default' as const },
-      { source: 'A', target: 'D', status: 'default' as const },
-      { source: 'B', target: 'C', status: 'default' as const },
-      { source: 'B', target: 'D', status: 'default' as const },
-      { source: 'C', target: 'F', status: 'default' as const },
-      { source: 'D', target: 'E', status: 'default' as const },
-      { source: 'E', target: 'F', status: 'default' as const }
-    ]
-  };
+  if (operation === 'bfs' && startNode) {
+    return visualizeBFS(graph, startNode);
+  } else if (operation === 'dfs' && startNode) {
+    return visualizeDFS(graph, startNode);
+  } else if (operation === 'dijkstra' && startNode) {
+    return visualizeDijkstra(graph, startNode, endNode);
+  }
+  
+  return steps;
+}
 
-  // Initial state
+function visualizeBFS(graph: GraphData, startNode: string): VisualizationStep[] {
+  const steps: VisualizationStep[] = [];
+  const visited = new Set<string>();
+  const queue = [startNode];
+  
   steps.push({
-    array: [{ value: 'BFS Starting', status: 'default' }],
+    array: [{ value: 'BFS Starting', status: ITEM_STATUSES.DEFAULT }],
     lineIndex: 0,
-    graphData: { ...graphData },
+    graphData: {
+      nodes: graph.nodes.map(node => ({ ...node, status: 'default' as const })),
+      edges: graph.edges.map(edge => ({ ...edge, status: 'default' as const }))
+    },
     description: `Starting BFS from node ${startNode}`
   });
   
-  // Simulate BFS traversal
-  const visited = new Set<string>();
-  const queue = [startNode];
   let stepIndex = 1;
   
   while (queue.length > 0) {
@@ -45,98 +44,53 @@ export function visualizeBFS(startNode: string = 'A'): VisualizationStep[] {
     if (!visited.has(currentNode)) {
       visited.add(currentNode);
       
-      // Update node status to visited
       const updatedGraphData = {
-        nodes: graphData.nodes.map(node => ({
+        nodes: graph.nodes.map(node => ({
           ...node,
           status: visited.has(node.id) ? ('visited' as const) : 
                   node.id === currentNode ? ('processing' as const) : ('default' as const)
         })),
-        edges: graphData.edges.map(edge => ({
+        edges: graph.edges.map(edge => ({
           ...edge,
           status: (visited.has(edge.source) && visited.has(edge.target)) ? ('visited' as const) : ('default' as const)
         }))
       };
       
       steps.push({
-        array: [{ value: `Visiting ${currentNode}`, status: 'found' }],
+        array: [{ value: `Visiting ${currentNode}`, status: ITEM_STATUSES.FOUND }],
         lineIndex: stepIndex,
         graphData: updatedGraphData,
         description: `Visiting node ${currentNode}`
       });
       
-      // Add neighbors to queue
-      const neighbors = graphData.edges
-        .filter(edge => edge.source === currentNode)
-        .map(edge => edge.target)
-        .concat(
-          graphData.edges
-            .filter(edge => edge.target === currentNode)
-            .map(edge => edge.source)
-        );
+      const neighbors = graph.edges
+        .filter(edge => edge.source === currentNode || edge.target === currentNode)
+        .map(edge => edge.source === currentNode ? edge.target : edge.source)
+        .filter(neighbor => !visited.has(neighbor) && !queue.includes(neighbor));
       
-      neighbors.forEach(neighbor => {
-        if (!visited.has(neighbor) && !queue.includes(neighbor)) {
-          queue.push(neighbor);
-        }
-      });
-      
+      neighbors.forEach(neighbor => queue.push(neighbor));
       stepIndex++;
     }
   }
   
-  // Final state
-  steps.push({
-    array: [{ value: 'BFS Complete', status: 'found' }],
-    lineIndex: stepIndex,
-    graphData: {
-      nodes: graphData.nodes.map(node => ({
-        ...node,
-        status: visited.has(node.id) ? ('found' as const) : ('default' as const)
-      })),
-      edges: graphData.edges.map(edge => ({
-        ...edge,
-        status: 'visited' as const
-      }))
-    },
-    description: 'BFS traversal completed'
-  });
-  
   return steps;
 }
 
-// Enhanced DFS Visualization
-export function visualizeDFS(startNode: string = 'A'): VisualizationStep[] {
+function visualizeDFS(graph: GraphData, startNode: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
+  const visited = new Set<string>();
+  const stack = [startNode];
   
-  const graphData = {
-    nodes: [
-      { id: 'A', x: 150, y: 50, status: 'default' as const },
-      { id: 'B', x: 100, y: 150, status: 'default' as const },
-      { id: 'C', x: 200, y: 150, status: 'default' as const },
-      { id: 'D', x: 50, y: 250, status: 'default' as const },
-      { id: 'E', x: 150, y: 250, status: 'default' as const },
-      { id: 'F', x: 250, y: 250, status: 'default' as const }
-    ],
-    edges: [
-      { source: 'A', target: 'B', status: 'default' as const },
-      { source: 'A', target: 'C', status: 'default' as const },
-      { source: 'B', target: 'D', status: 'default' as const },
-      { source: 'B', target: 'E', status: 'default' as const },
-      { source: 'C', target: 'E', status: 'default' as const },
-      { source: 'C', target: 'F', status: 'default' as const }
-    ]
-  };
-
   steps.push({
-    array: [{ value: 'DFS Starting', status: 'default' }],
+    array: [{ value: 'DFS Starting', status: ITEM_STATUSES.DEFAULT }],
     lineIndex: 0,
-    graphData: { ...graphData },
+    graphData: {
+      nodes: graph.nodes.map(node => ({ ...node, status: 'default' as const })),
+      edges: graph.edges.map(edge => ({ ...edge, status: 'default' as const }))
+    },
     description: `Starting DFS from node ${startNode}`
   });
   
-  const visited = new Set<string>();
-  const stack = [startNode];
   let stepIndex = 1;
   
   while (stack.length > 0) {
@@ -146,32 +100,30 @@ export function visualizeDFS(startNode: string = 'A'): VisualizationStep[] {
       visited.add(currentNode);
       
       const updatedGraphData = {
-        nodes: graphData.nodes.map(node => ({
+        nodes: graph.nodes.map(node => ({
           ...node,
           status: visited.has(node.id) ? ('visited' as const) : 
                   node.id === currentNode ? ('processing' as const) : ('default' as const)
         })),
-        edges: graphData.edges.map(edge => ({
+        edges: graph.edges.map(edge => ({
           ...edge,
           status: (visited.has(edge.source) && visited.has(edge.target)) ? ('path' as const) : ('default' as const)
         }))
       };
       
       steps.push({
-        array: [{ value: `Visiting ${currentNode}`, status: 'found' }],
+        array: [{ value: `Visiting ${currentNode}`, status: ITEM_STATUSES.FOUND }],
         lineIndex: stepIndex,
         graphData: updatedGraphData,
         description: `Visiting node ${currentNode}`
       });
       
-      // Add neighbors to stack (in reverse order for proper DFS)
-      const neighbors = graphData.edges
+      const neighbors = graph.edges
         .filter(edge => edge.source === currentNode || edge.target === currentNode)
         .map(edge => edge.source === currentNode ? edge.target : edge.source)
-        .filter(neighbor => !visited.has(neighbor))
-        .reverse();
+        .filter(neighbor => !visited.has(neighbor));
       
-      neighbors.forEach(neighbor => {
+      neighbors.reverse().forEach(neighbor => {
         if (!stack.includes(neighbor)) {
           stack.push(neighbor);
         }
@@ -184,53 +136,37 @@ export function visualizeDFS(startNode: string = 'A'): VisualizationStep[] {
   return steps;
 }
 
-// Enhanced Dijkstra's Algorithm Visualization
-export function visualizeDijkstra(startNode: string = 'A'): VisualizationStep[] {
+function visualizeDijkstra(graph: GraphData, startNode: string, endNode?: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
+  const distances: { [key: string]: number } = {};
+  const visited = new Set<string>();
   
-  const graphData = {
-    nodes: [
-      { id: 'A', x: 100, y: 100, distance: 0, status: 'target' as const },
-      { id: 'B', x: 200, y: 50, distance: Infinity, status: 'default' as const },
-      { id: 'C', x: 300, y: 100, distance: Infinity, status: 'default' as const },
-      { id: 'D', x: 200, y: 150, distance: Infinity, status: 'default' as const },
-      { id: 'E', x: 150, y: 200, distance: Infinity, status: 'default' as const }
-    ],
-    edges: [
-      { source: 'A', target: 'B', weight: 4, status: 'default' as const },
-      { source: 'A', target: 'D', weight: 2, status: 'default' as const },
-      { source: 'B', target: 'C', weight: 3, status: 'default' as const },
-      { source: 'B', target: 'D', weight: 1, status: 'default' as const },
-      { source: 'C', target: 'E', weight: 2, status: 'default' as const },
-      { source: 'D', target: 'E', weight: 3, status: 'default' as const }
-    ]
-  };
-
+  // Initialize distances
+  graph.nodes.forEach(node => {
+    distances[node.id] = node.id === startNode ? 0 : Infinity;
+  });
+  
   steps.push({
-    array: [{ value: 'Dijkstra Start', status: 'default' }],
+    array: [{ value: 'Dijkstra Start', status: ITEM_STATUSES.DEFAULT }],
     lineIndex: 0,
-    graphData: { ...graphData },
+    graphData: {
+      nodes: graph.nodes.map(node => ({
+        ...node,
+        distance: distances[node.id],
+        status: node.id === startNode ? ('target' as const) : ('default' as const)
+      })),
+      edges: graph.edges.map(edge => ({ ...edge, status: 'default' as const }))
+    },
     description: `Finding shortest paths from ${startNode}`
   });
   
-  const distances = { A: 0, B: Infinity, C: Infinity, D: Infinity, E: Infinity };
-  const visited = new Set<string>();
-  const previous = {};
-  
-  // Set starting node distance to 0
-  if (startNode !== 'A') {
-    distances[startNode] = 0;
-    distances['A'] = Infinity;
-  }
-  
   let stepIndex = 1;
   
-  while (visited.size < graphData.nodes.length) {
-    // Find unvisited node with minimum distance
-    let currentNode = null;
+  while (visited.size < graph.nodes.length) {
+    let currentNode: string | null = null;
     let minDistance = Infinity;
     
-    for (const node of graphData.nodes) {
+    for (const node of graph.nodes) {
       if (!visited.has(node.id) && distances[node.id] < minDistance) {
         minDistance = distances[node.id];
         currentNode = node.id;
@@ -242,13 +178,14 @@ export function visualizeDijkstra(startNode: string = 'A'): VisualizationStep[] 
     visited.add(currentNode);
     
     // Update distances to neighbors
-    const neighbors = graphData.edges.filter(
+    const neighbors = graph.edges.filter(
       edge => edge.source === currentNode || edge.target === currentNode
     );
     
     neighbors.forEach(edge => {
       const neighbor = edge.source === currentNode ? edge.target : edge.source;
-      const newDistance = distances[currentNode] + edge.weight;
+      const weight = edge.weight || 1;
+      const newDistance = distances[currentNode!] + weight;
       
       if (newDistance < distances[neighbor]) {
         distances[neighbor] = newDistance;
@@ -256,20 +193,20 @@ export function visualizeDijkstra(startNode: string = 'A'): VisualizationStep[] 
     });
     
     const updatedGraphData = {
-      nodes: graphData.nodes.map(node => ({
+      nodes: graph.nodes.map(node => ({
         ...node,
         distance: distances[node.id],
         status: visited.has(node.id) ? ('visited' as const) : 
                 node.id === currentNode ? ('processing' as const) : ('default' as const)
       })),
-      edges: graphData.edges.map(edge => ({
+      edges: graph.edges.map(edge => ({
         ...edge,
         status: visited.has(edge.source) && visited.has(edge.target) ? ('path' as const) : ('default' as const)
       }))
     };
     
     steps.push({
-      array: [{ value: `Process ${currentNode}`, status: 'found' }],
+      array: [{ value: `Process ${currentNode}`, status: ITEM_STATUSES.FOUND }],
       lineIndex: stepIndex,
       graphData: updatedGraphData,
       description: `Processing node ${currentNode}, distance: ${distances[currentNode]}`
