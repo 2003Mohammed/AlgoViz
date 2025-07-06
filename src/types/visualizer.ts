@@ -1,6 +1,6 @@
 
 export interface ArrayItem {
-  value: number;
+  value: number | string;
   status: 'default' | 'comparing' | 'swapping' | 'sorted' | 'pivot' | 'found' | 'current' | 'visited' | 'added' | 'removing' | 'active' | 'processing' | 'target' | 'path';
   index?: number;
 }
@@ -18,7 +18,8 @@ export interface GraphNode {
   value?: string | number;
   visited?: boolean;
   current?: boolean;
-  status?: 'default' | 'current' | 'visited' | 'found' | 'processing';
+  status?: 'default' | 'current' | 'visited' | 'found' | 'processing' | 'path' | 'active' | 'target';
+  distance?: number;
 }
 
 export interface GraphEdge {
@@ -27,7 +28,7 @@ export interface GraphEdge {
   source?: string;
   target?: string;
   weight?: number;
-  status?: 'default' | 'current' | 'visited' | 'found';
+  status?: 'default' | 'current' | 'visited' | 'found' | 'path';
   directed?: boolean;
 }
 
@@ -82,8 +83,10 @@ export interface VisualizerStep {
 }
 
 export interface GuideSlide {
+  id?: string;
   title: string;
   content: string;
   code?: string;
   visual?: any;
+  image?: string;
 }

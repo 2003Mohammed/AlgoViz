@@ -13,13 +13,14 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({ graphDat
         <svg width="100%" height="100%" viewBox="0 0 600 400" className="circuit-pattern rounded-lg">
           {/* Draw edges */}
           {graphData.edges.map((edge, idx) => {
-            const source = graphData.nodes.find(n => n.id === edge.source);
-            const target = graphData.nodes.find(n => n.id === edge.target);
+            const source = graphData.nodes.find(n => n.id === (edge.source || edge.from));
+            const target = graphData.nodes.find(n => n.id === (edge.target || edge.to));
             
             if (!source || !target) return null;
             
             const edgeColor = edge.status === 'visited' ? 'stroke-yellow-500' : 
                             edge.status === 'path' ? 'stroke-green-500' : 
+                            edge.status === 'current' ? 'stroke-blue-500' :
                             'stroke-muted-foreground/50';
             
             return (
@@ -31,7 +32,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({ graphDat
                   y2={target.y}
                   className={`${edgeColor} stroke-2`}
                   strokeDasharray={edge.status === 'path' ? "none" : "5,5"}
-                  marker-end={edge.directed ? "url(#arrowhead)" : undefined}
+                  markerEnd={edge.directed ? "url(#arrowhead)" : undefined}
                 />
                 {edge.weight && (
                   <text
@@ -72,6 +73,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = ({ graphDat
             else if (node.status === 'processing') nodeColor = 'fill-purple-500';
             else if (node.status === 'path') nodeColor = 'fill-green-500';
             else if (node.status === 'active' || node.status === 'target') nodeColor = 'fill-blue-500';
+            else if (node.status === 'current') nodeColor = 'fill-orange-500';
             else nodeColor = 'fill-foreground/80';
             
             return (
