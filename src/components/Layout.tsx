@@ -8,12 +8,10 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  console.log('Layout rendering');
-  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative dark">
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {children}
       </main>
       <Footer />

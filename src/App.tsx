@@ -1,41 +1,35 @@
-
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Routes, Route } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { Home } from './pages/Home';
+import { Algorithms } from './pages/Algorithms';
+import { DataStructures } from './pages/DataStructures';
+import { Guides } from './pages/Guides';
+import { AlgorithmGuide } from './components/guides/AlgorithmGuide';
 import { useTheme } from './hooks/useTheme';
-import { Toaster } from './components/ui/toaster';
-
-// Page imports
-import Index from './pages/Index';
-import VisualizerPage from './pages/VisualizerPage';
-import DataStructuresPage from './pages/DataStructuresPage';
-import LearnPage from './pages/LearnPage';
-
-// Data Structure imports
-import { DataStructureVisualizer } from './components/data-structure-visualizer';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ThemeSwitcher } from './components/ThemeSwitcher';
+import { DataStructureVisualizer } from './components/data-structure-visualizer/DataStructureVisualizer';
 import { dataStructures } from './utils/dataStructureData';
-
-const queryClient = new QueryClient();
+import { BinarySearchPage } from './pages/BinarySearchPage';
+import { ArrayVisualizerPage } from './pages/ArrayVisualizerPage';
 
 function App() {
   const { theme } = useTheme();
 
-  console.log('App rendering, theme:', theme);
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <div className={`min-h-screen transition-colors duration-300 ${
-          theme === 'dark' 
-            ? 'bg-gray-900 text-white' 
-            : 'bg-gray-50 text-gray-900'
-        }`}>
+    <QueryClientProvider client={new QueryClient()}>
+      <div className={`min-h-screen transition-colors duration-300 ${
+        theme === 'dark' 
+          ? 'bg-gray-900 text-white' 
+          : 'bg-gray-50 text-gray-900'
+      }`}>
+        <Layout>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/algorithms" element={<VisualizerPage />} />
-            <Route path="/algorithms/:algorithmId" element={<VisualizerPage />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/algorithms" element={<Algorithms />} />
             
-            <Route path="/data-structures" element={<DataStructuresPage />} />
+            <Route path="/data-structures" element={<DataStructures />} />
             {dataStructures.map((ds) => (
               <Route 
                 key={ds.id} 
@@ -44,14 +38,13 @@ function App() {
               />
             ))}
 
-            <Route path="/guides" element={<LearnPage />} />
-            
-            {/* Fallback route */}
-            <Route path="*" element={<Index />} />
+            <Route path="/guides" element={<Guides />} />
+            <Route path="/guides/:algorithmId" element={<AlgorithmGuide />} />
+            <Route path="/visualizer/array" element={<ArrayVisualizerPage />} />
+            <Route path="/visualizer/binary-search" element={<BinarySearchPage />} />
           </Routes>
-        </div>
-        <Toaster />
-      </BrowserRouter>
+        </Layout>
+      </div>
     </QueryClientProvider>
   );
 }

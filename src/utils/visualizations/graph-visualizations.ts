@@ -52,9 +52,7 @@ export function visualizeBFS(graph: GraphData, startNode: string): Visualization
         })),
         edges: graph.edges.map(edge => ({
           ...edge,
-          status: (visited.has(edge.from) && visited.has(edge.to)) || 
-                  (visited.has(edge.source || '') && visited.has(edge.target || '')) ? 
-                  ('visited' as const) : ('default' as const)
+          status: (visited.has(edge.source) && visited.has(edge.target)) ? ('visited' as const) : ('default' as const)
         }))
       };
       
@@ -66,15 +64,9 @@ export function visualizeBFS(graph: GraphData, startNode: string): Visualization
       });
       
       const neighbors = graph.edges
-        .filter(edge => (edge.from === currentNode || edge.to === currentNode) ||
-                       (edge.source === currentNode || edge.target === currentNode))
-        .map(edge => {
-          if (edge.from === currentNode) return edge.to;
-          if (edge.to === currentNode) return edge.from;
-          if (edge.source === currentNode) return edge.target;
-          return edge.source;
-        })
-        .filter((neighbor): neighbor is string => neighbor !== undefined && !visited.has(neighbor) && !queue.includes(neighbor));
+        .filter(edge => edge.source === currentNode || edge.target === currentNode)
+        .map(edge => edge.source === currentNode ? edge.target : edge.source)
+        .filter(neighbor => !visited.has(neighbor) && !queue.includes(neighbor));
       
       neighbors.forEach(neighbor => queue.push(neighbor));
       stepIndex++;
@@ -115,9 +107,7 @@ export function visualizeDFS(graph: GraphData, startNode: string): Visualization
         })),
         edges: graph.edges.map(edge => ({
           ...edge,
-          status: (visited.has(edge.from) && visited.has(edge.to)) ||
-                  (visited.has(edge.source || '') && visited.has(edge.target || '')) ? 
-                  ('path' as const) : ('default' as const)
+          status: (visited.has(edge.source) && visited.has(edge.target)) ? ('path' as const) : ('default' as const)
         }))
       };
       
@@ -129,15 +119,9 @@ export function visualizeDFS(graph: GraphData, startNode: string): Visualization
       });
       
       const neighbors = graph.edges
-        .filter(edge => (edge.from === currentNode || edge.to === currentNode) ||
-                       (edge.source === currentNode || edge.target === currentNode))
-        .map(edge => {
-          if (edge.from === currentNode) return edge.to;
-          if (edge.to === currentNode) return edge.from;
-          if (edge.source === currentNode) return edge.target;
-          return edge.source;
-        })
-        .filter((neighbor): neighbor is string => neighbor !== undefined && !visited.has(neighbor));
+        .filter(edge => edge.source === currentNode || edge.target === currentNode)
+        .map(edge => edge.source === currentNode ? edge.target : edge.source)
+        .filter(neighbor => !visited.has(neighbor));
       
       neighbors.reverse().forEach(neighbor => {
         if (!stack.includes(neighbor)) {
@@ -169,7 +153,7 @@ export function visualizeDijkstra(graph: GraphData, startNode: string, endNode?:
       nodes: graph.nodes.map(node => ({
         ...node,
         distance: distances[node.id],
-        status: node.id === startNode ? ('current' as const) : ('default' as const)
+        status: node.id === startNode ? ('target' as const) : ('default' as const)
       })),
       edges: graph.edges.map(edge => ({ ...edge, status: 'default' as const }))
     },
@@ -195,16 +179,11 @@ export function visualizeDijkstra(graph: GraphData, startNode: string, endNode?:
     
     // Update distances to neighbors
     const neighbors = graph.edges.filter(
-      edge => (edge.from === currentNode || edge.to === currentNode) ||
-              (edge.source === currentNode || edge.target === currentNode)
+      edge => edge.source === currentNode || edge.target === currentNode
     );
     
     neighbors.forEach(edge => {
-      const neighbor = edge.from === currentNode ? edge.to : 
-                      edge.to === currentNode ? edge.from :
-                      edge.source === currentNode ? edge.target : edge.source;
-      if (!neighbor) return;
-      
+      const neighbor = edge.source === currentNode ? edge.target : edge.source;
       const weight = edge.weight || 1;
       const newDistance = distances[currentNode!] + weight;
       
@@ -222,9 +201,7 @@ export function visualizeDijkstra(graph: GraphData, startNode: string, endNode?:
       })),
       edges: graph.edges.map(edge => ({
         ...edge,
-        status: (visited.has(edge.from) && visited.has(edge.to)) ||
-                (visited.has(edge.source || '') && visited.has(edge.target || '')) ? 
-                ('path' as const) : ('default' as const)
+        status: visited.has(edge.source) && visited.has(edge.target) ? ('path' as const) : ('default' as const)
       }))
     };
     

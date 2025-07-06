@@ -5,21 +5,6 @@ import { VisualizerContainer } from './visualizer/VisualizerContainer';
 import { motion } from 'framer-motion';
 
 export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
-  // Ensure algorithm has required properties
-  const completeAlgorithm = {
-    ...algorithm,
-    timeComplexity: algorithm.timeComplexity || {
-      best: 'O(n)',
-      average: 'O(n log n)',
-      worst: 'O(n²)'
-    },
-    spaceComplexity: algorithm.spaceComplexity || 'O(1)',
-    pseudocode: algorithm.pseudocode || [],
-    implementation: algorithm.implementation || '',
-    realWorldExamples: algorithm.realWorldExamples || [],
-    slides: algorithm.slides || []
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,7 +16,7 @@ export const Visualizer: React.FC<VisualizerProps> = ({ algorithm }) => {
         damping: 15
       }}
     >
-      <VisualizerContainer algorithm={completeAlgorithm} />
+      <VisualizerContainer algorithm={algorithm} />
     </motion.div>
   );
 };

@@ -23,14 +23,17 @@ interface AlgorithmGuideProps {
 // Default slides if algorithm doesn't provide its own
 const defaultSlides: GuideSlide[] = [
   {
+    id: "1",
     title: "Introduction",
     content: "This algorithm visualizer will help you understand how the algorithm works step by step."
   },
   {
+    id: "2",
     title: "How to Use",
     content: "Use the controls to play, pause, and step through the visualization. You can also adjust the speed."
   },
   {
+    id: "3",
     title: "Ready?",
     content: "You're now ready to start visualizing! Click 'Start Visualizing' to begin."
   }
@@ -85,7 +88,7 @@ export const AlgorithmGuide: React.FC<AlgorithmGuideProps> = ({ algorithm, onSki
               <h3 className="font-medium mb-2">Contents</h3>
               <ol className="space-y-1.5 text-sm">
                 {slides.map((slide, index) => (
-                  <li key={slide.id || index} className="flex items-center gap-2">
+                  <li key={slide.id} className="flex items-center gap-2">
                     <span className={`h-5 w-5 rounded-full flex items-center justify-center text-xs 
                       ${index === currentSlideIndex ? 'bg-primary text-primary-foreground' : 
                         index < currentSlideIndex ? 'bg-primary/20 text-muted-foreground' : 

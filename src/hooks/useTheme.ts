@@ -1,29 +1,39 @@
 
 import { useState, useEffect } from 'react';
 
-export function useTheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+type Theme = 'dark';
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
-    }
-  }, []);
+export function useTheme() {
+  const [theme] = useState<Theme>('dark');
 
   useEffect(() => {
     const root = document.documentElement;
+    
+    // Always use dark theme
     root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    root.classList.add('dark');
+    
+    // Store preference
+    localStorage.setItem('theme', 'dark');
+    
+    // Update meta theme-color for mobile browsers
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', '#0f172a');
+    }
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    // Apply dark theme styling
+    document.body.className = 'dark theme-transition';
+    document.body.style.setProperty('--theme-bg', '#0f172a');
+    document.body.style.setProperty('--theme-text', '#f8fafc');
+    document.body.style.setProperty('--theme-primary', '#60a5fa');
+  }, []);
+
+  return { 
+    theme: 'dark' as const, 
+    toggleTheme: () => {}, // No-op since we only have dark mode
+    setThemeMode: () => {}, // No-op
+    isDark: true,
+    isLight: false
   };
-
-  return { theme, toggleTheme };
 }

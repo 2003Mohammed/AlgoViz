@@ -18,10 +18,6 @@ export const StackRenderer: React.FC<StackRendererProps> = ({ stack }) => {
         return 'bg-yellow-500';
       case 'current':
         return 'bg-blue-500';
-      case 'visited':
-        return 'bg-gray-500';
-      case 'active':
-        return 'bg-cyan-500';
       default:
         return 'bg-primary';
     }
