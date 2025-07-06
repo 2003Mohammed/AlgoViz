@@ -1,134 +1,113 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Menu, X, Monitor, Database, BookOpen, Home } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
-import { Moon, Menu, X, Activity } from 'lucide-react';
+import { Button } from './ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
 
-export const Navbar = () => {
+export const Navbar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
-  const { theme } = useTheme();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: 'Algorithms', path: '/visualizer', icon: Activity },
-    { name: 'Data Structures', path: '/data-structures', icon: Activity },
+    { path: '/', label: 'Home', icon: Home },
+    { path: '/algorithms', label: 'Algorithms', icon: Monitor },
+    { path: '/data-structures', label: 'Data Structures', icon: Database },
+    { path: '/guides', label: 'Guides', icon: BookOpen },
   ];
 
-  const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl theme-transition">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <motion.div
-            className="flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
-              <Activity className="h-5 w-5 text-primary-foreground" />
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Monitor className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl text-foreground">AlgoViz</span>
-          </motion.div>
-        </Link>
+            <span className="text-xl font-bold">AlgoViz</span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-1">
-          {navItems.map((item) => (
-            <Link key={item.path} to={item.path}>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map(({ path, label, icon: Icon }) => (
+              <Link
+                key={path}
+                to={path}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-md transition-colors ${
+                  isActive(path)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
-                <Button
-                  variant={isActive(item.path) ? "default" : "ghost"}
-                  size="sm"
-                  className="theme-transition"
-                >
-                  <item.icon className="h-4 w-4 mr-2" />
-                  {item.name}
-                </Button>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
+                <Icon className="w-4 h-4" />
+                <span>{label}</span>
+              </Link>
+            ))}
+          </div>
 
-        {/* Theme Display & Mobile Menu */}
-        <div className="flex items-center space-x-2">
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          {/* Theme Toggle & Mobile Menu */}
+          <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="sm"
-              className="theme-transition"
-              aria-label="Dark mode enabled"
-              disabled
+              onClick={toggleTheme}
+              className="hidden md:flex"
             >
-              <Moon className="h-4 w-4" />
+              {theme === 'dark' ? '🌙' : '☀️'}
             </Button>
-          </motion.div>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden theme-transition"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle mobile menu"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isMobileMenuOpen ? 'close' : 'menu'}
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </motion.div>
-            </AnimatePresence>
-          </Button>
+            <button
+              className="md:hidden"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden border-t border-border/40 bg-background/90 backdrop-blur-xl"
-          >
-            <div className="container py-4 space-y-2">
-              {navItems.map((item) => (
-                <Link key={item.path} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
-                  <motion.div
-                    whileHover={{ x: 4 }}
-                    whileTap={{ scale: 0.98 }}
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-border"
+            >
+              <div className="py-4 space-y-2">
+                {navItems.map(({ path, label, icon: Icon }) => (
+                  <Link
+                    key={path}
+                    to={path}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
+                      isActive(path)
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    onClick={() => setIsOpen(false)}
                   >
-                    <Button
-                      variant={isActive(item.path) ? "default" : "ghost"}
-                      size="sm"
-                      className="w-full justify-start theme-transition"
-                    >
-                      <item.icon className="h-4 w-4 mr-2" />
-                      {item.name}
-                    </Button>
-                  </motion.div>
-                </Link>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    <Icon className="w-4 h-4" />
+                    <span>{label}</span>
+                  </Link>
+                ))}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className="w-full justify-start px-4"
+                >
+                  {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </nav>
   );
 };
