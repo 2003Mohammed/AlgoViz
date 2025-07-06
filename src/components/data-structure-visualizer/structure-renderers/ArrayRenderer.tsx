@@ -24,6 +24,12 @@ export const ArrayRenderer: React.FC<ArrayRendererProps> = ({ array }) => {
         return 'bg-red-400';
       case 'current':
         return 'bg-orange-500';
+      case 'visited':
+        return 'bg-gray-500';
+      case 'active':
+        return 'bg-cyan-500';
+      case 'processing':
+        return 'bg-indigo-500';
       default:
         return 'bg-primary';
     }

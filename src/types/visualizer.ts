@@ -1,7 +1,7 @@
 
 export interface ArrayItem {
   value: number;
-  status: 'default' | 'comparing' | 'swapping' | 'sorted' | 'pivot' | 'found';
+  status: 'default' | 'comparing' | 'swapping' | 'sorted' | 'pivot' | 'found' | 'current' | 'visited' | 'added' | 'removing' | 'active' | 'processing' | 'target' | 'path';
   index?: number;
 }
 
@@ -15,14 +15,20 @@ export interface GraphNode {
   x: number;
   y: number;
   label: string;
+  value?: string | number;
   visited?: boolean;
   current?: boolean;
+  status?: 'default' | 'current' | 'visited' | 'found' | 'processing';
 }
 
 export interface GraphEdge {
   from: string;
   to: string;
+  source?: string;
+  target?: string;
   weight?: number;
+  status?: 'default' | 'current' | 'visited' | 'found';
+  directed?: boolean;
 }
 
 export interface TreeNode {
@@ -45,4 +51,39 @@ export interface Algorithm {
   description: string;
   category: string;
   icon: any;
+  timeComplexity?: {
+    best: string;
+    average: string;
+    worst: string;
+  };
+  spaceComplexity?: string;
+  pseudocode?: string[];
+  implementation?: string;
+  realWorldExamples?: {
+    title: string;
+    description: string;
+    industry: string;
+  }[];
+  slides?: GuideSlide[];
+}
+
+export interface VisualizationStep {
+  array?: ArrayItem[];
+  graphData?: GraphData;
+  treeData?: TreeNode;
+  lineIndex: number;
+  description?: string;
+}
+
+export interface VisualizerStep {
+  array: ArrayItem[];
+  lineIndex: number;
+  description?: string;
+}
+
+export interface GuideSlide {
+  title: string;
+  content: string;
+  code?: string;
+  visual?: any;
 }

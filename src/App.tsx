@@ -10,8 +10,6 @@ import Index from './pages/Index';
 import VisualizerPage from './pages/VisualizerPage';
 import DataStructuresPage from './pages/DataStructuresPage';
 import LearnPage from './pages/LearnPage';
-import ArrayVisualizerPage from './pages/ArrayVisualizerPage';
-import BinarySearchPage from './pages/BinarySearchPage';
 
 // Data Structure imports
 import { DataStructureVisualizer } from './components/data-structure-visualizer';
@@ -47,8 +45,6 @@ function App() {
             ))}
 
             <Route path="/guides" element={<LearnPage />} />
-            <Route path="/visualizer/array" element={<ArrayVisualizerPage />} />
-            <Route path="/visualizer/binary-search" element={<BinarySearchPage />} />
             
             {/* Fallback route */}
             <Route path="*" element={<Index />} />

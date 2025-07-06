@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { ArrayItem, VisualizationStep } from '../../types/visualizer';
 import { toast } from '../use-toast';
