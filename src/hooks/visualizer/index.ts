@@ -1,122 +1,76 @@
 
-import { useState, useRef, useEffect } from 'react';
-import { ArrayItem, VisualizerStep, GraphData, TreeNode } from '../../types/visualizer';
-import { useArrayOperations } from './useArrayOperations';
-import { useGraphTreeOperations } from './useGraphTreeOperations';
-import { useAnimationControls } from './useAnimationControls';
-import { exportVisualizationData } from './utils';
-import { VisualizerStateReturnType } from './types';
+import { useState, useCallback } from 'react';
+import { ArrayItem } from '../../types/visualizer';
 
-export function useVisualizerState(algorithmId: string): VisualizerStateReturnType {
-  const [array, setArray] = useState<ArrayItem[]>([]);
-  const [graphData, setGraphData] = useState<GraphData | null>(null);
-  const [treeData, setTreeData] = useState<TreeNode | null>(null);
-  const [visualizationType, setVisualizationType] = useState<'array' | 'graph' | 'tree'>('array');
-  const [totalSteps, setTotalSteps] = useState(0);
-  const [activeLineIndex, setActiveLineIndex] = useState(-1);
+export const useVisualizerState = (algorithmId: string) => {
+  const [array, setArray] = useState<ArrayItem[]>([
+    { value: 64, status: 'default' },
+    { value: 34, status: 'default' },
+    { value: 25, status: 'default' },
+    { value: 12, status: 'default' },
+    { value: 22, status: 'default' },
+    { value: 11, status: 'default' },
+    { value: 90, status: 'default' }
+  ]);
   
-  const animationRef = useRef<number | null>(null);
-  const stepsRef = useRef<VisualizerStep[]>([]);
-  
-  // Animation controls (removed speed)
-  const resetAnimation = () => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-  };
-  
-  const {
-    isPlaying,
-    currentStep,
-    reset,
-    togglePlayPause,
-    stepForward,
-    stepBackward,
-    setCurrentStep,
-    setIsPlaying
-  } = useAnimationControls(
-    totalSteps,
-    stepsRef,
-    setArray,
-    setActiveLineIndex,
-    animationRef
-  );
-  
-  // Array operations
-  const { 
-    handleGenerateRandomArray,
-    handleCustomArraySubmit
-  } = useArrayOperations(
-    algorithmId,
-    setArray,
-    setTotalSteps,
-    setCurrentStep,
-    setActiveLineIndex,
-    stepsRef,
-    resetAnimation
-  );
-  
-  // Graph and tree operations
-  const {
-    handleGenerateRandomGraph,
-    handleGenerateRandomTree
-  } = useGraphTreeOperations(
-    algorithmId,
-    setGraphData,
-    setTreeData,
-    resetAnimation
-  );
-  
-  // Export visualization
-  const exportVisualization = () => {
-    exportVisualizationData(algorithmId, stepsRef.current, currentStep);
-  };
-  
-  // Initialize visualization when component mounts or algorithm changes
-  useEffect(() => {
-    // Determine visualization type based on algorithm
-    if (algorithmId.includes('sort')) {
-      setVisualizationType('array');
-      handleGenerateRandomArray();
-    } else if (algorithmId.includes('search')) {
-      setVisualizationType('array');
-      handleGenerateRandomArray(true); // Generate sorted array for search algorithms
-    } else if (algorithmId.includes('graph') || algorithmId.includes('path')) {
-      setVisualizationType('graph');
-      handleGenerateRandomGraph();
-    } else if (algorithmId.includes('tree')) {
-      setVisualizationType('tree');
-      handleGenerateRandomTree();
-    } else {
-      setVisualizationType('array');
-      handleGenerateRandomArray();
-    }
-    
-    // Cleanup on unmount or algorithm change
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [algorithmId]);
-  
-  // Animation effect with medium speed (1000ms interval)
-  useEffect(() => {
-    if (isPlaying) {
-      const timer = setInterval(() => {
-        if (currentStep < totalSteps - 1) {
-          stepForward();
-        } else {
-          setIsPlaying(false);
-        }
-      }, 1000); // Medium speed - 1 second per step
-      
-      return () => clearInterval(timer);
-    }
-  }, [isPlaying, currentStep, totalSteps, stepForward, setIsPlaying]);
+  const [graphData, setGraphData] = useState(null);
+  const [treeData, setTreeData] = useState(null);
+  const [visualizationType] = useState<'array' | 'graph' | 'tree'>('array');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [totalSteps, setTotalSteps] = useState(1);
+  const [activeLineIndex, setActiveLineIndex] = useState(0);
 
-  // Public API
+  const handleGenerateRandomArray = useCallback(() => {
+    const newArray = Array.from({ length: 7 }, () => ({
+      value: Math.floor(Math.random() * 100) + 1,
+      status: 'default' as const
+    }));
+    setArray(newArray);
+  }, []);
+
+  const handleGenerateRandomGraph = useCallback(() => {
+    console.log('Generate random graph');
+  }, []);
+
+  const handleGenerateRandomTree = useCallback(() => {
+    console.log('Generate random tree');
+  }, []);
+
+  const handleCustomArraySubmit = useCallback((customArray: number[]) => {
+    const newArray = customArray.map(value => ({
+      value,
+      status: 'default' as const
+    }));
+    setArray(newArray);
+  }, []);
+
+  const reset = useCallback(() => {
+    setCurrentStep(0);
+    setIsPlaying(false);
+    setActiveLineIndex(0);
+  }, []);
+
+  const togglePlayPause = useCallback(() => {
+    setIsPlaying(!isPlaying);
+  }, [isPlaying]);
+
+  const stepForward = useCallback(() => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  }, [currentStep, totalSteps]);
+
+  const stepBackward = useCallback(() => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  }, [currentStep]);
+
+  const exportVisualization = useCallback(() => {
+    console.log('Export visualization');
+  }, []);
+
   return {
     array,
     graphData,
@@ -136,4 +90,4 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     stepBackward,
     exportVisualization
   };
-}
+};
