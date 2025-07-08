@@ -12,7 +12,7 @@ import { toast } from '../../hooks/use-toast';
 
 interface ArrayItem {
   value: number;
-  status: 'default' | 'comparing' | 'swapping' | 'sorted' | 'found' | 'active';
+  status: 'default' | 'comparing' | 'swapping' | 'sorted' | 'found' | 'active' | 'searching';
 }
 
 const ArrayVisualizer: React.FC = () => {
@@ -31,13 +31,14 @@ const ArrayVisualizer: React.FC = () => {
   const [deleteIndex, setDeleteIndex] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [algorithm, setAlgorithm] = useState<'bubble' | 'selection'>('bubble');
+  const [isRunning, setIsRunning] = useState(false);
 
   const visualization = useVisualizationSteps(array);
   const controls = useAnimationControls(visualization.totalSteps);
 
   // Animation effect
   useEffect(() => {
-    if (controls.isPlaying && controls.currentStep < visualization.totalSteps - 1) {
+    if (controls.isPlaying && controls.currentStep < visualization.totalSteps - 1 && !isRunning) {
       const timeout = setTimeout(() => {
         controls.setCurrentStep(controls.currentStep + 1);
       }, 1000 / controls.speed);
@@ -46,18 +47,38 @@ const ArrayVisualizer: React.FC = () => {
       return () => clearTimeout(timeout);
     } else if (controls.currentStep >= visualization.totalSteps - 1) {
       controls.pause();
+      setIsRunning(false);
     }
-  }, [controls.isPlaying, controls.currentStep, controls.speed, visualization.totalSteps]);
+  }, [controls.isPlaying, controls.currentStep, controls.speed, visualization.totalSteps, isRunning]);
 
   // Update array based on current step
   useEffect(() => {
     const currentStep = visualization.getCurrentStep(controls.currentStep);
-    if (currentStep) {
+    if (currentStep && controls.isPlaying) {
       setArray(currentStep.data);
     }
-  }, [controls.currentStep, visualization]);
+  }, [controls.currentStep, visualization, controls.isPlaying]);
+
+  const validateIndex = (index: number, allowEnd: boolean = false): boolean => {
+    return index >= 0 && index <= (allowEnd ? array.length : array.length - 1);
+  };
+
+  const validateValue = (value: string): number | null => {
+    const num = parseInt(value);
+    if (isNaN(num) || value.trim() === '') {
+      toast({ title: 'Error', description: 'Please enter a valid number', variant: 'destructive' });
+      return null;
+    }
+    if (num < 1 || num > 100) {
+      toast({ title: 'Error', description: 'Please enter a number between 1 and 100', variant: 'destructive' });
+      return null;
+    }
+    return num;
+  };
 
   const generateRandomArray = useCallback(() => {
+    if (isRunning) return;
+    
     const newArray = Array.from({ length: 8 }, () => ({
       value: Math.floor(Math.random() * 100) + 1,
       status: 'default' as const
@@ -65,260 +86,389 @@ const ArrayVisualizer: React.FC = () => {
     setArray(newArray);
     visualization.clearSteps();
     controls.reset();
-    toast({ title: 'Random array generated' });
-  }, [visualization, controls]);
+    toast({ title: 'Random array generated', description: `Generated ${newArray.length} random elements` });
+  }, [visualization, controls, isRunning]);
 
   const insertAtIndex = useCallback(() => {
-    const value = parseInt(inputValue);
+    if (isRunning) return;
+    
+    const value = validateValue(inputValue);
+    if (value === null) return;
+    
     const index = insertIndex ? parseInt(insertIndex) : array.length;
     
-    if (isNaN(value)) {
-      toast({ title: 'Error', description: 'Please enter a valid number', variant: 'destructive' });
-      return;
-    }
-    
-    if (index < 0 || index > array.length) {
-      toast({ title: 'Error', description: 'Invalid index', variant: 'destructive' });
+    if (isNaN(index) || !validateIndex(index, true)) {
+      toast({ 
+        title: 'Error', 
+        description: `Index must be between 0 and ${array.length}`, 
+        variant: 'destructive' 
+      });
       return;
     }
 
+    if (array.length >= 12) {
+      toast({ title: 'Error', description: 'Array cannot exceed 12 elements', variant: 'destructive' });
+      return;
+    }
+
+    const steps: VisualizationStep[] = [];
+    
+    // Step 1: Highlight insertion point
+    if (index < array.length) {
+      steps.push({
+        data: array.map((item, i) => ({
+          ...item,
+          status: i === index ? 'active' as const : 'default' as const
+        })),
+        description: `Preparing to insert ${value} at index ${index}`
+      });
+    }
+
+    // Step 2: Insert element
     const newArray = [...array];
-    newArray.splice(index, 0, { value, status: 'default' });
-    setArray(newArray);
+    newArray.splice(index, 0, { value, status: 'active' });
+    
+    steps.push({
+      data: newArray,
+      description: `Inserted ${value} at index ${index}`
+    });
+
+    // Step 3: Reset status
+    steps.push({
+      data: newArray.map(item => ({ ...item, status: 'default' })),
+      description: 'Insertion complete'
+    });
+
+    steps.forEach(step => visualization.addStep(step));
+    setArray(newArray.map(item => ({ ...item, status: 'default' })));
+    visualization.clearSteps();
+    controls.reset();
     setInputValue('');
     setInsertIndex('');
-    visualization.clearSteps();
-    controls.reset();
-    toast({ title: 'Element inserted', description: `Added ${value} at index ${index}` });
-  }, [inputValue, insertIndex, array, visualization, controls]);
+    
+    toast({ 
+      title: 'Element inserted', 
+      description: `Added ${value} at index ${index}. Array length: ${newArray.length}` 
+    });
+  }, [inputValue, insertIndex, array, visualization, controls, isRunning]);
 
   const deleteAtIndex = useCallback(() => {
+    if (isRunning) return;
+    
     const index = parseInt(deleteIndex);
     
-    if (isNaN(index) || index < 0 || index >= array.length) {
-      toast({ title: 'Error', description: 'Invalid index', variant: 'destructive' });
+    if (isNaN(index) || !validateIndex(index)) {
+      toast({ 
+        title: 'Error', 
+        description: `Index must be between 0 and ${array.length - 1}`, 
+        variant: 'destructive' 
+      });
       return;
     }
 
-    const newArray = [...array];
-    const removedValue = newArray[index].value;
-    newArray.splice(index, 1);
+    if (array.length === 0) {
+      toast({ title: 'Error', description: 'Array is empty', variant: 'destructive' });
+      return;
+    }
+
+    const steps: VisualizationStep[] = [];
+    const elementToDelete = array[index].value;
+    
+    // Step 1: Highlight element to delete
+    steps.push({
+      data: array.map((item, i) => ({
+        ...item,
+        status: i === index ? 'active' as const : 'default' as const
+      })),
+      description: `Marking element ${elementToDelete} at index ${index} for deletion`
+    });
+
+    // Step 2: Remove element
+    const newArray = array.filter((_, i) => i !== index);
+    
+    steps.push({
+      data: newArray,
+      description: `Deleted element ${elementToDelete} from index ${index}`
+    });
+
+    steps.forEach(step => visualization.addStep(step));
     setArray(newArray);
-    setDeleteIndex('');
     visualization.clearSteps();
     controls.reset();
-    toast({ title: 'Element deleted', description: `Removed ${removedValue} from index ${index}` });
-  }, [deleteIndex, array, visualization, controls]);
+    setDeleteIndex('');
+    
+    toast({ 
+      title: 'Element deleted', 
+      description: `Removed ${elementToDelete} from index ${index}. Array length: ${newArray.length}` 
+    });
+  }, [deleteIndex, array, visualization, controls, isRunning]);
 
   const searchElement = useCallback(() => {
-    const value = parseInt(searchValue);
+    if (isRunning) return;
     
-    if (isNaN(value)) {
-      toast({ title: 'Error', description: 'Please enter a valid number', variant: 'destructive' });
+    const value = validateValue(searchValue);
+    if (value === null) return;
+
+    if (array.length === 0) {
+      toast({ title: 'Error', description: 'Array is empty', variant: 'destructive' });
       return;
     }
 
     visualization.clearSteps();
     const steps: VisualizationStep[] = [];
+    setIsRunning(true);
+    
+    let found = false;
+    let foundIndex = -1;
     
     for (let i = 0; i < array.length; i++) {
-      const stepArray = array.map((item, idx) => ({
-        ...item,
-        status: idx === i ? 'active' : idx < i ? 'comparing' : 'default' 
-      }));
-      
+      // Step: Check current element
       steps.push({
-        data: stepArray,
-        description: `Checking index ${i}: ${array[i].value}`,
-        activeIndex: i
+        data: array.map((item, idx) => ({
+          ...item,
+          status: idx === i ? 'searching' as const : 
+                  idx < i ? 'active' as const : 'default' as const
+        })),
+        description: `Checking index ${i}: value ${array[i].value} ${array[i].value === value ? '(MATCH!)' : ''}`
       });
       
       if (array[i].value === value) {
-        const foundArray = array.map((item, idx) => ({
-          ...item,
-          status: idx === i ? 'found' : 'default'
-        }));
-        
+        // Found the element
         steps.push({
-          data: foundArray,
-          description: `Found ${value} at index ${i}!`,
-          activeIndex: i
+          data: array.map((item, idx) => ({
+            ...item,
+            status: idx === i ? 'found' as const : 'default' as const
+          })),
+          description: `Found ${value} at index ${i}!`
         });
+        found = true;
+        foundIndex = i;
         break;
       }
     }
     
-    if (!array.some(item => item.value === value)) {
+    // If not found
+    if (!found) {
       steps.push({
-        data: array.map(item => ({ ...item, status: 'comparing' })),
+        data: array.map(item => ({ ...item, status: 'active' })),
         description: `${value} not found in array`
+      });
+      
+      steps.push({
+        data: array.map(item => ({ ...item, status: 'default' })),
+        description: 'Search complete - element not found'
       });
     }
 
     steps.forEach(step => visualization.addStep(step));
     controls.reset();
     setSearchValue('');
-    toast({ title: 'Search started', description: `Searching for ${value}` });
-  }, [searchValue, array, visualization, controls]);
+    
+    setTimeout(() => setIsRunning(false), 100);
+    
+    const message = found ? `Found ${value} at index ${foundIndex}` : `${value} not found`;
+    toast({ title: 'Search completed', description: message });
+  }, [searchValue, array, visualization, controls, isRunning]);
 
   const bubbleSort = useCallback(() => {
+    if (isRunning || array.length === 0) return;
+    
     visualization.clearSteps();
     const arr = [...array];
     const steps: VisualizationStep[] = [];
+    setIsRunning(true);
+    
+    let swaps = 0;
+    let comparisons = 0;
     
     for (let i = 0; i < arr.length - 1; i++) {
       for (let j = 0; j < arr.length - i - 1; j++) {
-        // Show comparison
-        const compareArray = arr.map((item, idx) => ({
-          ...item,
-          status: (idx === j || idx === j + 1) ? 'comparing' : 
-                  idx >= arr.length - i ? 'sorted' : 'default'
-        }));
+        comparisons++;
         
+        // Show comparison
         steps.push({
-          data: compareArray,
-          description: `Comparing ${arr[j].value} and ${arr[j + 1].value}`,
-          compareIndices: [j, j + 1]
+          data: arr.map((item, idx) => ({
+            ...item,
+            status: (idx === j || idx === j + 1) ? 'comparing' as const : 
+                    idx >= arr.length - i ? 'sorted' as const : 'default' as const
+          })),
+          description: `Comparing ${arr[j].value} and ${arr[j + 1].value} (comparison #${comparisons})`
         });
         
-        visualization.incrementComparisons();
-        
         if (arr[j].value > arr[j + 1].value) {
+          swaps++;
+          
           // Show swap
-          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-          
-          const swapArray = arr.map((item, idx) => ({
-            ...item,
-            status: (idx === j || idx === j + 1) ? 'swapping' : 
-                    idx >= arr.length - i ? 'sorted' : 'default'
-          }));
-          
           steps.push({
-            data: swapArray,
-            description: `Swapped ${arr[j + 1].value} and ${arr[j].value}`,
-            swapIndices: [j, j + 1]
+            data: arr.map((item, idx) => ({
+              ...item,
+              status: (idx === j || idx === j + 1) ? 'swapping' as const : 
+                      idx >= arr.length - i ? 'sorted' as const : 'default' as const
+            })),
+            description: `Swapping ${arr[j].value} and ${arr[j + 1].value} (swap #${swaps})`
           });
           
-          visualization.incrementSwaps();
+          // Perform swap
+          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+          
+          // Show after swap
+          steps.push({
+            data: arr.map((item, idx) => ({
+              ...item,
+              status: (idx === j || idx === j + 1) ? 'active' as const : 
+                      idx >= arr.length - i ? 'sorted' as const : 'default' as const
+            })),
+            description: `Swapped! New positions: ${arr[j].value} and ${arr[j + 1].value}`
+          });
         }
       }
       
       // Mark as sorted
-      const sortedArray = arr.map((item, idx) => ({
-        ...item,
-        status: idx >= arr.length - i - 1 ? 'sorted' : 'default'
-      }));
-      
       steps.push({
-        data: sortedArray,
-        description: `Element at position ${arr.length - i - 1} is now in correct position`
+        data: arr.map((item, idx) => ({
+          ...item,
+          status: idx >= arr.length - i - 1 ? 'sorted' as const : 'default' as const
+        })),
+        description: `Element ${arr[arr.length - i - 1].value} is now in its final position`
       });
     }
     
     // Final sorted state
     steps.push({
       data: arr.map(item => ({ ...item, status: 'sorted' })),
-      description: 'Array is completely sorted!'
+      description: `Bubble sort complete! Made ${comparisons} comparisons and ${swaps} swaps`
     });
 
     steps.forEach(step => visualization.addStep(step));
     controls.reset();
-    toast({ title: 'Bubble sort started', description: 'Watch the sorting animation' });
-  }, [array, visualization, controls]);
+    
+    setTimeout(() => setIsRunning(false), 100);
+    
+    toast({ 
+      title: 'Bubble sort started', 
+      description: `${steps.length} steps generated. Press play to watch!` 
+    });
+  }, [array, visualization, controls, isRunning]);
 
   const selectionSort = useCallback(() => {
+    if (isRunning || array.length === 0) return;
+    
     visualization.clearSteps();
     const arr = [...array];
     const steps: VisualizationStep[] = [];
+    setIsRunning(true);
+    
+    let swaps = 0;
+    let comparisons = 0;
     
     for (let i = 0; i < arr.length - 1; i++) {
       let minIndex = i;
       
       // Show current minimum
-      const currentArray = arr.map((item, idx) => ({
-        ...item,
-        status: idx < i ? 'sorted' : idx === minIndex ? 'active' : 'default'
-      }));
-      
       steps.push({
-        data: currentArray,
-        description: `Finding minimum from index ${i} onwards`,
-        activeIndex: minIndex
+        data: arr.map((item, idx) => ({
+          ...item,
+          status: idx < i ? 'sorted' as const : 
+                  idx === minIndex ? 'active' as const : 'default' as const
+        })),
+        description: `Finding minimum from index ${i} onwards. Current minimum: ${arr[minIndex].value}`
       });
       
       for (let j = i + 1; j < arr.length; j++) {
+        comparisons++;
+        
         // Show comparison
-        const compareArray = arr.map((item, idx) => ({
-          ...item,
-          status: idx < i ? 'sorted' : 
-                  idx === minIndex ? 'active' : 
-                  idx === j ? 'comparing' : 'default'
-        }));
-        
         steps.push({
-          data: compareArray,
-          description: `Comparing ${arr[minIndex].value} with ${arr[j].value}`,
-          compareIndices: [minIndex, j]
+          data: arr.map((item, idx) => ({
+            ...item,
+            status: idx < i ? 'sorted' as const : 
+                    idx === minIndex ? 'active' as const : 
+                    idx === j ? 'comparing' as const : 'default' as const
+          })),
+          description: `Comparing current minimum ${arr[minIndex].value} with ${arr[j].value} (comparison #${comparisons})`
         });
-        
-        visualization.incrementComparisons();
         
         if (arr[j].value < arr[minIndex].value) {
           minIndex = j;
+          
+          steps.push({
+            data: arr.map((item, idx) => ({
+              ...item,
+              status: idx < i ? 'sorted' as const : 
+                      idx === minIndex ? 'active' as const : 'default' as const
+            })),
+            description: `New minimum found: ${arr[minIndex].value} at index ${minIndex}`
+          });
         }
       }
       
       // Swap if needed
       if (minIndex !== i) {
-        [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
-        
-        const swapArray = arr.map((item, idx) => ({
-          ...item,
-          status: idx === i || idx === minIndex ? 'swapping' : 
-                  idx < i ? 'sorted' : 'default'
-        }));
+        swaps++;
         
         steps.push({
-          data: swapArray,
-          description: `Swapped ${arr[minIndex].value} with ${arr[i].value}`,
-          swapIndices: [i, minIndex]
+          data: arr.map((item, idx) => ({
+            ...item,
+            status: idx === i || idx === minIndex ? 'swapping' as const : 
+                    idx < i ? 'sorted' as const : 'default' as const
+          })),
+          description: `Swapping ${arr[i].value} at index ${i} with minimum ${arr[minIndex].value} at index ${minIndex} (swap #${swaps})`
         });
         
-        visualization.incrementSwaps();
+        [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
       }
       
       // Mark as sorted
-      const sortedArray = arr.map((item, idx) => ({
-        ...item,
-        status: idx <= i ? 'sorted' : 'default'
-      }));
-      
       steps.push({
-        data: sortedArray,
-        description: `Position ${i} is now sorted`
+        data: arr.map((item, idx) => ({
+          ...item,
+          status: idx <= i ? 'sorted' as const : 'default' as const
+        })),
+        description: `Position ${i} is now sorted with value ${arr[i].value}`
       });
     }
     
     // Final sorted state
     steps.push({
       data: arr.map(item => ({ ...item, status: 'sorted' })),
-      description: 'Selection sort complete!'
+      description: `Selection sort complete! Made ${comparisons} comparisons and ${swaps} swaps`
     });
 
     steps.forEach(step => visualization.addStep(step));
     controls.reset();
-    toast({ title: 'Selection sort started', description: 'Watch the sorting animation' });
-  }, [array, visualization, controls]);
+    
+    setTimeout(() => setIsRunning(false), 100);
+    
+    toast({ 
+      title: 'Selection sort started', 
+      description: `${steps.length} steps generated. Press play to watch!` 
+    });
+  }, [array, visualization, controls, isRunning]);
 
   const startSorting = useCallback(() => {
+    if (array.length === 0) {
+      toast({ title: 'Error', description: 'Array is empty. Generate an array first.', variant: 'destructive' });
+      return;
+    }
+    
     if (algorithm === 'bubble') {
       bubbleSort();
     } else {
       selectionSort();
     }
-  }, [algorithm, bubbleSort, selectionSort]);
+  }, [algorithm, bubbleSort, selectionSort, array.length]);
 
-  const maxValue = Math.max(...array.map(item => item.value));
+  const resetArray = useCallback(() => {
+    if (isRunning) return;
+    
+    setArray(prev => prev.map(item => ({ ...item, status: 'default' })));
+    visualization.clearSteps();
+    controls.reset();
+    setIsRunning(false);
+    toast({ title: 'Array reset', description: 'All animations cleared' });
+  }, [visualization, controls, isRunning]);
+
+  const maxValue = Math.max(...array.map(item => item.value), 1);
   const currentStep = visualization.getCurrentStep(controls.currentStep);
 
   return (
@@ -334,18 +484,24 @@ const ArrayVisualizer: React.FC = () => {
               <label className="text-sm font-medium">Insert Element</label>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Value"
+                  placeholder="Value (1-100)"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   type="number"
+                  min="1"
+                  max="100"
+                  disabled={isRunning}
                 />
                 <Input
                   placeholder="Index (optional)"
                   value={insertIndex}
                   onChange={(e) => setInsertIndex(e.target.value)}
                   type="number"
+                  min="0"
+                  max={array.length}
+                  disabled={isRunning}
                 />
-                <Button onClick={insertAtIndex} size="sm">
+                <Button onClick={insertAtIndex} size="sm" disabled={isRunning}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -359,8 +515,11 @@ const ArrayVisualizer: React.FC = () => {
                   value={deleteIndex}
                   onChange={(e) => setDeleteIndex(e.target.value)}
                   type="number"
+                  min="0"
+                  max={Math.max(0, array.length - 1)}
+                  disabled={isRunning}
                 />
-                <Button onClick={deleteAtIndex} size="sm" variant="destructive">
+                <Button onClick={deleteAtIndex} size="sm" variant="destructive" disabled={isRunning}>
                   <Minus className="h-4 w-4" />
                 </Button>
               </div>
@@ -374,8 +533,9 @@ const ArrayVisualizer: React.FC = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   type="number"
+                  disabled={isRunning}
                 />
-                <Button onClick={searchElement} size="sm">
+                <Button onClick={searchElement} size="sm" disabled={isRunning}>
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -383,64 +543,76 @@ const ArrayVisualizer: React.FC = () => {
           </div>
 
           {/* Array Visualization */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-end justify-center gap-2">
-            <AnimatePresence mode="sync">
-              {array.map((item, index) => {
-                const height = (item.value / maxValue) * 200;
-                const getColor = () => {
-                  switch (item.status) {
-                    case 'comparing': return 'bg-yellow-500';
-                    case 'swapping': return 'bg-blue-500';
-                    case 'sorted': return 'bg-green-500';
-                    case 'found': return 'bg-purple-500';
-                    case 'active': return 'bg-orange-500';
-                    default: return 'bg-primary';
-                  }
-                };
+          <div className="bg-muted/20 p-6 rounded-lg min-h-[320px] flex items-end justify-center gap-2 overflow-x-auto">
+            {array.length === 0 ? (
+              <div className="flex items-center justify-center h-64 text-center text-muted-foreground">
+                <div>
+                  <p className="text-lg font-medium">Empty Array</p>
+                  <p className="text-sm">Generate a random array or insert elements to get started</p>
+                </div>
+              </div>
+            ) : (
+              <AnimatePresence mode="sync">
+                {array.map((item, index) => {
+                  const height = Math.max((item.value / maxValue) * 240, 30);
+                  const getColor = () => {
+                    switch (item.status) {
+                      case 'comparing': return 'bg-yellow-500 border-yellow-600';
+                      case 'swapping': return 'bg-blue-500 border-blue-600';
+                      case 'sorted': return 'bg-green-500 border-green-600';
+                      case 'found': return 'bg-purple-500 border-purple-600';
+                      case 'active': return 'bg-orange-500 border-orange-600';
+                      case 'searching': return 'bg-red-500 border-red-600';
+                      default: return 'bg-primary border-primary/60';
+                    }
+                  };
 
-                return (
-                  <motion.div
-                    key={`${index}-${item.value}`}
-                    className="flex flex-col items-center gap-2"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    layout
-                  >
+                  return (
                     <motion.div
-                      className={`${getColor()} rounded-t-lg flex items-end justify-center text-white text-sm font-bold min-w-[40px] relative`}
-                      style={{ height: `${Math.max(height, 30)}px` }}
-                      animate={{
-                        scale: item.status === 'comparing' || item.status === 'swapping' ? 1.1 : 1,
-                      }}
+                      key={`${index}-${item.value}`}
+                      className="flex flex-col items-center gap-2"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      layout
                       transition={{ duration: 0.3 }}
                     >
-                      <span className="mb-1">{item.value}</span>
-                      {(item.status === 'comparing' || item.status === 'swapping') && (
-                        <motion.div
-                          className="absolute inset-0 bg-white/20 rounded-t-lg"
-                          animate={{ opacity: [0.3, 0.7, 0.3] }}
-                          transition={{ duration: 0.8, repeat: Infinity }}
-                        />
-                      )}
+                      <motion.div
+                        className={`${getColor()} text-white rounded-t-lg flex items-end justify-center text-sm font-bold min-w-[40px] relative border-2`}
+                        style={{ height: `${height}px` }}
+                        animate={{
+                          scale: item.status === 'comparing' || item.status === 'swapping' || item.status === 'searching' ? 1.1 : 1,
+                        }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <span className="mb-2">{item.value}</span>
+                        {(item.status === 'comparing' || item.status === 'swapping' || item.status === 'searching') && (
+                          <motion.div
+                            className="absolute inset-0 bg-white/20 rounded-t-lg"
+                            animate={{ opacity: [0.3, 0.7, 0.3] }}
+                            transition={{ duration: 0.8, repeat: Infinity }}
+                          />
+                        )}
+                      </motion.div>
+                      <div className="text-xs text-muted-foreground font-mono bg-muted px-2 py-1 rounded">
+                        {index}
+                      </div>
                     </motion.div>
-                    <div className="text-xs text-muted-foreground font-mono bg-muted px-2 py-1 rounded">
-                      {index}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                  );
+                })}
+              </AnimatePresence>
+            )}
           </div>
 
           {/* Algorithm Selection */}
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center justify-center">
             <label className="text-sm font-medium">Sort Algorithm:</label>
             <div className="flex gap-2">
               <Button
                 variant={algorithm === 'bubble' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setAlgorithm('bubble')}
+                disabled={isRunning}
               >
                 Bubble Sort
               </Button>
@@ -448,6 +620,7 @@ const ArrayVisualizer: React.FC = () => {
                 variant={algorithm === 'selection' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setAlgorithm('selection')}
+                disabled={isRunning}
               >
                 Selection Sort
               </Button>
@@ -456,29 +629,29 @@ const ArrayVisualizer: React.FC = () => {
 
           {/* Control Buttons */}
           <div className="flex flex-wrap gap-2 items-center justify-center">
-            <Button onClick={generateRandomArray} variant="outline" size="sm">
+            <Button onClick={generateRandomArray} variant="outline" size="sm" disabled={isRunning}>
               <Shuffle className="h-4 w-4 mr-2" />
               Random Array
             </Button>
-            <Button onClick={startSorting} variant="default" size="sm">
+            <Button onClick={startSorting} variant="default" size="sm" disabled={isRunning || array.length === 0}>
               Start {algorithm === 'bubble' ? 'Bubble' : 'Selection'} Sort
             </Button>
-            <Button onClick={controls.stepBackward} variant="outline" size="sm" disabled={controls.currentStep === 0}>
+            <Button onClick={controls.stepBackward} variant="outline" size="sm" disabled={controls.currentStep === 0 || isRunning}>
               <StepBack className="h-4 w-4" />
             </Button>
-            <Button onClick={controls.isPlaying ? controls.pause : controls.play} variant="outline" size="sm">
+            <Button onClick={controls.isPlaying ? controls.pause : controls.play} variant="outline" size="sm" disabled={visualization.totalSteps === 0}>
               {controls.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
             </Button>
-            <Button onClick={controls.stepForward} variant="outline" size="sm" disabled={controls.currentStep >= visualization.totalSteps - 1}>
+            <Button onClick={controls.stepForward} variant="outline" size="sm" disabled={controls.currentStep >= visualization.totalSteps - 1 || isRunning}>
               <StepForward className="h-4 w-4" />
             </Button>
-            <Button onClick={controls.reset} variant="outline" size="sm">
+            <Button onClick={resetArray} variant="outline" size="sm" disabled={isRunning}>
               <RotateCcw className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Speed Control */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-center">
             <span className="text-sm font-medium">Speed:</span>
             <div className="flex-1 max-w-xs">
               <Slider
@@ -487,6 +660,7 @@ const ArrayVisualizer: React.FC = () => {
                 min={0.25}
                 max={4}
                 step={0.25}
+                disabled={isRunning}
               />
             </div>
             <span className="text-sm text-muted-foreground">{controls.speed}x</span>
@@ -527,6 +701,7 @@ const ArrayVisualizer: React.FC = () => {
                 <li>• Image and video processing (pixel arrays)</li>
                 <li>• Mathematical computations and matrices</li>
                 <li>• Game development (tile maps, inventories)</li>
+                <li>• Memory management in operating systems</li>
               </ul>
             </div>
             <div>
@@ -536,6 +711,7 @@ const ArrayVisualizer: React.FC = () => {
                 <li>• E-commerce (price, rating sorting)</li>
                 <li>• Data analysis and reporting</li>
                 <li>• File system organization</li>
+                <li>• Database query optimization</li>
               </ul>
             </div>
           </div>
@@ -562,6 +738,11 @@ const ArrayVisualizer: React.FC = () => {
             <Button asChild variant="outline" size="sm">
               <a href="https://www.geeksforgeeks.org/array-data-structure/" target="_blank" rel="noopener noreferrer">
                 GeeksforGeeks - Arrays
+              </a>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <a href="https://visualgo.net/en/sorting" target="_blank" rel="noopener noreferrer">
+                VisuAlgo - Sorting
               </a>
             </Button>
           </div>
