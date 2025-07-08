@@ -5,19 +5,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import SortingVisualizer from '../components/visualizers/SortingVisualizer';
 import SearchVisualizer from '../components/visualizers/SearchVisualizer';
+import BubbleSortVisualizer from '../components/visualizers/BubbleSortVisualizer';
+import SelectionSortVisualizer from '../components/visualizers/SelectionSortVisualizer';
 
 const algorithms = [
-  { id: 'sorting', name: 'Sorting', description: 'Bubble, Selection, Quick, Merge, and more' },
+  { id: 'bubble-sort', name: 'Bubble Sort', description: 'Simple comparison-based sorting algorithm' },
+  { id: 'selection-sort', name: 'Selection Sort', description: 'Find minimum and place at beginning' },
+  { id: 'sorting', name: 'More Sorting', description: 'Quick, Merge, Heap, and more (Coming Soon)' },
   { id: 'searching', name: 'Searching', description: 'Linear, Binary, Jump, and Exponential search' },
   { id: 'graph', name: 'Graph Algorithms', description: 'DFS, BFS, Dijkstra, and A* (Coming Soon)' },
   { id: 'dynamic', name: 'Dynamic Programming', description: 'Fibonacci, Knapsack, LCS (Coming Soon)' }
 ];
 
 const Algorithms: React.FC = () => {
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState('sorting');
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState('bubble-sort');
 
   const renderVisualizer = () => {
     switch (selectedAlgorithm) {
+      case 'bubble-sort':
+        return <BubbleSortVisualizer />;
+      case 'selection-sort':
+        return <SelectionSortVisualizer />;
       case 'sorting':
         return <SortingVisualizer />;
       case 'searching':
@@ -41,7 +49,7 @@ const Algorithms: React.FC = () => {
           </Card>
         );
       default:
-        return <SortingVisualizer />;
+        return <BubbleSortVisualizer />;
     }
   };
 
@@ -66,7 +74,7 @@ const Algorithms: React.FC = () => {
             <CardTitle>Select Algorithm Category</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {algorithms.map((algorithm) => (
                 <Button
                   key={algorithm.id}
