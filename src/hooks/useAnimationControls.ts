@@ -12,7 +12,7 @@ export function useAnimationControls(totalSteps: number = 0) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [currentStep, setCurrentStep] = useState(0);
-  const animationRef = useRef<number | null>(null);
+  const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const play = useCallback(() => {
     setIsPlaying(true);

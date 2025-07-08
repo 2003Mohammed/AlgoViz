@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -87,7 +86,7 @@ const LinkedListVisualizer: React.FC = () => {
     const newNode: ListNode = { id: newId, value, next: list.head, status: 'inserting' };
     const step1List = {
       ...list,
-      nodes: [newNode, ...list.nodes.map(n => ({ ...n, status: 'default' }))]
+      nodes: [newNode, ...list.nodes.map(n => ({ ...n, status: 'default' as const }))]
     };
     
     steps.push({
@@ -101,7 +100,7 @@ const LinkedListVisualizer: React.FC = () => {
       head: newId,
       nodes: step1List.nodes.map(n => ({
         ...n,
-        status: n.id === newId ? 'active' : 'default'
+        status: n.id === newId ? 'active' as const : 'default' as const
       }))
     };
     
@@ -113,7 +112,7 @@ const LinkedListVisualizer: React.FC = () => {
     // Step 3: Complete insertion
     const finalList = {
       ...step2List,
-      nodes: step2List.nodes.map(n => ({ ...n, status: 'default' }))
+      nodes: step2List.nodes.map(n => ({ ...n, status: 'default' as const }))
     };
     
     steps.push({
@@ -163,7 +162,7 @@ const LinkedListVisualizer: React.FC = () => {
             ...list,
             nodes: list.nodes.map(n => ({
               ...n,
-              status: n.id === currentId ? 'traversing' : 'default'
+              status: n.id === currentId ? 'traversing' as const : 'default' as const
             }))
           },
           description: `Traversing to find tail, currently at ${node.value}`
@@ -178,7 +177,7 @@ const LinkedListVisualizer: React.FC = () => {
       // Create new node
       const newNode: ListNode = { id: newId, value, next: null, status: 'inserting' };
       const updatedNodes = list.nodes.map(n => 
-        n.id === currentId ? { ...n, next: newId, status: 'active' } : { ...n, status: 'default' }
+        n.id === currentId ? { ...n, next: newId, status: 'active' as const } : { ...n, status: 'default' as const }
       );
       
       steps.push({
@@ -232,7 +231,7 @@ const LinkedListVisualizer: React.FC = () => {
           ...list,
           nodes: list.nodes.map(n => ({
             ...n,
-            status: n.id === currentId ? 'traversing' : 'default'
+            status: n.id === currentId ? 'traversing' as const : 'default' as const
           }))
         },
         description: `Traversing to position ${pos}, currently at position ${currentPos}`
@@ -255,7 +254,7 @@ const LinkedListVisualizer: React.FC = () => {
         };
         
         const updatedNodes = list.nodes.map(n => 
-          n.id === currentId ? { ...n, next: newId, status: 'active' } : { ...n, status: 'default' }
+          n.id === currentId ? { ...n, next: newId, status: 'active' as const } : { ...n, status: 'default' as const }
         );
         
         steps.push({
@@ -297,7 +296,7 @@ const LinkedListVisualizer: React.FC = () => {
         ...list,
         nodes: list.nodes.map(n => ({
           ...n,
-          status: n.id === list.head ? 'deleting' : 'default'
+          status: n.id === list.head ? 'deleting' as const : 'default' as const
         }))
       },
       description: `Marking head node (${headNode.value}) for deletion`
@@ -311,7 +310,7 @@ const LinkedListVisualizer: React.FC = () => {
       data: {
         ...list,
         head: newHead,
-        nodes: filteredNodes.map(n => ({ ...n, status: 'default' }))
+        nodes: filteredNodes.map(n => ({ ...n, status: 'default' as const }))
       },
       description: `Updated head pointer and removed node`
     });
@@ -345,7 +344,7 @@ const LinkedListVisualizer: React.FC = () => {
           ...list,
           nodes: list.nodes.map(n => ({
             ...n,
-            status: n.id === currentId ? 'traversing' : 'default'
+            status: n.id === currentId ? 'traversing' as const : 'default' as const
           }))
         },
         description: `Searching at position ${position}, checking value ${node.value}`
@@ -357,7 +356,7 @@ const LinkedListVisualizer: React.FC = () => {
             ...list,
             nodes: list.nodes.map(n => ({
               ...n,
-              status: n.id === currentId ? 'found' : 'default'
+              status: n.id === currentId ? 'found' as const : 'default' as const
             }))
           },
           description: `Found ${value} at position ${position}!`
@@ -374,7 +373,7 @@ const LinkedListVisualizer: React.FC = () => {
       steps.push({
         data: {
           ...list,
-          nodes: list.nodes.map(n => ({ ...n, status: 'default' }))
+          nodes: list.nodes.map(n => ({ ...n, status: 'default' as const }))
         },
         description: `${value} not found in the list`
       });
@@ -410,7 +409,7 @@ const LinkedListVisualizer: React.FC = () => {
           ...list,
           nodes: workingNodes.map(n => ({
             ...n,
-            status: n.id === currentId ? 'active' : 'default'
+            status: n.id === currentId ? 'active' as const : 'default' as const
           }))
         },
         description: `Reversing link for node ${currentNode.value}`
@@ -426,7 +425,7 @@ const LinkedListVisualizer: React.FC = () => {
       data: {
         ...list,
         head: prev,
-        nodes: workingNodes.map(n => ({ ...n, status: 'default' }))
+        nodes: workingNodes.map(n => ({ ...n, status: 'default' as const }))
       },
       description: 'List reversed successfully!'
     });
