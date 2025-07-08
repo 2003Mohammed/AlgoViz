@@ -27,6 +27,29 @@ const StackVisualizer: React.FC = () => {
     setPeekedValue(null);
   };
 
+  const generateExample = () => {
+    const examples = [
+      [10, 20, 30, 40],
+      [5, 15, 25, 35],
+      [100, 200, 300]
+    ];
+    const randomExample = examples[Math.floor(Math.random() * examples.length)];
+    const newStack = randomExample.map(value => ({
+      id: Date.now().toString() + Math.random(),
+      value,
+      status: 'default' as const
+    }));
+    setStack(newStack);
+    setLastOperation('Generated example stack');
+    resetError();
+  };
+
+  const eraseExample = () => {
+    setStack([]);
+    setLastOperation('Erased stack');
+    resetError();
+  };
+
   const push = () => {
     const value = parseInt(inputValue.trim());
     if (isNaN(value)) {
@@ -148,6 +171,16 @@ const StackVisualizer: React.FC = () => {
           <CardTitle>Stack Visualizer (LIFO - Last In First Out)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Example Generation */}
+          <div className="flex gap-2 justify-center">
+            <Button onClick={generateExample} variant="outline" size="sm">
+              Generate Example
+            </Button>
+            <Button onClick={eraseExample} variant="outline" size="sm">
+              Erase Example
+            </Button>
+          </div>
+
           {/* Operations */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">

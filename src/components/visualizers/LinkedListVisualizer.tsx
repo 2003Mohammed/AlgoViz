@@ -24,13 +24,51 @@ const LinkedListVisualizer: React.FC = () => {
   const [list, setList] = useState<LinkedList>({ head: null, tail: null, nodes: [] });
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteValue] = useState('');
+  const [insertIndex, setInsertIndex] = useState('');
   const [lastOperation, setLastOperation] = useState<string>('');
   const [isAnimating, setIsAnimating] = useState(false);
   const [error, setError] = useState<string>('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const resetError = () => {
-    setError('');
+  const resetError = () => setError('');
+
+  const generateExample = () => {
+    const examples = [
+      [10, 20, 30, 40],
+      [5, 15, 25, 35, 45],
+      [100, 200, 300]
+    ];
+    const randomExample = examples[Math.floor(Math.random() * examples.length)];
+    
+    const nodes: LinkedListNode[] = randomExample.map((value, index) => ({
+      id: `node-${index}`,
+      value,
+      next: index < randomExample.length - 1 ? `node-${index + 1}` : null,
+      prev: listType === 'doubly' && index > 0 ? `node-${index - 1}` : null,
+      status: 'default'
+    }));
+
+    // Handle circular connection
+    if (listType === 'circular' && nodes.length > 0) {
+      nodes[nodes.length - 1].next = nodes[0].id;
+      if (listType === 'doubly') {
+        nodes[0].prev = nodes[nodes.length - 1].id;
+      }
+    }
+
+    setList({
+      head: nodes.length > 0 ? nodes[0].id : null,
+      tail: nodes.length > 0 ? nodes[nodes.length - 1].id : null,
+      nodes
+    });
+    setLastOperation(`Generated example ${listType} linked list`);
+    resetError();
+  };
+
+  const eraseExample = () => {
+    setList({ head: null, tail: null, nodes: [] });
+    setLastOperation('Erased linked list');
+    resetError();
   };
 
   const insertAtEnd = () => {
@@ -65,8 +103,18 @@ const LinkedListVisualizer: React.FC = () => {
         }
       }
 
+      // Handle circular connection
+      if (listType === 'circular' && updatedNodes.length > 1) {
+        newNode.next = updatedHead;
+        if (listType === 'doubly') {
+          const headNode = updatedNodes.find(node => node.id === updatedHead);
+          if (headNode) {
+            headNode.prev = newNode.id;
+          }
+        }
+      }
+
       return {
-        ...prev,
         head: updatedHead,
         tail: updatedTail,
         nodes: updatedNodes
@@ -77,6 +125,103 @@ const LinkedListVisualizer: React.FC = () => {
     setLastOperation(`Inserted ${value} at end`);
 
     // Animation cleanup
+    if (animationRef.current) clearTimeout(animationRef.current);
+    animationRef.current = setTimeout(() => {
+      setList(prev => ({
+        ...prev,
+        nodes: prev.nodes.map(node => ({ ...node, status: 'default' }))
+      }));
+      setIsAnimating(false);
+    }, 500);
+  };
+
+  const insertAtIndex = () => {
+    const value = parseInt(inputValue.trim());
+    const index = parseInt(insertIndex.trim());
+    
+    if (isNaN(value)) {
+      setError('Please enter a valid number');
+      return;
+    }
+    
+    if (isNaN(index) || index < 0 || index > list.nodes.length) {
+      setError(`Index must be between 0 and ${list.nodes.length}`);
+      return;
+    }
+
+    if (index === list.nodes.length) {
+      insertAtEnd();
+      return;
+    }
+
+    resetError();
+    setIsAnimating(true);
+
+    const newNode: LinkedListNode = {
+      id: Date.now().toString(),
+      value,
+      next: null,
+      prev: null,
+      status: 'adding'
+    };
+
+    setList(prev => {
+      const updatedNodes = [...prev.nodes];
+      
+      if (index === 0) {
+        // Insert at head
+        newNode.next = prev.head;
+        if (listType === 'doubly' && prev.head) {
+          const headNode = updatedNodes.find(node => node.id === prev.head);
+          if (headNode) {
+            headNode.prev = newNode.id;
+          }
+        }
+        updatedNodes.unshift(newNode);
+        
+        return {
+          head: newNode.id,
+          tail: prev.tail || newNode.id,
+          nodes: updatedNodes
+        };
+      } else {
+        // Insert at middle
+        const nodeArray = [];
+        let current = prev.head;
+        while (current) {
+          const node = updatedNodes.find(n => n.id === current);
+          if (node) {
+            nodeArray.push(node);
+            current = node.next;
+          } else break;
+        }
+        
+        const prevNode = nodeArray[index - 1];
+        const nextNode = nodeArray[index];
+        
+        newNode.next = nextNode?.id || null;
+        newNode.prev = listType === 'doubly' ? prevNode?.id || null : null;
+        
+        if (prevNode) {
+          prevNode.next = newNode.id;
+        }
+        if (nextNode && listType === 'doubly') {
+          nextNode.prev = newNode.id;
+        }
+        
+        updatedNodes.splice(index, 0, newNode);
+        
+        return {
+          ...prev,
+          nodes: updatedNodes
+        };
+      }
+    });
+
+    setInputValue('');
+    setInsertIndex('');
+    setLastOperation(`Inserted ${value} at index ${index}`);
+
     if (animationRef.current) clearTimeout(animationRef.current);
     animationRef.current = setTimeout(() => {
       setList(prev => ({
@@ -169,6 +314,12 @@ const LinkedListVisualizer: React.FC = () => {
   };
 
   const search = () => {
+    const value = parseInt(deleteValue.trim());
+    if (isNaN(value)) {
+      setError('Please enter a valid number to search');
+      return;
+    }
+
     setIsAnimating(true);
     resetError();
 
@@ -178,22 +329,63 @@ const LinkedListVisualizer: React.FC = () => {
       return;
     }
 
-    setList(prev => ({
-      ...prev,
-      nodes: prev.nodes.map(node => ({ ...node, status: 'searching' }))
-    }));
+    let found = false;
+    let current = list.head;
+    let position = 0;
 
-    setLastOperation('Searching list');
+    const searchAnimation = () => {
+      if (current) {
+        const node = list.nodes.find(n => n.id === current);
+        if (node) {
+          setList(prev => ({
+            ...prev,
+            nodes: prev.nodes.map(n => ({
+              ...n,
+              status: n.id === current ? 'searching' : 'default'
+            }))
+          }));
 
-    // Animation cleanup
-    if (animationRef.current) clearTimeout(animationRef.current);
-    animationRef.current = setTimeout(() => {
-      setList(prev => ({
-        ...prev,
-        nodes: prev.nodes.map(node => ({ ...node, status: 'default' }))
-      }));
-      setIsAnimating(false);
-    }, 1000);
+          if (node.value === value) {
+            found = true;
+            setLastOperation(`Found ${value} at position ${position}`);
+            setTimeout(() => {
+              setList(prev => ({
+                ...prev,
+                nodes: prev.nodes.map(n => ({
+                  ...n,
+                  status: n.id === current ? 'adding' : 'default'
+                }))
+              }));
+              setTimeout(() => {
+                setList(prev => ({
+                  ...prev,
+                  nodes: prev.nodes.map(n => ({ ...n, status: 'default' }))
+                }));
+                setIsAnimating(false);
+              }, 1000);
+            }, 500);
+            return;
+          }
+
+          current = node.next;
+          position++;
+          
+          if (current && (!listType.includes('circular') || position < list.nodes.length)) {
+            setTimeout(searchAnimation, 500);
+          } else {
+            setError(`${value} not found in the list`);
+            setList(prev => ({
+              ...prev,
+              nodes: prev.nodes.map(n => ({ ...n, status: 'default' }))
+            }));
+            setIsAnimating(false);
+          }
+        }
+      }
+    };
+
+    searchAnimation();
+    setDeleteValue('');
   };
 
   const reverse = () => {
@@ -342,7 +534,7 @@ const LinkedListVisualizer: React.FC = () => {
                 size="sm"
                 onClick={() => {
                   setListType(type);
-                  reset();
+                  eraseExample();
                 }}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -350,8 +542,18 @@ const LinkedListVisualizer: React.FC = () => {
             ))}
           </div>
 
+          {/* Example Generation */}
+          <div className="flex gap-2 justify-center">
+            <Button onClick={generateExample} variant="outline" size="sm">
+              Generate Example
+            </Button>
+            <Button onClick={eraseExample} variant="outline" size="sm">
+              Erase Example
+            </Button>
+          </div>
+
           {/* Operations */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Insert Value</label>
               <div className="flex gap-2">
@@ -360,16 +562,25 @@ const LinkedListVisualizer: React.FC = () => {
                   type="number" 
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
                   disabled={isAnimating}
+                  className="flex-1"
                 />
-                <Button size="sm" onClick={insertAtEnd} disabled={isAnimating || !inputValue.trim()}>
+                <Input 
+                  placeholder="Index" 
+                  type="number" 
+                  value={insertIndex}
+                  onChange={(e) => setInsertIndex(e.target.value)}
+                  disabled={isAnimating}
+                  className="w-20"
+                />
+                <Button size="sm" onClick={insertIndex.trim() === '' ? insertAtEnd : insertAtIndex} disabled={isAnimating || !inputValue.trim()}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
+            
             <div className="space-y-2">
-              <label className="text-sm font-medium">Delete Value</label>
+              <label className="text-sm font-medium">Delete/Search Value</label>
               <div className="flex gap-2">
                 <Input 
                   placeholder="Value" 
@@ -381,15 +592,12 @@ const LinkedListVisualizer: React.FC = () => {
                 <Button size="sm" variant="destructive" onClick={deleteNode} disabled={isAnimating || !deleteValue.trim()}>
                   <Minus className="h-4 w-4" />
                 </Button>
+                <Button size="sm" variant="outline" onClick={search} disabled={isAnimating || !deleteValue.trim()}>
+                  <Search className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Search</label>
-              <Button size="sm" variant="outline" onClick={search} disabled={isAnimating || list.nodes.length === 0}>
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </Button>
-            </div>
+            
             <div className="space-y-2">
               <label className="text-sm font-medium">Operations</label>
               <Button size="sm" variant="outline" onClick={reverse} disabled={isAnimating || list.nodes.length < 2}>
@@ -401,9 +609,8 @@ const LinkedListVisualizer: React.FC = () => {
 
           {/* Error Display */}
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="text-sm">{error}</span>
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              {error}
             </div>
           )}
 
@@ -412,7 +619,7 @@ const LinkedListVisualizer: React.FC = () => {
             {list.nodes.length === 0 ? (
               <div className="text-center text-muted-foreground">
                 <p className="text-lg font-medium">Empty {listType} Linked List</p>
-                <p className="text-sm">Insert nodes to see visualization</p>
+                <p className="text-sm">Generate example or insert nodes</p>
               </div>
             ) : (
               <div className="flex items-center space-x-4 overflow-x-auto">
