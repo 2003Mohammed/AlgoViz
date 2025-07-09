@@ -9,15 +9,23 @@ import BubbleSortVisualizer from '../components/visualizers/BubbleSortVisualizer
 import SelectionSortVisualizer from '../components/visualizers/SelectionSortVisualizer';
 import InsertionSortVisualizer from '../components/visualizers/InsertionSortVisualizer';
 import MergeSortVisualizer from '../components/visualizers/MergeSortVisualizer';
+import QuickSortVisualizer from '../components/visualizers/QuickSortVisualizer';
+import HeapSortVisualizer from '../components/visualizers/HeapSortVisualizer';
+import BFSVisualizer from '../components/visualizers/BFSVisualizer';
+import DFSVisualizer from '../components/visualizers/DFSVisualizer';
 
 const algorithms = [
   { id: 'bubble-sort', name: 'Bubble Sort', description: 'Simple comparison-based sorting algorithm' },
   { id: 'selection-sort', name: 'Selection Sort', description: 'Find minimum and place at beginning' },
   { id: 'insertion-sort', name: 'Insertion Sort', description: 'Build sorted array one element at a time' },
   { id: 'merge-sort', name: 'Merge Sort', description: 'Divide-and-conquer sorting algorithm' },
-  { id: 'sorting', name: 'More Sorting', description: 'Quick, Heap, and more (Coming Soon)' },
+  { id: 'quick-sort', name: 'Quick Sort', description: 'Efficient divide-and-conquer sorting' },
+  { id: 'heap-sort', name: 'Heap Sort', description: 'Sorting using binary heap data structure' },
+  { id: 'bfs', name: 'Breadth-First Search', description: 'Graph traversal using queue' },
+  { id: 'dfs', name: 'Depth-First Search', description: 'Graph traversal using stack' },
+  { id: 'sorting', name: 'More Sorting', description: 'Additional sorting algorithms (Coming Soon)' },
   { id: 'searching', name: 'Searching', description: 'Linear, Binary, Jump, and Exponential search' },
-  { id: 'graph', name: 'Graph Algorithms', description: 'DFS, BFS, Dijkstra, and A* (Coming Soon)' },
+  { id: 'graph', name: 'Graph Algorithms', description: 'Advanced graph algorithms (Coming Soon)' },
   { id: 'dynamic', name: 'Dynamic Programming', description: 'Fibonacci, Knapsack, LCS (Coming Soon)' }
 ];
 
@@ -34,6 +42,14 @@ const Algorithms: React.FC = () => {
         return <InsertionSortVisualizer />;
       case 'merge-sort':
         return <MergeSortVisualizer />;
+      case 'quick-sort':
+        return <QuickSortVisualizer />;
+      case 'heap-sort':
+        return <HeapSortVisualizer />;
+      case 'bfs':
+        return <BFSVisualizer />;
+      case 'dfs':
+        return <DFSVisualizer />;
       case 'sorting':
         return <SortingVisualizer />;
       case 'searching':
@@ -42,8 +58,8 @@ const Algorithms: React.FC = () => {
         return (
           <Card>
             <CardContent className="p-8 text-center">
-              <h3 className="text-xl font-semibold mb-2">Graph Algorithms</h3>
-              <p className="text-muted-foreground">Coming Soon - DFS, BFS, Dijkstra, A*</p>
+              <h3 className="text-xl font-semibold mb-2">Advanced Graph Algorithms</h3>
+              <p className="text-muted-foreground">Coming Soon - Dijkstra, A*, Floyd-Warshall</p>
             </CardContent>
           </Card>
         );

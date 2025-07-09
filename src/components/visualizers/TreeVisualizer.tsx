@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -14,6 +13,7 @@ interface TreeNode {
   x?: number;
   y?: number;
   status?: 'default' | 'visiting' | 'visited' | 'found' | 'adding' | 'removing';
+  highlighted?: boolean;
 }
 
 interface TreePosition {
@@ -30,10 +30,12 @@ const TreeVisualizer: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [animationSteps, setAnimationSteps] = useState<TreeNode[]>([]);
+  const [animationSteps, setAnimationSteps] = useState<{ node: TreeNode; description: string }[]>([]);
   const [traversalResult, setTraversalResult] = useState<number[]>([]);
   const [traversalType, setTraversalType] = useState<'inorder' | 'preorder' | 'postorder'>('inorder');
   const [error, setError] = useState('');
+  const [highlightedNodes, setHighlightedNodes] = useState<Set<number>>(new Set());
+  const [currentDescription, setCurrentDescription] = useState('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetError = () => setError('');
@@ -238,35 +240,69 @@ const TreeVisualizer: React.FC = () => {
     }
   };
 
-  // Tree traversals
-  const inorderTraversal = (node: TreeNode | null, result: number[] = []): number[] => {
-    if (node) {
-      inorderTraversal(node.left, result);
-      result.push(node.value);
-      inorderTraversal(node.right, result);
-    }
+  // Enhanced traversal functions with step descriptions
+  const inorderTraversalWithSteps = (node: TreeNode | null, steps: { node: TreeNode; description: string }[] = []): number[] => {
+    const result: number[] = [];
+    
+    const traverse = (currentNode: TreeNode | null) => {
+      if (currentNode) {
+        if (currentNode.left) traverse(currentNode.left);
+        
+        steps.push({ 
+          node: { ...currentNode }, 
+          description: `Visiting node ${currentNode.value} (Inorder: Left → Root → Right)` 
+        });
+        result.push(currentNode.value);
+        
+        if (currentNode.right) traverse(currentNode.right);
+      }
+    };
+    
+    traverse(node);
     return result;
   };
 
-  const preorderTraversal = (node: TreeNode | null, result: number[] = []): number[] => {
-    if (node) {
-      result.push(node.value);
-      preorderTraversal(node.left, result);
-      preorderTraversal(node.right, result);
-    }
+  const preorderTraversalWithSteps = (node: TreeNode | null, steps: { node: TreeNode; description: string }[] = []): number[] => {
+    const result: number[] = [];
+    
+    const traverse = (currentNode: TreeNode | null) => {
+      if (currentNode) {
+        steps.push({ 
+          node: { ...currentNode }, 
+          description: `Visiting node ${currentNode.value} (Preorder: Root → Left → Right)` 
+        });
+        result.push(currentNode.value);
+        
+        if (currentNode.left) traverse(currentNode.left);
+        if (currentNode.right) traverse(currentNode.right);
+      }
+    };
+    
+    traverse(node);
     return result;
   };
 
-  const postorderTraversal = (node: TreeNode | null, result: number[] = []): number[] => {
-    if (node) {
-      postorderTraversal(node.left, result);
-      postorderTraversal(node.right, result);
-      result.push(node.value);
-    }
+  const postorderTraversalWithSteps = (node: TreeNode | null, steps: { node: TreeNode; description: string }[] = []): number[] => {
+    const result: number[] = [];
+    
+    const traverse = (currentNode: TreeNode | null) => {
+      if (currentNode) {
+        if (currentNode.left) traverse(currentNode.left);
+        if (currentNode.right) traverse(currentNode.right);
+        
+        steps.push({ 
+          node: { ...currentNode }, 
+          description: `Visiting node ${currentNode.value} (Postorder: Left → Right → Root)` 
+        });
+        result.push(currentNode.value);
+      }
+    };
+    
+    traverse(node);
     return result;
   };
 
-  // Handle traversal
+  // Handle traversal with animation steps
   const handleTraversal = () => {
     if (!root) {
       setError('Tree is empty');
@@ -274,47 +310,26 @@ const TreeVisualizer: React.FC = () => {
     }
 
     resetError();
+    const steps: { node: TreeNode; description: string }[] = [];
     let result: number[] = [];
     
     switch (traversalType) {
       case 'inorder':
-        result = inorderTraversal(root);
+        result = inorderTraversalWithSteps(root, steps);
         break;
       case 'preorder':
-        result = preorderTraversal(root);
+        result = preorderTraversalWithSteps(root, steps);
         break;
       case 'postorder':
-        result = postorderTraversal(root);
+        result = postorderTraversalWithSteps(root, steps);
         break;
     }
     
     setTraversalResult(result);
-    
-    // Create animation steps for traversal
-    const steps: TreeNode[] = [];
-    const traversalAnimated = (node: TreeNode | null) => {
-      if (node) {
-        if (traversalType === 'preorder') {
-          steps.push({ ...node, status: 'visiting' });
-        }
-        
-        if (node.left) traversalAnimated(node.left);
-        
-        if (traversalType === 'inorder') {
-          steps.push({ ...node, status: 'visiting' });
-        }
-        
-        if (node.right) traversalAnimated(node.right);
-        
-        if (traversalType === 'postorder') {
-          steps.push({ ...node, status: 'visiting' });
-        }
-      }
-    };
-    
-    traversalAnimated(root);
     setAnimationSteps(steps);
     setCurrentStep(0);
+    setHighlightedNodes(new Set());
+    setCurrentDescription('');
     setIsAnimating(true);
     setIsPaused(false);
   };
@@ -336,7 +351,7 @@ const TreeVisualizer: React.FC = () => {
     }
   };
 
-  // Render tree nodes
+  // Enhanced render tree with highlighting
   const renderTree = (node: TreeNode | null): JSX.Element | null => {
     if (!node) return null;
     
@@ -345,9 +360,11 @@ const TreeVisualizer: React.FC = () => {
     const renderNode = (currentNode: TreeNode | null): JSX.Element | null => {
       if (!currentNode || currentNode.x === undefined || currentNode.y === undefined) return null;
       
-      const nodeColor = currentNode.status === 'visiting' ? 'fill-yellow-500' : 
+      const isHighlighted = highlightedNodes.has(currentNode.value);
+      const nodeColor = isHighlighted ? 'fill-yellow-400' : 
+                       currentNode.status === 'visiting' ? 'fill-blue-500' : 
                        currentNode.status === 'found' ? 'fill-green-500' :
-                       currentNode.status === 'visited' ? 'fill-blue-500' : 'fill-primary';
+                       currentNode.status === 'visited' ? 'fill-blue-300' : 'fill-primary';
       
       return (
         <g key={`node-${currentNode.value}-${currentNode.x}-${currentNode.y}`}>
@@ -375,17 +392,17 @@ const TreeVisualizer: React.FC = () => {
             />
           )}
           
-          {/* Node circle */}
+          {/* Enhanced node circle with highlighting */}
           <motion.circle
             cx={currentNode.x}
             cy={currentNode.y}
             r="15"
             className={`${nodeColor} stroke-foreground stroke-2`}
             animate={{ 
-              scale: currentNode.status === 'visiting' ? 1.2 : 1,
+              scale: isHighlighted ? 1.3 : currentNode.status === 'visiting' ? 1.2 : 1,
               opacity: currentNode.status === 'visited' ? 0.7 : 1
             }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5 }}
           />
           
           {/* Node value */}
@@ -443,15 +460,21 @@ const TreeVisualizer: React.FC = () => {
     }
   };
 
-  // Animation effect
+  // Enhanced animation effect with highlighting
   useEffect(() => {
     if (isAnimating && !isPaused && animationSteps.length > 0) {
-      if (currentStep < animationSteps.length - 1) {
+      if (currentStep < animationSteps.length) {
+        const step = animationSteps[currentStep];
+        setHighlightedNodes(new Set([step.node.value]));
+        setCurrentDescription(step.description);
+        
         animationRef.current = setTimeout(() => {
           setCurrentStep(currentStep + 1);
-        }, 1000);
+        }, 1500);
       } else {
         setIsAnimating(false);
+        setHighlightedNodes(new Set());
+        setCurrentDescription('Traversal completed!');
       }
     }
 
@@ -614,6 +637,36 @@ const TreeVisualizer: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Color Legend */}
+          <div className="bg-muted/20 p-3 rounded-lg">
+            <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-primary rounded-full"></div>
+                <span>Default</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                <span>Visiting</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <span>Exploring</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span>Found</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Step Description */}
+          {currentDescription && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+              <strong>Step:</strong> {currentDescription}
+            </div>
+          )}
 
           {/* Error Display */}
           {error && (
