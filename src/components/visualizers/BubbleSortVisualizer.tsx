@@ -11,6 +11,11 @@ interface ArrayItem {
   status: 'default' | 'comparing' | 'swapping' | 'sorted';
 }
 
+interface AnimationStep {
+  array: ArrayItem[];
+  description: string;
+}
+
 const BubbleSortVisualizer: React.FC = () => {
   const [array, setArray] = useState<ArrayItem[]>([
     { value: 64, status: 'default' },
@@ -22,52 +27,82 @@ const BubbleSortVisualizer: React.FC = () => {
   ]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [animationSteps, setAnimationSteps] = useState<ArrayItem[][]>([]);
+  const [animationSteps, setAnimationSteps] = useState<AnimationStep[]>([]);
+  const [currentDescription, setCurrentDescription] = useState('');
   const [customInput, setCustomInput] = useState('');
   const [speed, setSpeed] = useState(1);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const generateBubbleSortSteps = (arr: ArrayItem[]): ArrayItem[][] => {
-    const steps: ArrayItem[][] = [];
+  const generateBubbleSortSteps = (arr: ArrayItem[]): AnimationStep[] => {
+    const steps: AnimationStep[] = [];
     const workingArray = [...arr];
     const n = workingArray.length;
     
-    steps.push([...workingArray]);
+    steps.push({
+      array: [...workingArray],
+      description: 'Starting Bubble Sort algorithm'
+    });
     
     for (let i = 0; i < n - 1; i++) {
       for (let j = 0; j < n - i - 1; j++) {
         // Show comparison
         const compareStep = workingArray.map((item, index) => ({
           ...item,
-          status: (index === j || index === j + 1) ? 'comparing' as const : 'default' as const
+          status: (index === j || index === j + 1) ? 'comparing' as const : item.status
         }));
-        steps.push([...compareStep]);
+        steps.push({
+          array: [...compareStep],
+          description: `Comparing elements at index ${j} (${workingArray[j].value}) and ${j + 1} (${workingArray[j + 1].value})`
+        });
         
         if (workingArray[j].value > workingArray[j + 1].value) {
           // Show swap
           const swapStep = workingArray.map((item, index) => ({
             ...item,
-            status: (index === j || index === j + 1) ? 'swapping' as const : 'default' as const
+            status: (index === j || index === j + 1) ? 'swapping' as const : item.status
           }));
-          steps.push([...swapStep]);
+          steps.push({
+            array: [...swapStep],
+            description: `Swapping ${workingArray[j].value} and ${workingArray[j + 1].value}`
+          });
           
           // Perform swap
           [workingArray[j], workingArray[j + 1]] = [workingArray[j + 1], workingArray[j]];
           
           // Show after swap
-          const afterSwap = [...workingArray];
-          steps.push([...afterSwap]);
+          steps.push({
+            array: [...workingArray],
+            description: `Swapped successfully`
+          });
+        } else {
+          steps.push({
+            array: [...workingArray],
+            description: `No swap needed - elements are in correct order`
+          });
         }
+        
+        // Reset comparison status
+        workingArray.forEach(item => {
+          if (item.status === 'comparing' || item.status === 'swapping') {
+            item.status = 'default';
+          }
+        });
       }
       
       // Mark as sorted
       workingArray[n - i - 1].status = 'sorted';
-      steps.push([...workingArray]);
+      steps.push({
+        array: [...workingArray],
+        description: `Element ${workingArray[n - i - 1].value} is now in its correct position`
+      });
     }
     
     // Mark all as sorted
-    const finalStep = workingArray.map(item => ({ ...item, status: 'sorted' as const }));
-    steps.push(finalStep);
+    workingArray[0].status = 'sorted';
+    steps.push({
+      array: [...workingArray],
+      description: 'Bubble Sort completed! All elements are now sorted.'
+    });
     
     return steps;
   };
@@ -94,6 +129,7 @@ const BubbleSortVisualizer: React.FC = () => {
     setIsAnimating(false);
     setCurrentStep(0);
     setAnimationSteps([]);
+    setCurrentDescription('');
     if (animationRef.current) {
       clearTimeout(animationRef.current);
     }
@@ -103,7 +139,9 @@ const BubbleSortVisualizer: React.FC = () => {
   const stepForward = () => {
     if (currentStep < animationSteps.length - 1) {
       setCurrentStep(prev => prev + 1);
-      setArray(animationSteps[currentStep + 1]);
+      const nextStep = animationSteps[currentStep + 1];
+      setArray(nextStep.array);
+      setCurrentDescription(nextStep.description);
     }
   };
 
@@ -135,7 +173,9 @@ const BubbleSortVisualizer: React.FC = () => {
       if (currentStep < animationSteps.length - 1) {
         animationRef.current = setTimeout(() => {
           setCurrentStep(prev => prev + 1);
-          setArray(animationSteps[currentStep + 1]);
+          const nextStep = animationSteps[currentStep + 1];
+          setArray(nextStep.array);
+          setCurrentDescription(nextStep.description);
         }, 1000 / speed);
       } else {
         setIsAnimating(false);
@@ -154,7 +194,7 @@ const BubbleSortVisualizer: React.FC = () => {
       case 'comparing': return 'bg-yellow-500';
       case 'swapping': return 'bg-red-500';
       case 'sorted': return 'bg-green-500';
-      default: return 'bg-primary';
+      default: return 'bg-blue-500';
     }
   };
 
@@ -168,23 +208,6 @@ const BubbleSortVisualizer: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Array Visualization */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[200px] flex items-end justify-center gap-2">
-            {array.map((item, index) => (
-              <motion.div
-                key={`${index}-${item.value}`}
-                className={`${getBarColor(item.status)} text-white text-sm font-bold flex items-end justify-center relative transition-all duration-300`}
-                style={{ 
-                  height: `${(item.value / 100) * 150 + 30}px`,
-                  width: '40px'
-                }}
-                animate={{ scale: item.status === 'swapping' ? 1.1 : 1 }}
-              >
-                <span className="absolute bottom-1">{item.value}</span>
-              </motion.div>
-            ))}
-          </div>
-
           {/* Custom Input */}
           <div className="flex gap-2">
             <Input
@@ -218,6 +241,53 @@ const BubbleSortVisualizer: React.FC = () => {
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
+          </div>
+
+          {/* Color Legend */}
+          <div className="bg-muted/20 p-3 rounded-lg">
+            <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-blue-500"></div>
+                <span>🔵 Unsorted</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-yellow-500"></div>
+                <span>🟡 Comparing</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500"></div>
+                <span>🔴 Swapping</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500"></div>
+                <span>🟢 Sorted</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Step Description */}
+          {currentDescription && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+              <strong>Step:</strong> {currentDescription}
+            </div>
+          )}
+
+          {/* Array Visualization */}
+          <div className="bg-muted/20 p-6 rounded-lg min-h-[200px] flex items-end justify-center gap-2">
+            {array.map((item, index) => (
+              <motion.div
+                key={`${index}-${item.value}`}
+                className={`${getBarColor(item.status)} text-white text-sm font-bold flex items-end justify-center relative transition-all duration-300`}
+                style={{ 
+                  height: `${(item.value / 100) * 150 + 30}px`,
+                  width: '40px'
+                }}
+                animate={{ scale: item.status === 'swapping' ? 1.1 : 1 }}
+              >
+                <span className="absolute bottom-1">{item.value}</span>
+              </motion.div>
+            ))}
           </div>
 
           {/* Speed Control */}

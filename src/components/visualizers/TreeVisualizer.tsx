@@ -1,345 +1,41 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Play, Pause, SkipForward, RotateCcw, Plus, Minus, Search, ExternalLink, Shuffle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface TreeNode {
+  id: string;
   value: number;
-  left: TreeNode | null;
-  right: TreeNode | null;
+  left?: TreeNode;
+  right?: TreeNode;
   x?: number;
   y?: number;
-  status?: 'default' | 'visiting' | 'visited' | 'found' | 'adding' | 'removing';
-  highlighted?: boolean;
+  status?: 'default' | 'visiting' | 'visited' | 'found';
 }
 
-interface TreePosition {
-  x: number;
-  y: number;
+interface TraversalStep {
+  node: TreeNode;
+  description: string;
 }
 
 const TreeVisualizer: React.FC = () => {
   const [root, setRoot] = useState<TreeNode | null>(null);
-  const [treeType, setTreeType] = useState<'binary' | 'bst'>('bst');
-  const [nodeValue, setNodeValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [deleteValue, setDeleteValue] = useState('');
+  const [treeType, setTreeType] = useState<'binary' | 'bst'>('bst');
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [animationSteps, setAnimationSteps] = useState<{ node: TreeNode; description: string }[]>([]);
-  const [traversalResult, setTraversalResult] = useState<number[]>([]);
-  const [traversalType, setTraversalType] = useState<'inorder' | 'preorder' | 'postorder'>('inorder');
-  const [error, setError] = useState('');
-  const [highlightedNodes, setHighlightedNodes] = useState<Set<number>>(new Set());
+  const [traversalSteps, setTraversalSteps] = useState<TraversalStep[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const resetError = () => setError('');
-
-  // Helper function to create a new node
-  const createNode = (value: number): TreeNode => ({
-    value,
-    left: null,
-    right: null,
-    status: 'default'
-  });
-
-  // Generate example tree
-  const generateExample = () => {
-    const values = treeType === 'bst' ? [50, 30, 70, 20, 40, 60, 80] : [1, 2, 3, 4, 5, 6, 7];
-    let newRoot: TreeNode | null = null;
-    
-    values.forEach(value => {
-      newRoot = insertNode(newRoot, value);
-    });
-    
-    setRoot(newRoot);
-    setAnimationSteps([]);
-    setCurrentStep(0);
-    setTraversalResult([]);
-    setIsAnimating(false);
-    setIsPaused(false);
-    resetError();
-  };
-
-  // Erase tree
-  const eraseExample = () => {
-    setRoot(null);
-    setAnimationSteps([]);
-    setCurrentStep(0);
-    setTraversalResult([]);
-    setIsAnimating(false);
-    setIsPaused(false);
-    resetError();
-  };
-
-  // Insert node into tree
-  const insertNode = (node: TreeNode | null, value: number): TreeNode => {
-    if (!node) {
-      return createNode(value);
-    }
-
-    if (treeType === 'bst') {
-      if (value < node.value) {
-        node.left = insertNode(node.left, value);
-      } else if (value > node.value) {
-        node.right = insertNode(node.right, value);
-      }
-    } else {
-      // Binary tree - insert level by level
-      if (!node.left) {
-        node.left = createNode(value);
-      } else if (!node.right) {
-        node.right = createNode(value);
-      } else {
-        // Continue with left subtree for simplicity
-        node.left = insertNode(node.left, value);
-      }
-    }
-
-    return node;
-  };
-
-  // Handle insert
-  const handleInsert = () => {
-    const value = parseInt(nodeValue.trim());
-    
-    if (isNaN(value)) {
-      setError('Please enter a valid number');
-      return;
-    }
-
-    if (treeType === 'bst' && findNode(root, value)) {
-      setError('Value already exists in BST');
-      return;
-    }
-
-    resetError();
-    const newRoot = insertNode(root, value);
-    setRoot(newRoot);
-    setNodeValue('');
-  };
-
-  // Find node in tree
-  const findNode = (node: TreeNode | null, value: number): TreeNode | null => {
-    if (!node) return null;
-    if (node.value === value) return node;
-    
-    if (treeType === 'bst') {
-      if (value < node.value) {
-        return findNode(node.left, value);
-      } else {
-        return findNode(node.right, value);
-      }
-    } else {
-      return findNode(node.left, value) || findNode(node.right, value);
-    }
-  };
-
-  // Delete node from tree
-  const deleteNode = (node: TreeNode | null, value: number): TreeNode | null => {
-    if (!node) return null;
-
-    if (value < node.value) {
-      node.left = deleteNode(node.left, value);
-    } else if (value > node.value) {
-      node.right = deleteNode(node.right, value);
-    } else {
-      // Node to be deleted found
-      if (!node.left) return node.right;
-      if (!node.right) return node.left;
-
-      // Node with two children
-      const minRight = findMin(node.right);
-      node.value = minRight.value;
-      node.right = deleteNode(node.right, minRight.value);
-    }
-
-    return node;
-  };
-
-  // Find minimum value node
-  const findMin = (node: TreeNode): TreeNode => {
-    while (node.left) {
-      node = node.left;
-    }
-    return node;
-  };
-
-  // Handle delete
-  const handleDelete = () => {
-    const value = parseInt(deleteValue.trim());
-    
-    if (isNaN(value)) {
-      setError('Please enter a valid number');
-      return;
-    }
-
-    if (!findNode(root, value)) {
-      setError('Value not found in tree');
-      return;
-    }
-
-    resetError();
-    const newRoot = deleteNode(root, value);
-    setRoot(newRoot);
-    setDeleteValue('');
-  };
-
-  // Handle search with animation
-  const handleSearch = () => {
-    const value = parseInt(searchValue.trim());
-    
-    if (isNaN(value)) {
-      setError('Please enter a valid number to search');
-      return;
-    }
-
-    if (!root) {
-      setError('Tree is empty');
-      return;
-    }
-
-    resetError();
-    const searchPath: TreeNode[] = [];
-    searchNodeAnimated(root, value, searchPath);
-    
-    if (searchPath.length > 0) {
-      setAnimationSteps(searchPath);
-      setCurrentStep(0);
-      setIsAnimating(true);
-      setIsPaused(false);
-    }
-    
-    setSearchValue('');
-  };
-
-  // Animated search
-  const searchNodeAnimated = (node: TreeNode | null, value: number, path: TreeNode[]) => {
-    if (!node) return;
-    
-    const nodeCopy = { ...node, status: 'visiting' as const };
-    path.push(nodeCopy);
-    
-    if (node.value === value) {
-      const foundNode = { ...node, status: 'found' as const };
-      path.push(foundNode);
-      return;
-    }
-    
-    if (treeType === 'bst') {
-      if (value < node.value && node.left) {
-        searchNodeAnimated(node.left, value, path);
-      } else if (value > node.value && node.right) {
-        searchNodeAnimated(node.right, value, path);
-      }
-    }
-  };
-
-  // Enhanced traversal functions with step descriptions
-  const inorderTraversalWithSteps = (node: TreeNode | null, steps: { node: TreeNode; description: string }[] = []): number[] => {
-    const result: number[] = [];
-    
-    const traverse = (currentNode: TreeNode | null) => {
-      if (currentNode) {
-        if (currentNode.left) traverse(currentNode.left);
-        
-        steps.push({ 
-          node: { ...currentNode }, 
-          description: `Visiting node ${currentNode.value} (Inorder: Left → Root → Right)` 
-        });
-        result.push(currentNode.value);
-        
-        if (currentNode.right) traverse(currentNode.right);
-      }
-    };
-    
-    traverse(node);
-    return result;
-  };
-
-  const preorderTraversalWithSteps = (node: TreeNode | null, steps: { node: TreeNode; description: string }[] = []): number[] => {
-    const result: number[] = [];
-    
-    const traverse = (currentNode: TreeNode | null) => {
-      if (currentNode) {
-        steps.push({ 
-          node: { ...currentNode }, 
-          description: `Visiting node ${currentNode.value} (Preorder: Root → Left → Right)` 
-        });
-        result.push(currentNode.value);
-        
-        if (currentNode.left) traverse(currentNode.left);
-        if (currentNode.right) traverse(currentNode.right);
-      }
-    };
-    
-    traverse(node);
-    return result;
-  };
-
-  const postorderTraversalWithSteps = (node: TreeNode | null, steps: { node: TreeNode; description: string }[] = []): number[] => {
-    const result: number[] = [];
-    
-    const traverse = (currentNode: TreeNode | null) => {
-      if (currentNode) {
-        if (currentNode.left) traverse(currentNode.left);
-        if (currentNode.right) traverse(currentNode.right);
-        
-        steps.push({ 
-          node: { ...currentNode }, 
-          description: `Visiting node ${currentNode.value} (Postorder: Left → Right → Root)` 
-        });
-        result.push(currentNode.value);
-      }
-    };
-    
-    traverse(node);
-    return result;
-  };
-
-  // Handle traversal with animation steps
-  const handleTraversal = () => {
-    if (!root) {
-      setError('Tree is empty');
-      return;
-    }
-
-    resetError();
-    const steps: { node: TreeNode; description: string }[] = [];
-    let result: number[] = [];
-    
-    switch (traversalType) {
-      case 'inorder':
-        result = inorderTraversalWithSteps(root, steps);
-        break;
-      case 'preorder':
-        result = preorderTraversalWithSteps(root, steps);
-        break;
-      case 'postorder':
-        result = postorderTraversalWithSteps(root, steps);
-        break;
-    }
-    
-    setTraversalResult(result);
-    setAnimationSteps(steps);
-    setCurrentStep(0);
-    setHighlightedNodes(new Set());
-    setCurrentDescription('');
-    setIsAnimating(true);
-    setIsPaused(false);
-  };
-
-  // Calculate node positions for rendering
   const calculatePositions = (node: TreeNode | null, x = 300, y = 50, level = 0): void => {
     if (!node) return;
     
-    const horizontalSpacing = Math.max(60, 150 / (level + 1));
-    
+    const horizontalSpacing = Math.max(80, 200 / (level + 1));
     node.x = x;
     node.y = y;
     
@@ -351,101 +47,230 @@ const TreeVisualizer: React.FC = () => {
     }
   };
 
-  // Enhanced render tree with highlighting
-  const renderTree = (node: TreeNode | null): JSX.Element | null => {
-    if (!node) return null;
-    
-    calculatePositions(root);
-    
-    const renderNode = (currentNode: TreeNode | null): JSX.Element | null => {
-      if (!currentNode || currentNode.x === undefined || currentNode.y === undefined) return null;
-      
-      const isHighlighted = highlightedNodes.has(currentNode.value);
-      const nodeColor = isHighlighted ? 'fill-yellow-400' : 
-                       currentNode.status === 'visiting' ? 'fill-blue-500' : 
-                       currentNode.status === 'found' ? 'fill-green-500' :
-                       currentNode.status === 'visited' ? 'fill-blue-300' : 'fill-primary';
-      
-      return (
-        <g key={`node-${currentNode.value}-${currentNode.x}-${currentNode.y}`}>
-          {/* Lines to children */}
-          {currentNode.left && (
-            <line
-              x1={currentNode.x}
-              y1={currentNode.y + 15}
-              x2={currentNode.left.x}
-              y2={currentNode.left.y - 15}
-              stroke="currentColor"
-              strokeWidth="2"
-              className="text-muted-foreground"
-            />
-          )}
-          {currentNode.right && (
-            <line
-              x1={currentNode.x}
-              y1={currentNode.y + 15}
-              x2={currentNode.right.x}
-              y2={currentNode.right.y - 15}
-              stroke="currentColor"
-              strokeWidth="2"
-              className="text-muted-foreground"
-            />
-          )}
-          
-          {/* Enhanced node circle with highlighting */}
-          <motion.circle
-            cx={currentNode.x}
-            cy={currentNode.y}
-            r="15"
-            className={`${nodeColor} stroke-foreground stroke-2`}
-            animate={{ 
-              scale: isHighlighted ? 1.3 : currentNode.status === 'visiting' ? 1.2 : 1,
-              opacity: currentNode.status === 'visited' ? 0.7 : 1
-            }}
-            transition={{ duration: 0.5 }}
-          />
-          
-          {/* Node value */}
-          <text
-            x={currentNode.x}
-            y={currentNode.y + 5}
-            textAnchor="middle"
-            className="text-sm font-bold fill-primary-foreground"
-          >
-            {currentNode.value}
-          </text>
-          
-          {/* Render children */}
-          {renderNode(currentNode.left)}
-          {renderNode(currentNode.right)}
-        </g>
-      );
+  const insertNode = (value: number) => {
+    const newNode: TreeNode = {
+      id: Math.random().toString(36).substr(2, 9),
+      value,
+      status: 'default'
     };
-    
-    return renderNode(node);
-  };
 
-  // Animation controls
-  const playAnimation = () => {
-    if (animationSteps.length === 0) {
-      setError('No animation to play. Try searching or traversing first.');
+    if (!root) {
+      setRoot(newNode);
       return;
     }
-    setIsAnimating(true);
-    setIsPaused(false);
+
+    if (treeType === 'bst') {
+      insertBST(root, newNode);
+    } else {
+      insertBinary(root, newNode);
+    }
+    
+    const updatedRoot = { ...root };
+    calculatePositions(updatedRoot);
+    setRoot(updatedRoot);
   };
 
-  const pauseAnimation = () => {
+  const insertBST = (currentNode: TreeNode, newNode: TreeNode): void => {
+    if (newNode.value < currentNode.value) {
+      if (!currentNode.left) {
+        currentNode.left = newNode;
+      } else {
+        insertBST(currentNode.left, newNode);
+      }
+    } else {
+      if (!currentNode.right) {
+        currentNode.right = newNode;
+      } else {
+        insertBST(currentNode.right, newNode);
+      }
+    }
+  };
+
+  const insertBinary = (currentNode: TreeNode, newNode: TreeNode): void => {
+    if (!currentNode.left) {
+      currentNode.left = newNode;
+    } else if (!currentNode.right) {
+      currentNode.right = newNode;
+    } else {
+      insertBinary(currentNode.left, newNode);
+    }
+  };
+
+  const deleteNode = (value: number) => {
+    if (!root) return;
+    
+    const deleteFromBST = (node: TreeNode | null, val: number): TreeNode | null => {
+      if (!node) return null;
+      
+      if (val < node.value) {
+        node.left = deleteFromBST(node.left, val);
+      } else if (val > node.value) {
+        node.right = deleteFromBST(node.right, val);
+      } else {
+        if (!node.left) return node.right;
+        if (!node.right) return node.left;
+        
+        const minNode = findMin(node.right);
+        node.value = minNode.value;
+        node.right = deleteFromBST(node.right, minNode.value);
+      }
+      return node;
+    };
+    
+    const newRoot = deleteFromBST(root, value);
+    if (newRoot) {
+      calculatePositions(newRoot);
+    }
+    setRoot(newRoot);
+  };
+
+  const findMin = (node: TreeNode): TreeNode => {
+    while (node.left) {
+      node = node.left;
+    }
+    return node;
+  };
+
+  const searchNode = (value: number) => {
+    if (!root) return;
+    
+    const steps: TraversalStep[] = [];
+    
+    const search = (node: TreeNode | null): boolean => {
+      if (!node) return false;
+      
+      steps.push({
+        node: { ...node },
+        description: `Checking node with value ${node.value}`
+      });
+      
+      if (node.value === value) {
+        steps.push({
+          node: { ...node, status: 'found' },
+          description: `Found target value ${value}!`
+        });
+        return true;
+      }
+      
+      if (treeType === 'bst') {
+        if (value < node.value) {
+          steps.push({
+            node: { ...node },
+            description: `${value} < ${node.value}, searching left subtree`
+          });
+          return search(node.left);
+        } else {
+          steps.push({
+            node: { ...node },
+            description: `${value} > ${node.value}, searching right subtree`
+          });
+          return search(node.right);
+        }
+      } else {
+        return search(node.left) || search(node.right);
+      }
+    };
+    
+    const found = search(root);
+    if (!found) {
+      steps.push({
+        node: root,
+        description: `Value ${value} not found in tree`
+      });
+    }
+    
+    setTraversalSteps(steps);
+    setCurrentStep(0);
+    setIsAnimating(true);
+  };
+
+  const performTraversal = (type: 'inorder' | 'preorder' | 'postorder') => {
+    if (!root) return;
+    
+    const steps: TraversalStep[] = [];
+    
+    const inorder = (node: TreeNode | null): void => {
+      if (!node) return;
+      inorder(node.left);
+      steps.push({
+        node: { ...node, status: 'visiting' },
+        description: `Visiting node ${node.value} (Inorder: Left, Root, Right)`
+      });
+      inorder(node.right);
+    };
+    
+    const preorder = (node: TreeNode | null): void => {
+      if (!node) return;
+      steps.push({
+        node: { ...node, status: 'visiting' },
+        description: `Visiting node ${node.value} (Preorder: Root, Left, Right)`
+      });
+      preorder(node.left);
+      preorder(node.right);
+    };
+    
+    const postorder = (node: TreeNode | null): void => {
+      if (!node) return;
+      postorder(node.left);
+      postorder(node.right);
+      steps.push({
+        node: { ...node, status: 'visiting' },
+        description: `Visiting node ${node.value} (Postorder: Left, Right, Root)`
+      });
+    };
+    
+    switch (type) {
+      case 'inorder':
+        inorder(root);
+        break;
+      case 'preorder':
+        preorder(root);
+        break;
+      case 'postorder':
+        postorder(root);
+        break;
+    }
+    
+    setTraversalSteps(steps);
+    setCurrentStep(0);
+    setIsAnimating(true);
+  };
+
+  const generateExample = () => {
+    setRoot(null);
+    const values = treeType === 'bst' ? [50, 30, 70, 20, 40, 60, 80] : [1, 2, 3, 4, 5, 6, 7];
+    
+    setTimeout(() => {
+      values.forEach(value => insertNode(value));
+    }, 100);
+  };
+
+  const eraseTree = () => {
+    setRoot(null);
+    setTraversalSteps([]);
+    setCurrentStep(0);
+    setCurrentDescription('');
     setIsAnimating(false);
-    setIsPaused(true);
-    if (animationRef.current) {
-      clearTimeout(animationRef.current);
-      animationRef.current = null;
+  };
+
+  const handleInsert = () => {
+    const value = parseInt(inputValue);
+    if (!isNaN(value)) {
+      insertNode(value);
+      setInputValue('');
+    }
+  };
+
+  const handleSearch = () => {
+    const value = parseInt(searchValue);
+    if (!isNaN(value)) {
+      searchNode(value);
+      setSearchValue('');
     }
   };
 
   const stepForward = () => {
-    if (currentStep < animationSteps.length - 1) {
+    if (currentStep < traversalSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -453,54 +278,130 @@ const TreeVisualizer: React.FC = () => {
   const resetAnimation = () => {
     setCurrentStep(0);
     setIsAnimating(false);
-    setIsPaused(false);
+    setCurrentDescription('');
     if (animationRef.current) {
       clearTimeout(animationRef.current);
-      animationRef.current = null;
+    }
+    
+    // Reset all node statuses
+    const resetNodeStatus = (node: TreeNode | null): void => {
+      if (node) {
+        node.status = 'default';
+        resetNodeStatus(node.left);
+        resetNodeStatus(node.right);
+      }
+    };
+    
+    if (root) {
+      resetNodeStatus(root);
+      setRoot({ ...root });
     }
   };
 
-  // Enhanced animation effect with highlighting
   useEffect(() => {
-    if (isAnimating && !isPaused && animationSteps.length > 0) {
-      if (currentStep < animationSteps.length) {
-        const step = animationSteps[currentStep];
-        setHighlightedNodes(new Set([step.node.value]));
+    if (isAnimating && traversalSteps.length > 0) {
+      if (currentStep < traversalSteps.length) {
+        const step = traversalSteps[currentStep];
         setCurrentDescription(step.description);
         
+        // Update the tree to highlight the current node
+        const updateNodeStatus = (node: TreeNode | null, targetId: string): TreeNode | null => {
+          if (!node) return null;
+          
+          const updatedNode = { 
+            ...node, 
+            status: node.id === targetId ? step.node.status : 'default',
+            left: updateNodeStatus(node.left, targetId),
+            right: updateNodeStatus(node.right, targetId)
+          };
+          
+          return updatedNode;
+        };
+        
+        if (root) {
+          const updatedRoot = updateNodeStatus(root, step.node.id);
+          setRoot(updatedRoot);
+        }
+        
         animationRef.current = setTimeout(() => {
-          setCurrentStep(currentStep + 1);
+          if (currentStep < traversalSteps.length - 1) {
+            setCurrentStep(currentStep + 1);
+          } else {
+            setIsAnimating(false);
+          }
         }, 1500);
-      } else {
-        setIsAnimating(false);
-        setHighlightedNodes(new Set());
-        setCurrentDescription('Traversal completed!');
       }
     }
 
     return () => {
       if (animationRef.current) {
         clearTimeout(animationRef.current);
-        animationRef.current = null;
       }
     };
-  }, [isAnimating, isPaused, currentStep, animationSteps]);
+  }, [isAnimating, currentStep, traversalSteps, root]);
 
-  const resetAll = () => {
-    setRoot(null);
-    setNodeValue('');
-    setSearchValue('');
-    setDeleteValue('');
-    setAnimationSteps([]);
-    setCurrentStep(0);
-    setTraversalResult([]);
-    setIsAnimating(false);
-    setIsPaused(false);
-    resetError();
-    if (animationRef.current) {
-      clearTimeout(animationRef.current);
-      animationRef.current = null;
-    }
+  const renderTree = (node: TreeNode | null): JSX.Element | null => {
+    if (!node) return null;
+    
+    const getNodeColor = (status?: string) => {
+      switch (status) {
+        case 'visiting': return 'fill-yellow-500';
+        case 'visited': return 'fill-green-500';
+        case 'found': return 'fill-green-500';
+        default: return 'fill-blue-500';
+      }
+    };
+
+    return (
+      <g key={node.id}>
+        {/* Edges */}
+        {node.left && (
+          <line
+            x1={node.x}
+            y1={node.y}
+            x2={node.left.x}
+            y2={node.left.y}
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-muted-foreground"
+          />
+        )}
+        {node.right && (
+          <line
+            x1={node.x}
+            y1={node.y}
+            x2={node.right.x}
+            y2={node.right.y}
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-muted-foreground"
+          />
+        )}
+        
+        {/* Node */}
+        <motion.circle
+          cx={node.x}
+          cy={node.y}
+          r="20"
+          className={`${getNodeColor(node.status)} stroke-foreground stroke-2`}
+          animate={{ scale: node.status === 'visiting' ? 1.2 : 1 }}
+          transition={{ duration: 0.3 }}
+        />
+        
+        <text
+          x={node.x}
+          y={node.y + 5}
+          textAnchor="middle"
+          className="text-sm font-bold fill-white"
+        >
+          {node.value}
+        </text>
+        
+        {/* Render children */}
+        {renderTree(node.left)}
+        {renderTree(node.right)}
+      </g>
+    );
   };
 
   return (
@@ -510,51 +411,84 @@ const TreeVisualizer: React.FC = () => {
           <CardTitle>Tree Visualizer</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Tree Type Selection */}
-          <div className="flex gap-4 items-center justify-center">
-            <label className="text-sm font-medium">Tree Type:</label>
-            <Select value={treeType} onValueChange={(value: 'binary' | 'bst') => setTreeType(value)}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bst">Binary Search Tree</SelectItem>
-                <SelectItem value="binary">Binary Tree</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Example Generation */}
-          <div className="flex gap-2 justify-center">
+          {/* Controls */}
+          <div className="flex gap-4 items-center justify-center flex-wrap">
+            <div className="flex gap-2">
+              <Button 
+                variant={treeType === 'bst' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setTreeType('bst')}
+              >
+                BST
+              </Button>
+              <Button 
+                variant={treeType === 'binary' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setTreeType('binary')}
+              >
+                Binary Tree
+              </Button>
+            </div>
+            
             <Button onClick={generateExample} variant="outline" size="sm">
               <Shuffle className="h-4 w-4 mr-2" />
               Generate Example
             </Button>
-            <Button onClick={eraseExample} variant="outline" size="sm">
-              Erase Example
+            
+            <Button onClick={eraseTree} variant="outline" size="sm">
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Erase Tree
+            </Button>
+          </div>
+
+          {/* Insert and Search */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Insert value"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleInsert()}
+              />
+              <Button onClick={handleInsert} size="sm">Insert</Button>
+            </div>
+            
+            <div className="flex gap-2">
+              <Input
+                placeholder="Search value"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <Button onClick={handleSearch} size="sm">Search</Button>
+            </div>
+          </div>
+
+          {/* Traversal Controls */}
+          <div className="flex gap-2 justify-center flex-wrap">
+            <Button onClick={() => performTraversal('inorder')} variant="outline" size="sm">
+              Inorder
+            </Button>
+            <Button onClick={() => performTraversal('preorder')} variant="outline" size="sm">
+              Preorder
+            </Button>
+            <Button onClick={() => performTraversal('postorder')} variant="outline" size="sm">
+              Postorder
             </Button>
           </div>
 
           {/* Animation Controls */}
-          {animationSteps.length > 0 && (
+          {traversalSteps.length > 0 && (
             <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
               <Button 
-                onClick={playAnimation} 
-                disabled={isAnimating}
+                onClick={() => setIsAnimating(!isAnimating)} 
                 size="sm"
+                disabled={currentStep >= traversalSteps.length - 1}
               >
-                <Play className="h-4 w-4 mr-2" />
-                Play
+                {isAnimating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                {isAnimating ? 'Pause' : 'Play'}
               </Button>
-              <Button 
-                onClick={pauseAnimation} 
-                disabled={!isAnimating}
-                size="sm"
-              >
-                <Pause className="h-4 w-4 mr-2" />
-                Pause
-              </Button>
-              <Button onClick={stepForward} size="sm">
+              <Button onClick={stepForward} size="sm" disabled={currentStep >= traversalSteps.length - 1}>
                 <SkipForward className="h-4 w-4 mr-2" />
                 Step
               </Button>
@@ -563,96 +497,22 @@ const TreeVisualizer: React.FC = () => {
                 Reset
               </Button>
               <span className="text-sm text-muted-foreground">
-                Step {currentStep + 1} of {animationSteps.length}
+                Step {currentStep + 1} of {traversalSteps.length}
               </span>
             </div>
           )}
-
-          {/* Operations */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Insert Node</label>
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="Value" 
-                  type="number" 
-                  value={nodeValue}
-                  onChange={(e) => setNodeValue(e.target.value)}
-                  disabled={isAnimating}
-                />
-                <Button size="sm" onClick={handleInsert} disabled={isAnimating || !nodeValue.trim()}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Delete Node</label>
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="Value" 
-                  type="number" 
-                  value={deleteValue}
-                  onChange={(e) => setDeleteValue(e.target.value)}
-                  disabled={isAnimating}
-                />
-                <Button size="sm" variant="destructive" onClick={handleDelete} disabled={isAnimating || !deleteValue.trim()}>
-                  <Minus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Search Node</label>
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="Value" 
-                  type="number" 
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  disabled={isAnimating}
-                />
-                <Button size="sm" variant="outline" onClick={handleSearch} disabled={isAnimating || !searchValue.trim()}>
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Traversal</label>
-              <div className="flex gap-2">
-                <Select value={traversalType} onValueChange={(value: 'inorder' | 'preorder' | 'postorder') => setTraversalType(value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="inorder">Inorder</SelectItem>
-                    <SelectItem value="preorder">Preorder</SelectItem>
-                    <SelectItem value="postorder">Postorder</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button size="sm" onClick={handleTraversal} disabled={isAnimating || !root}>
-                  Go
-                </Button>
-              </div>
-            </div>
-          </div>
 
           {/* Color Legend */}
           <div className="bg-muted/20 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-primary rounded-full"></div>
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                 <span>Default</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                 <span>Visiting</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span>Exploring</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -668,95 +528,21 @@ const TreeVisualizer: React.FC = () => {
             </div>
           )}
 
-          {/* Error Display */}
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Traversal Result */}
-          {traversalResult.length > 0 && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-              <strong>{traversalType.charAt(0).toUpperCase() + traversalType.slice(1)} Traversal:</strong> {traversalResult.join(' → ')}
-            </div>
-          )}
-
           {/* Tree Visualization */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[400px] flex items-center justify-center">
-            {!root ? (
-              <div className="text-center text-muted-foreground">
-                <p className="text-lg font-medium">Empty Tree</p>
-                <p className="text-sm">Generate an example or insert nodes</p>
-              </div>
-            ) : (
-              <svg width="600" height="350" className="overflow-visible">
+          <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-center justify-center">
+            {root ? (
+              <svg width="600" height="400" className="overflow-visible">
                 {renderTree(root)}
               </svg>
+            ) : (
+              <div className="text-center text-muted-foreground">
+                <p className="text-lg font-medium">Empty Tree</p>
+                <p className="text-sm">Generate an example or insert values to start</p>
+              </div>
             )}
-          </div>
-
-          {/* Reset Button */}
-          <div className="flex justify-center">
-            <Button onClick={resetAll} variant="outline">
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Reset All
-            </Button>
           </div>
         </CardContent>
       </Card>
-
-      {/* Educational Content */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Time Complexity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Search (BST):</span>
-                <span className="font-mono">O(log n)</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Insert (BST):</span>
-                <span className="font-mono">O(log n)</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Delete (BST):</span>
-                <span className="font-mono">O(log n)</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Traversal:</span>
-                <span className="font-mono">O(n)</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Real-world Applications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="text-sm space-y-1">
-              <li>• File systems (directory structure)</li>
-              <li>• Database indexing</li>
-              <li>• Expression parsing</li>
-              <li>• Decision trees in AI</li>
-              <li>• Huffman coding</li>
-            </ul>
-            <div className="mt-4 flex gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <a href="https://www.geeksforgeeks.org/binary-tree-data-structure/" target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  GeeksforGeeks
-                </a>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
