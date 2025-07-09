@@ -42,16 +42,16 @@ const DataStructures: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background p-2 sm:p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-4"
+          className="text-center space-y-2 md:space-y-4"
         >
-          <h1 className="text-4xl font-bold gradient-text">Data Structures</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text">Data Structures</h1>
+          <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
             Explore and interact with fundamental data structures through visual animations
           </p>
         </motion.div>
@@ -59,19 +59,19 @@ const DataStructures: React.FC = () => {
         {/* Structure Selection */}
         <Card>
           <CardHeader>
-            <CardTitle>Select Data Structure</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">Select Data Structure</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {dataStructures.map((structure) => (
                 <Button
                   key={structure.id}
                   variant={selectedStructure === structure.id ? 'default' : 'outline'}
-                  className="h-auto p-4 flex flex-col gap-2"
+                  className="h-auto p-3 sm:p-4 flex flex-col gap-2 text-left"
                   onClick={() => setSelectedStructure(structure.id)}
                 >
-                  <span className="font-semibold">{structure.name}</span>
-                  <span className="text-xs text-muted-foreground text-center">
+                  <span className="font-semibold text-sm sm:text-base">{structure.name}</span>
+                  <span className="text-xs text-muted-foreground text-center leading-tight">
                     {structure.description}
                   </span>
                 </Button>
@@ -86,6 +86,7 @@ const DataStructures: React.FC = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
+          className="overflow-hidden"
         >
           {renderVisualizer()}
         </motion.div>
