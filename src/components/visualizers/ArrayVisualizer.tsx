@@ -24,6 +24,9 @@ const ArrayVisualizer: React.FC = () => {
   const [insertIndex, setInsertIndex] = useState('');
   const [deleteIndex, setDeleteIndex] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [animationSteps, setAnimationSteps] = useState<ArrayItem[][]>([]);
   const [error, setError] = useState('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -38,11 +41,19 @@ const ArrayVisualizer: React.FC = () => {
     ];
     const randomExample = examples[Math.floor(Math.random() * examples.length)];
     setArray(randomExample.map(value => ({ value, status: 'default' as const })));
+    setAnimationSteps([]);
+    setCurrentStep(0);
+    setIsAnimating(false);
+    setIsPaused(false);
     resetError();
   };
 
   const eraseExample = () => {
     setArray([]);
+    setAnimationSteps([]);
+    setCurrentStep(0);
+    setIsAnimating(false);
+    setIsPaused(false);
     resetError();
   };
 
@@ -134,6 +145,110 @@ const ArrayVisualizer: React.FC = () => {
     setSearchValue('');
   };
 
+  const bubbleSort = () => {
+    if (array.length === 0) {
+      setError('Array is empty');
+      return;
+    }
+
+    resetError();
+    const steps: ArrayItem[][] = [];
+    const sortArray = [...array];
+    
+    // Generate all bubble sort steps
+    for (let i = 0; i < sortArray.length - 1; i++) {
+      for (let j = 0; j < sortArray.length - i - 1; j++) {
+        // Comparing step
+        const compareArray = sortArray.map((item, index) => ({
+          ...item,
+          status: (index === j || index === j + 1) ? 'comparing' as const : 'default' as const
+        }));
+        steps.push([...compareArray]);
+        
+        if (sortArray[j].value > sortArray[j + 1].value) {
+          // Swapping step
+          const swapArray = sortArray.map((item, index) => ({
+            ...item,
+            status: (index === j || index === j + 1) ? 'swapping' as const : 'default' as const
+          }));
+          steps.push([...swapArray]);
+          
+          // Perform swap
+          [sortArray[j], sortArray[j + 1]] = [sortArray[j + 1], sortArray[j]];
+          
+          // After swap
+          steps.push([...sortArray.map(item => ({ ...item, status: 'default' as const }))]);
+        }
+      }
+      
+      // Mark as sorted
+      sortArray[sortArray.length - 1 - i].status = 'sorted';
+      steps.push([...sortArray]);
+    }
+    
+    // Mark first element as sorted
+    sortArray[0].status = 'sorted';
+    steps.push([...sortArray]);
+    
+    setAnimationSteps(steps);
+    setCurrentStep(0);
+    setIsAnimating(true);
+    setIsPaused(false);
+  };
+
+  const selectionSort = () => {
+    if (array.length === 0) {
+      setError('Array is empty');
+      return;
+    }
+
+    resetError();
+    const steps: ArrayItem[][] = [];
+    const sortArray = [...array];
+    
+    for (let i = 0; i < sortArray.length - 1; i++) {
+      let minIndex = i;
+      
+      // Finding minimum
+      for (let j = i + 1; j < sortArray.length; j++) {
+        const compareArray = sortArray.map((item, index) => ({
+          ...item,
+          status: index === minIndex ? 'comparing' as const : 
+                 index === j ? 'searching' as const : 'default' as const
+        }));
+        steps.push([...compareArray]);
+        
+        if (sortArray[j].value < sortArray[minIndex].value) {
+          minIndex = j;
+        }
+      }
+      
+      // Swap if needed
+      if (minIndex !== i) {
+        const swapArray = sortArray.map((item, index) => ({
+          ...item,
+          status: (index === i || index === minIndex) ? 'swapping' as const : 'default' as const
+        }));
+        steps.push([...swapArray]);
+        
+        [sortArray[i], sortArray[minIndex]] = [sortArray[minIndex], sortArray[i]];
+      }
+      
+      // Mark as sorted
+      sortArray[i].status = 'sorted';
+      steps.push([...sortArray]);
+    }
+    
+    // Mark last element as sorted
+    sortArray[sortArray.length - 1].status = 'sorted';
+    steps.push([...sortArray]);
+    
+    setAnimationSteps(steps);
+    setCurrentStep(0);
+    setIsAnimating(true);
+    setIsPaused(false);
+  };
+
   const shuffleArray = () => {
     resetError();
     const newArray = [...array];
@@ -142,6 +257,10 @@ const ArrayVisualizer: React.FC = () => {
       [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
     setArray(newArray.map(item => ({ ...item, status: 'default' })));
+    setAnimationSteps([]);
+    setCurrentStep(0);
+    setIsAnimating(false);
+    setIsPaused(false);
   };
 
   const resetArray = () => {
@@ -150,9 +269,74 @@ const ArrayVisualizer: React.FC = () => {
     setSearchValue('');
     setInsertIndex('');
     setDeleteIndex('');
-    resetError();
+    setAnimationSteps([]);
+    setCurrentStep(0);
     setIsAnimating(false);
+    setIsPaused(false);
+    resetError();
+    if (animationRef.current) clearTimeout(animationRef.current);
   };
+
+  const playAnimation = () => {
+    if (animationSteps.length === 0) {
+      setError('No animation to play. Try sorting first.');
+      return;
+    }
+    setIsAnimating(true);
+    setIsPaused(false);
+  };
+
+  const pauseAnimation = () => {
+    setIsAnimating(false);
+    setIsPaused(true);
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+      animationRef.current = null;
+    }
+  };
+
+  const stepForward = () => {
+    if (currentStep < animationSteps.length - 1) {
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      setArray(animationSteps[nextStep]);
+    }
+  };
+
+  const resetAnimation = () => {
+    if (animationSteps.length > 0) {
+      setCurrentStep(0);
+      setArray(animationSteps[0]);
+    }
+    setIsAnimating(false);
+    setIsPaused(false);
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+      animationRef.current = null;
+    }
+  };
+
+  // Animation effect
+  useEffect(() => {
+    if (isAnimating && !isPaused && animationSteps.length > 0) {
+      if (currentStep < animationSteps.length - 1) {
+        animationRef.current = setTimeout(() => {
+          const nextStep = currentStep + 1;
+          setCurrentStep(nextStep);
+          setArray(animationSteps[nextStep]);
+        }, 800);
+      } else {
+        setIsAnimating(false);
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        clearTimeout(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [isAnimating, isPaused, currentStep, animationSteps]);
 
   const getItemColor = (status: ArrayItem['status']) => {
     switch (status) {
@@ -164,12 +348,6 @@ const ArrayVisualizer: React.FC = () => {
       default: return 'bg-primary';
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) clearTimeout(animationRef.current);
-    };
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -187,6 +365,39 @@ const ArrayVisualizer: React.FC = () => {
               Erase Example
             </Button>
           </div>
+
+          {/* Animation Controls */}
+          {animationSteps.length > 0 && (
+            <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
+              <Button 
+                onClick={playAnimation} 
+                disabled={isAnimating}
+                size="sm"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Play
+              </Button>
+              <Button 
+                onClick={pauseAnimation} 
+                disabled={!isAnimating}
+                size="sm"
+              >
+                <Pause className="h-4 w-4 mr-2" />
+                Pause
+              </Button>
+              <Button onClick={stepForward} size="sm">
+                <SkipForward className="h-4 w-4 mr-2" />
+                Step
+              </Button>
+              <Button onClick={resetAnimation} variant="outline" size="sm">
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Reset
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {animationSteps.length}
+              </span>
+            </div>
+          )}
 
           {/* Operations */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -258,6 +469,16 @@ const ArrayVisualizer: React.FC = () => {
                 </Button>
               </div>
             </div>
+          </div>
+
+          {/* Sorting Controls */}
+          <div className="flex gap-2 justify-center">
+            <Button onClick={bubbleSort} disabled={isAnimating || array.length === 0}>
+              Bubble Sort
+            </Button>
+            <Button onClick={selectionSort} disabled={isAnimating || array.length === 0}>
+              Selection Sort
+            </Button>
           </div>
 
           {/* Error Display */}

@@ -22,8 +22,6 @@ interface GraphEdge {
   status: 'default' | 'traversing' | 'traversed';
 }
 
-type TraversalType = 'bfs' | 'dfs';
-
 const GraphVisualizer: React.FC = () => {
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
@@ -33,26 +31,43 @@ const GraphVisualizer: React.FC = () => {
   const [startNode, setStartNode] = useState('');
   const [lastOperation, setLastOperation] = useState<string>('');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [animationSteps, setAnimationSteps] = useState<any[]>([]);
   const [error, setError] = useState<string>('');
   const [traversalResult, setTraversalResult] = useState<string[]>([]);
-  const [isTraversing, setIsTraversing] = useState(false);
-  const [currentTraversalIndex, setCurrentTraversalIndex] = useState(-1);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const traversalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetError = () => {
     setError('');
+  };
+
+  // Auto-position nodes in a circle to avoid overlap
+  const calculateNodePositions = (nodeCount: number) => {
+    const positions: { x: number, y: number }[] = [];
+    const centerX = 250;
+    const centerY = 150;
+    const radius = Math.min(100, 50 + nodeCount * 10);
+    
+    for (let i = 0; i < nodeCount; i++) {
+      const angle = (2 * Math.PI * i) / nodeCount;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+      positions.push({ x, y });
+    }
+    
+    return positions;
   };
 
   const generateExample = () => {
     const examples = [
       {
         nodes: [
-          { id: 'A', label: 'A', x: 100, y: 100 },
-          { id: 'B', label: 'B', x: 200, y: 50 },
-          { id: 'C', label: 'C', x: 200, y: 150 },
-          { id: 'D', label: 'D', x: 300, y: 100 },
-          { id: 'E', label: 'E', x: 400, y: 80 }
+          { id: 'A', label: 'A' },
+          { id: 'B', label: 'B' },
+          { id: 'C', label: 'C' },
+          { id: 'D', label: 'D' },
+          { id: 'E', label: 'E' }
         ],
         edges: [
           { source: 'A', target: 'B' },
@@ -64,11 +79,12 @@ const GraphVisualizer: React.FC = () => {
       },
       {
         nodes: [
-          { id: '1', label: '1', x: 150, y: 80 },
-          { id: '2', label: '2', x: 100, y: 160 },
-          { id: '3', label: '3', x: 200, y: 160 },
-          { id: '4', label: '4', x: 300, y: 120 },
-          { id: '5', label: '5', x: 250, y: 200 }
+          { id: '1', label: '1' },
+          { id: '2', label: '2' },
+          { id: '3', label: '3' },
+          { id: '4', label: '4' },
+          { id: '5', label: '5' },
+          { id: '6', label: '6' }
         ],
         edges: [
           { source: '1', target: '2' },
@@ -76,15 +92,19 @@ const GraphVisualizer: React.FC = () => {
           { source: '2', target: '4' },
           { source: '3', target: '4' },
           { source: '3', target: '5' },
-          { source: '4', target: '5' }
+          { source: '4', target: '6' },
+          { source: '5', target: '6' }
         ]
       }
     ];
 
     const example = examples[Math.floor(Math.random() * examples.length)];
+    const positions = calculateNodePositions(example.nodes.length);
     
-    const newNodes: GraphNode[] = example.nodes.map(node => ({
+    const newNodes: GraphNode[] = example.nodes.map((node, index) => ({
       ...node,
+      x: positions[index].x,
+      y: positions[index].y,
       status: 'default'
     }));
 
@@ -99,6 +119,11 @@ const GraphVisualizer: React.FC = () => {
     setEdges(newEdges);
     setStartNode(example.nodes[0].id);
     setLastOperation('Generated example graph');
+    setAnimationSteps([]);
+    setCurrentStep(0);
+    setTraversalResult([]);
+    setIsAnimating(false);
+    setIsPaused(false);
     resetError();
   };
 
@@ -106,9 +131,12 @@ const GraphVisualizer: React.FC = () => {
     setNodes([]);
     setEdges([]);
     setTraversalResult([]);
-    setCurrentTraversalIndex(-1);
+    setCurrentStep(0);
+    setAnimationSteps([]);
     setStartNode('');
     setLastOperation('Erased graph');
+    setIsAnimating(false);
+    setIsPaused(false);
     resetError();
   };
 
@@ -126,19 +154,27 @@ const GraphVisualizer: React.FC = () => {
 
     resetError();
     
-    // Generate random position
-    const x = Math.random() * 300 + 50;
-    const y = Math.random() * 200 + 50;
-
+    // Calculate position for new node
+    const newNodeCount = nodes.length + 1;
+    const positions = calculateNodePositions(newNodeCount);
+    
+    // Update existing nodes with new positions
+    const updatedNodes = nodes.map((node, index) => ({
+      ...node,
+      x: positions[index].x,
+      y: positions[index].y
+    }));
+    
+    // Add new node
     const newNode: GraphNode = {
       id: label,
       label,
-      x,
-      y,
+      x: positions[nodes.length].x,
+      y: positions[nodes.length].y,
       status: 'default'
     };
 
-    setNodes(prev => [...prev, newNode]);
+    setNodes([...updatedNodes, newNode]);
     setNodeInput('');
     setLastOperation(`Added node ${label}`);
   };
@@ -159,8 +195,23 @@ const GraphVisualizer: React.FC = () => {
     resetError();
 
     // Remove node and all connected edges
-    setNodes(prev => prev.filter(node => node.label !== label));
-    setEdges(prev => prev.filter(edge => edge.source !== label && edge.target !== label));
+    const remainingNodes = nodes.filter(node => node.label !== label);
+    const remainingEdges = edges.filter(edge => edge.source !== label && edge.target !== label);
+    
+    // Recalculate positions for remaining nodes
+    if (remainingNodes.length > 0) {
+      const positions = calculateNodePositions(remainingNodes.length);
+      const repositionedNodes = remainingNodes.map((node, index) => ({
+        ...node,
+        x: positions[index].x,
+        y: positions[index].y
+      }));
+      setNodes(repositionedNodes);
+    } else {
+      setNodes([]);
+    }
+    
+    setEdges(remainingEdges);
     setNodeInput('');
     setLastOperation(`Removed node ${label}`);
   };
@@ -225,20 +276,27 @@ const GraphVisualizer: React.FC = () => {
     }
 
     resetError();
-    setIsTraversing(true);
-    setCurrentTraversalIndex(0);
-
+    
     const visited = new Set<string>();
     const queue = [startNode];
     const result: string[] = [];
+    const steps: any[] = [];
 
-    // BFS algorithm
+    // BFS algorithm with animation steps
     while (queue.length > 0) {
       const current = queue.shift()!;
       
       if (!visited.has(current)) {
         visited.add(current);
         result.push(current);
+        
+        // Add step for visiting current node
+        steps.push({
+          type: 'visit',
+          node: current,
+          visited: Array.from(visited),
+          queue: [...queue]
+        });
 
         // Add neighbors to queue
         const neighbors = edges
@@ -247,54 +305,23 @@ const GraphVisualizer: React.FC = () => {
           .filter(neighbor => !visited.has(neighbor) && !queue.includes(neighbor));
 
         queue.push(...neighbors);
+        
+        // Add step for exploring neighbors
+        if (neighbors.length > 0) {
+          steps.push({
+            type: 'explore',
+            node: current,
+            neighbors,
+            queue: [...queue]
+          });
+        }
       }
     }
 
     setTraversalResult(result);
+    setAnimationSteps(steps);
+    setCurrentStep(0);
     setLastOperation(`BFS traversal: ${result.join(' → ')}`);
-
-    // Animate BFS
-    let index = 0;
-    const animateStep = () => {
-      if (index < result.length) {
-        const currentNodeLabel = result[index];
-        
-        // Mark current node as visiting
-        setNodes(prev => prev.map(node => ({
-          ...node,
-          status: node.label === currentNodeLabel ? 'visiting' : 
-                  result.slice(0, index).includes(node.label) ? 'visited' : 'default'
-        })));
-
-        // Mark edges as traversed
-        if (index > 0) {
-          const prevNodeLabel = result[index - 1];
-          setEdges(prev => prev.map(edge => ({
-            ...edge,
-            status: (edge.source === prevNodeLabel && edge.target === currentNodeLabel) ||
-                   (edge.source === currentNodeLabel && edge.target === prevNodeLabel) 
-                   ? 'traversed' : edge.status
-          })));
-        }
-
-        setCurrentTraversalIndex(index);
-        index++;
-        
-        if (traversalRef.current) clearTimeout(traversalRef.current);
-        traversalRef.current = setTimeout(animateStep, 1000);
-      } else {
-        setIsTraversing(false);
-        setCurrentTraversalIndex(-1);
-        
-        // Mark all visited nodes
-        setNodes(prev => prev.map(node => ({
-          ...node,
-          status: result.includes(node.label) ? 'visited' : 'default'
-        })));
-      }
-    };
-
-    animateStep();
   };
 
   const performDFS = () => {
@@ -309,18 +336,24 @@ const GraphVisualizer: React.FC = () => {
     }
 
     resetError();
-    setIsTraversing(true);
-    setCurrentTraversalIndex(0);
-
+    
     const visited = new Set<string>();
     const result: string[] = [];
+    const steps: any[] = [];
 
-    // DFS algorithm (recursive)
+    // DFS algorithm (recursive) with animation steps
     const dfs = (nodeLabel: string) => {
       if (visited.has(nodeLabel)) return;
       
       visited.add(nodeLabel);
       result.push(nodeLabel);
+      
+      // Add step for visiting current node
+      steps.push({
+        type: 'visit',
+        node: nodeLabel,
+        visited: Array.from(visited)
+      });
 
       // Visit neighbors
       const neighbors = edges
@@ -328,56 +361,89 @@ const GraphVisualizer: React.FC = () => {
         .map(edge => edge.source === nodeLabel ? edge.target : edge.source)
         .filter(neighbor => !visited.has(neighbor));
 
-      neighbors.forEach(neighbor => dfs(neighbor));
+      neighbors.forEach(neighbor => {
+        steps.push({
+          type: 'explore',
+          node: nodeLabel,
+          neighbor
+        });
+        dfs(neighbor);
+      });
     };
 
     dfs(startNode);
     setTraversalResult(result);
+    setAnimationSteps(steps);
+    setCurrentStep(0);
     setLastOperation(`DFS traversal: ${result.join(' → ')}`);
+  };
 
-    // Animate DFS
-    let index = 0;
-    const animateStep = () => {
-      if (index < result.length) {
-        const currentNodeLabel = result[index];
-        
-        // Mark current node as visiting
-        setNodes(prev => prev.map(node => ({
-          ...node,
-          status: node.label === currentNodeLabel ? 'visiting' : 
-                  result.slice(0, index).includes(node.label) ? 'visited' : 'default'
-        })));
+  // Animation controls
+  const playAnimation = () => {
+    if (animationSteps.length === 0) {
+      setError('No animation to play. Try BFS or DFS first.');
+      return;
+    }
+    setIsAnimating(true);
+    setIsPaused(false);
+  };
 
-        // Mark edges as traversed
-        if (index > 0) {
-          const prevNodeLabel = result[index - 1];
-          setEdges(prev => prev.map(edge => ({
-            ...edge,
-            status: (edge.source === prevNodeLabel && edge.target === currentNodeLabel) ||
-                   (edge.source === currentNodeLabel && edge.target === prevNodeLabel) 
-                   ? 'traversed' : edge.status
-          })));
-        }
+  const pauseAnimation = () => {
+    setIsAnimating(false);
+    setIsPaused(true);
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+      animationRef.current = null;
+    }
+  };
 
-        setCurrentTraversalIndex(index);
-        index++;
-        
-        if (traversalRef.current) clearTimeout(traversalRef.current);
-        traversalRef.current = setTimeout(animateStep, 1000);
+  const stepForward = () => {
+    if (currentStep < animationSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const resetAnimation = () => {
+    setCurrentStep(0);
+    setIsAnimating(false);
+    setIsPaused(false);
+    setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
+    setEdges(prev => prev.map(edge => ({ ...edge, status: 'default' })));
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+      animationRef.current = null;
+    }
+  };
+
+  // Animation effect
+  useEffect(() => {
+    if (isAnimating && !isPaused && animationSteps.length > 0) {
+      if (currentStep < animationSteps.length - 1) {
+        animationRef.current = setTimeout(() => {
+          setCurrentStep(currentStep + 1);
+          
+          // Update node/edge states based on current step
+          const step = animationSteps[currentStep + 1];
+          if (step) {
+            setNodes(prev => prev.map(node => ({
+              ...node,
+              status: step.visited?.includes(node.label) ? 'visited' as const :
+                     step.node === node.label ? 'visiting' as const : 'default' as const
+            })));
+          }
+        }, 1000);
       } else {
-        setIsTraversing(false);
-        setCurrentTraversalIndex(-1);
-        
-        // Mark all visited nodes
-        setNodes(prev => prev.map(node => ({
-          ...node,
-          status: result.includes(node.label) ? 'visited' : 'default'
-        })));
+        setIsAnimating(false);
+      }
+    }
+
+    return () => {
+      if (animationRef.current) {
+        clearTimeout(animationRef.current);
+        animationRef.current = null;
       }
     };
-
-    animateStep();
-  };
+  }, [isAnimating, isPaused, currentStep, animationSteps]);
 
   const reset = () => {
     setNodes([]);
@@ -387,27 +453,20 @@ const GraphVisualizer: React.FC = () => {
     setEdgeTarget('');
     setStartNode('');
     setTraversalResult([]);
-    setCurrentTraversalIndex(-1);
+    setAnimationSteps([]);
+    setCurrentStep(0);
     setLastOperation('Graph reset');
     setIsAnimating(false);
-    setIsTraversing(false);
+    setIsPaused(false);
     resetError();
     if (animationRef.current) clearTimeout(animationRef.current);
-    if (traversalRef.current) clearTimeout(traversalRef.current);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter' && !isAnimating && !isTraversing) {
+    if (e.key === 'Enter' && !isAnimating) {
       action();
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) clearTimeout(animationRef.current);
-      if (traversalRef.current) clearTimeout(traversalRef.current);
-    };
-  }, []);
 
   const getNodeColor = (status: GraphNode['status']) => {
     switch (status) {
@@ -468,8 +527,10 @@ const GraphVisualizer: React.FC = () => {
               cy={node.y}
               r="20"
               className={`${getNodeColor(node.status)} stroke-foreground stroke-2`}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              animate={{ 
+                scale: node.status === 'visiting' ? 1.2 : 1,
+                opacity: node.status === 'visited' ? 0.8 : 1
+              }}
               transition={{ duration: 0.3 }}
             />
             <text
@@ -504,6 +565,39 @@ const GraphVisualizer: React.FC = () => {
             </Button>
           </div>
 
+          {/* Animation Controls */}
+          {animationSteps.length > 0 && (
+            <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
+              <Button 
+                onClick={playAnimation} 
+                disabled={isAnimating}
+                size="sm"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Play
+              </Button>
+              <Button 
+                onClick={pauseAnimation} 
+                disabled={!isAnimating}
+                size="sm"
+              >
+                <Pause className="h-4 w-4 mr-2" />
+                Pause
+              </Button>
+              <Button onClick={stepForward} size="sm">
+                <SkipForward className="h-4 w-4 mr-2" />
+                Step
+              </Button>
+              <Button onClick={resetAnimation} variant="outline" size="sm">
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Reset
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {animationSteps.length}
+              </span>
+            </div>
+          )}
+
           {/* Operations */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
@@ -514,15 +608,15 @@ const GraphVisualizer: React.FC = () => {
                   value={nodeInput}
                   onChange={(e) => setNodeInput(e.target.value)}
                   onKeyPress={(e) => handleKeyPress(e, addNode)}
-                  disabled={isAnimating || isTraversing}
+                  disabled={isAnimating}
                 />
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={addNode} disabled={isAnimating || isTraversing || !nodeInput.trim()}>
+                <Button size="sm" onClick={addNode} disabled={isAnimating || !nodeInput.trim()}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add
                 </Button>
-                <Button size="sm" variant="destructive" onClick={removeNode} disabled={isAnimating || isTraversing || !nodeInput.trim()}>
+                <Button size="sm" variant="destructive" onClick={removeNode} disabled={isAnimating || !nodeInput.trim()}>
                   <Minus className="h-4 w-4 mr-1" />
                   Remove
                 </Button>
@@ -536,16 +630,16 @@ const GraphVisualizer: React.FC = () => {
                   placeholder="From" 
                   value={edgeSource}
                   onChange={(e) => setEdgeSource(e.target.value)}
-                  disabled={isAnimating || isTraversing}
+                  disabled={isAnimating}
                 />
                 <Input 
                   placeholder="To" 
                   value={edgeTarget}
                   onChange={(e) => setEdgeTarget(e.target.value)}
-                  disabled={isAnimating || isTraversing}
+                  disabled={isAnimating}
                 />
               </div>
-              <Button size="sm" onClick={addEdge} disabled={isAnimating || isTraversing || !edgeSource.trim() || !edgeTarget.trim()}>
+              <Button size="sm" onClick={addEdge} disabled={isAnimating || !edgeSource.trim() || !edgeTarget.trim()}>
                 <GitBranch className="h-4 w-4 mr-2" />
                 Add Edge
               </Button>
@@ -557,18 +651,18 @@ const GraphVisualizer: React.FC = () => {
                 placeholder="Start node" 
                 value={startNode}
                 onChange={(e) => setStartNode(e.target.value)}
-                disabled={isAnimating || isTraversing}
+                disabled={isAnimating}
               />
             </div>
             
             <div className="space-y-2">
               <label className="text-sm font-medium">Traversal</label>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={performBFS} disabled={isAnimating || isTraversing || nodes.length === 0}>
+                <Button size="sm" variant="outline" onClick={performBFS} disabled={isAnimating || nodes.length === 0}>
                   <Search className="h-4 w-4 mr-1" />
                   BFS
                 </Button>
-                <Button size="sm" variant="outline" onClick={performDFS} disabled={isAnimating || isTraversing || nodes.length === 0}>
+                <Button size="sm" variant="outline" onClick={performDFS} disabled={isAnimating || nodes.length === 0}>
                   <Search className="h-4 w-4 mr-1" />
                   DFS
                 </Button>

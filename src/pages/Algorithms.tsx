@@ -7,11 +7,15 @@ import SortingVisualizer from '../components/visualizers/SortingVisualizer';
 import SearchVisualizer from '../components/visualizers/SearchVisualizer';
 import BubbleSortVisualizer from '../components/visualizers/BubbleSortVisualizer';
 import SelectionSortVisualizer from '../components/visualizers/SelectionSortVisualizer';
+import InsertionSortVisualizer from '../components/visualizers/InsertionSortVisualizer';
+import MergeSortVisualizer from '../components/visualizers/MergeSortVisualizer';
 
 const algorithms = [
   { id: 'bubble-sort', name: 'Bubble Sort', description: 'Simple comparison-based sorting algorithm' },
   { id: 'selection-sort', name: 'Selection Sort', description: 'Find minimum and place at beginning' },
-  { id: 'sorting', name: 'More Sorting', description: 'Quick, Merge, Heap, and more (Coming Soon)' },
+  { id: 'insertion-sort', name: 'Insertion Sort', description: 'Build sorted array one element at a time' },
+  { id: 'merge-sort', name: 'Merge Sort', description: 'Divide-and-conquer sorting algorithm' },
+  { id: 'sorting', name: 'More Sorting', description: 'Quick, Heap, and more (Coming Soon)' },
   { id: 'searching', name: 'Searching', description: 'Linear, Binary, Jump, and Exponential search' },
   { id: 'graph', name: 'Graph Algorithms', description: 'DFS, BFS, Dijkstra, and A* (Coming Soon)' },
   { id: 'dynamic', name: 'Dynamic Programming', description: 'Fibonacci, Knapsack, LCS (Coming Soon)' }
@@ -26,6 +30,10 @@ const Algorithms: React.FC = () => {
         return <BubbleSortVisualizer />;
       case 'selection-sort':
         return <SelectionSortVisualizer />;
+      case 'insertion-sort':
+        return <InsertionSortVisualizer />;
+      case 'merge-sort':
+        return <MergeSortVisualizer />;
       case 'sorting':
         return <SortingVisualizer />;
       case 'searching':
@@ -74,7 +82,7 @@ const Algorithms: React.FC = () => {
             <CardTitle>Select Algorithm Category</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {algorithms.map((algorithm) => (
                 <Button
                   key={algorithm.id}
