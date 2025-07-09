@@ -1,447 +1,329 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Plus, Minus, Search, RotateCcw, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Plus, Minus, Search, RotateCcw, ExternalLink, AlertTriangle, Shuffle, Eye, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface LinkedListNode {
+interface ListNode {
   id: string;
   value: number;
-  next: string | null;
-  prev: string | null;
-  status: 'default' | 'searching' | 'adding' | 'removing';
+  next?: string | null;
+  prev?: string | null;
+  status: 'default' | 'inserting' | 'deleting' | 'searching' | 'found' | 'current';
 }
 
-interface LinkedList {
-  head: string | null;
-  tail: string | null;
-  nodes: LinkedListNode[];
-}
+type ListType = 'singly' | 'doubly' | 'circular';
 
 const LinkedListVisualizer: React.FC = () => {
-  const [listType, setListType] = useState<'singly' | 'doubly' | 'circular'>('singly');
-  const [list, setList] = useState<LinkedList>({ head: null, tail: null, nodes: [] });
+  const [nodes, setNodes] = useState<ListNode[]>([]);
+  const [head, setHead] = useState<string | null>(null);
+  const [tail, setTail] = useState<string | null>(null);
+  const [listType, setListType] = useState<ListType>('singly');
   const [inputValue, setInputValue] = useState('');
-  const [deleteValue, setDeleteValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [insertIndex, setInsertIndex] = useState('');
+  const [deleteIndex, setDeleteIndex] = useState('');
   const [lastOperation, setLastOperation] = useState<string>('');
   const [isAnimating, setIsAnimating] = useState(false);
   const [error, setError] = useState<string>('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const maxSize = 8;
 
-  const resetError = () => setError('');
+  const resetError = () => {
+    setError('');
+  };
 
   const generateExample = () => {
     const examples = [
       [10, 20, 30, 40],
-      [5, 15, 25, 35, 45],
-      [100, 200, 300]
+      [5, 15, 25, 35],
+      [100, 200, 300, 400]
     ];
     const randomExample = examples[Math.floor(Math.random() * examples.length)];
     
-    const nodes: LinkedListNode[] = randomExample.map((value, index) => ({
-      id: `node-${index}`,
-      value,
-      next: index < randomExample.length - 1 ? `node-${index + 1}` : null,
-      prev: listType === 'doubly' && index > 0 ? `node-${index - 1}` : null,
-      status: 'default'
-    }));
+    const newNodes: ListNode[] = [];
+    let newHead: string | null = null;
+    let newTail: string | null = null;
 
-    // Handle circular connection
-    if (listType === 'circular' && nodes.length > 0) {
-      nodes[nodes.length - 1].next = nodes[0].id;
-      if (listType === 'doubly') {
-        nodes[0].prev = nodes[nodes.length - 1].id;
+    randomExample.forEach((value, index) => {
+      const nodeId = `node-${Date.now()}-${index}`;
+      const node: ListNode = {
+        id: nodeId,
+        value,
+        status: 'default'
+      };
+
+      if (index === 0) {
+        newHead = nodeId;
       }
-    }
+      if (index === randomExample.length - 1) {
+        newTail = nodeId;
+      }
 
-    setList({
-      head: nodes.length > 0 ? nodes[0].id : null,
-      tail: nodes.length > 0 ? nodes[nodes.length - 1].id : null,
-      nodes
+      // Set next pointer
+      if (index < randomExample.length - 1) {
+        node.next = `node-${Date.now()}-${index + 1}`;
+      } else if (listType === 'circular') {
+        node.next = newHead;
+      }
+
+      // Set prev pointer for doubly linked list
+      if (listType === 'doubly') {
+        if (index > 0) {
+          node.prev = `node-${Date.now()}-${index - 1}`;
+        }
+      }
+
+      newNodes.push(node);
     });
+
+    setNodes(newNodes);
+    setHead(newHead);
+    setTail(newTail);
     setLastOperation(`Generated example ${listType} linked list`);
     resetError();
   };
 
   const eraseExample = () => {
-    setList({ head: null, tail: null, nodes: [] });
+    setNodes([]);
+    setHead(null);
+    setTail(null);
     setLastOperation('Erased linked list');
     resetError();
   };
 
-  const insertAtEnd = () => {
+  const insertAtHead = () => {
     const value = parseInt(inputValue.trim());
     if (isNaN(value)) {
       setError('Please enter a valid number');
       return;
     }
+    
+    if (nodes.length >= maxSize) {
+      setError('List size limit reached');
+      return;
+    }
 
     resetError();
     setIsAnimating(true);
-
-    const newNode: LinkedListNode = {
-      id: Date.now().toString(),
+    
+    const newNodeId = `node-${Date.now()}`;
+    const newNode: ListNode = {
+      id: newNodeId,
       value,
-      next: null,
-      prev: list.tail,
-      status: 'adding'
+      status: 'inserting',
+      next: head
     };
 
-    setList(prev => {
-      const updatedNodes = [...prev.nodes, newNode];
-      let updatedHead = prev.head;
-      let updatedTail = newNode.id;
+    if (listType === 'doubly' && head) {
+      // Update old head's prev pointer
+      setNodes(prev => prev.map(node => 
+        node.id === head ? { ...node, prev: newNodeId } : node
+      ));
+    }
 
-      if (!prev.head) {
-        updatedHead = newNode.id;
-      } else {
-        const prevTailNode = updatedNodes.find(node => node.id === prev.tail);
-        if (prevTailNode) {
-          prevTailNode.next = newNode.id;
-        }
-      }
+    if (listType === 'circular' && tail) {
+      // Update tail's next to point to new head
+      setNodes(prev => prev.map(node => 
+        node.id === tail ? { ...node, next: newNodeId } : node
+      ));
+      newNode.prev = tail;
+    }
 
-      // Handle circular connection
-      if (listType === 'circular' && updatedNodes.length > 1) {
-        newNode.next = updatedHead;
-        if (listType === 'doubly') {
-          const headNode = updatedNodes.find(node => node.id === updatedHead);
-          if (headNode) {
-            headNode.prev = newNode.id;
-          }
-        }
-      }
-
-      return {
-        head: updatedHead,
-        tail: updatedTail,
-        nodes: updatedNodes
-      };
-    });
-
+    setNodes(prev => [newNode, ...prev]);
+    setHead(newNodeId);
+    if (nodes.length === 0) {
+      setTail(newNodeId);
+    }
     setInputValue('');
-    setLastOperation(`Inserted ${value} at end`);
+    setLastOperation(`Inserted ${value} at head`);
 
     // Animation cleanup
     if (animationRef.current) clearTimeout(animationRef.current);
     animationRef.current = setTimeout(() => {
-      setList(prev => ({
-        ...prev,
-        nodes: prev.nodes.map(node => ({ ...node, status: 'default' }))
-      }));
+      setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
       setIsAnimating(false);
     }, 500);
   };
 
-  const insertAtIndex = () => {
+  const insertAtTail = () => {
     const value = parseInt(inputValue.trim());
-    const index = parseInt(insertIndex.trim());
-    
     if (isNaN(value)) {
       setError('Please enter a valid number');
       return;
     }
     
-    if (isNaN(index) || index < 0 || index > list.nodes.length) {
-      setError(`Index must be between 0 and ${list.nodes.length}`);
+    if (nodes.length >= maxSize) {
+      setError('List size limit reached');
       return;
     }
 
-    if (index === list.nodes.length) {
-      insertAtEnd();
+    resetError();
+    setIsAnimating(true);
+    
+    const newNodeId = `node-${Date.now()}`;
+    const newNode: ListNode = {
+      id: newNodeId,
+      value,
+      status: 'inserting'
+    };
+
+    if (listType === 'doubly') {
+      newNode.prev = tail;
+    }
+
+    if (listType === 'circular') {
+      newNode.next = head;
+    }
+
+    if (tail) {
+      setNodes(prev => prev.map(node => 
+        node.id === tail ? { ...node, next: newNodeId } : node
+      ));
+    }
+
+    setNodes(prev => [...prev, newNode]);
+    setTail(newNodeId);
+    if (nodes.length === 0) {
+      setHead(newNodeId);
+    }
+    setInputValue('');
+    setLastOperation(`Inserted ${value} at tail`);
+
+    // Animation cleanup
+    if (animationRef.current) clearTimeout(animationRef.current);
+    animationRef.current = setTimeout(() => {
+      setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
+      setIsAnimating(false);
+    }, 500);
+  };
+
+  const deleteAtHead = () => {
+    if (nodes.length === 0) {
+      setError('List is empty');
       return;
     }
 
     resetError();
     setIsAnimating(true);
 
-    const newNode: LinkedListNode = {
-      id: Date.now().toString(),
-      value,
-      next: null,
-      prev: null,
-      status: 'adding'
-    };
+    const headNode = nodes.find(node => node.id === head);
+    if (!headNode) return;
 
-    setList(prev => {
-      const updatedNodes = [...prev.nodes];
+    // Mark head as deleting
+    setNodes(prev => prev.map(node => 
+      node.id === head ? { ...node, status: 'deleting' } : node
+    ));
+
+    setLastOperation(`Deleted ${headNode.value} from head`);
+
+    // Remove after animation
+    if (animationRef.current) clearTimeout(animationRef.current);
+    animationRef.current = setTimeout(() => {
+      setNodes(prev => prev.filter(node => node.id !== head));
       
-      if (index === 0) {
-        // Insert at head
-        newNode.next = prev.head;
-        if (listType === 'doubly' && prev.head) {
-          const headNode = updatedNodes.find(node => node.id === prev.head);
-          if (headNode) {
-            headNode.prev = newNode.id;
-          }
+      if (headNode.next && headNode.next !== head) {
+        setHead(headNode.next);
+        if (listType === 'doubly') {
+          setNodes(prev => prev.map(node => 
+            node.id === headNode.next ? { ...node, prev: null } : node
+          ));
         }
-        updatedNodes.unshift(newNode);
-        
-        return {
-          head: newNode.id,
-          tail: prev.tail || newNode.id,
-          nodes: updatedNodes
-        };
       } else {
-        // Insert at middle
-        const nodeArray = [];
-        let current = prev.head;
-        while (current) {
-          const node = updatedNodes.find(n => n.id === current);
-          if (node) {
-            nodeArray.push(node);
-            current = node.next;
-          } else break;
-        }
-        
-        const prevNode = nodeArray[index - 1];
-        const nextNode = nodeArray[index];
-        
-        newNode.next = nextNode?.id || null;
-        newNode.prev = listType === 'doubly' ? prevNode?.id || null : null;
-        
-        if (prevNode) {
-          prevNode.next = newNode.id;
-        }
-        if (nextNode && listType === 'doubly') {
-          nextNode.prev = newNode.id;
-        }
-        
-        updatedNodes.splice(index, 0, newNode);
-        
-        return {
-          ...prev,
-          nodes: updatedNodes
-        };
+        setHead(null);
+        setTail(null);
       }
-    });
-
-    setInputValue('');
-    setInsertIndex('');
-    setLastOperation(`Inserted ${value} at index ${index}`);
-
-    if (animationRef.current) clearTimeout(animationRef.current);
-    animationRef.current = setTimeout(() => {
-      setList(prev => ({
-        ...prev,
-        nodes: prev.nodes.map(node => ({ ...node, status: 'default' }))
-      }));
-      setIsAnimating(false);
-    }, 500);
-  };
-
-  const deleteNode = () => {
-    const valueToDelete = parseInt(deleteValue.trim());
-    if (isNaN(valueToDelete)) {
-      setError('Please enter a valid number to delete');
-      return;
-    }
-
-    resetError();
-    setIsAnimating(true);
-
-    let nodeToDeleteId: string | null = null;
-    for (const node of list.nodes) {
-      if (node.value === valueToDelete) {
-        nodeToDeleteId = node.id;
-        break;
-      }
-    }
-
-    if (!nodeToDeleteId) {
-      setError(`Node with value ${valueToDelete} not found`);
-      setIsAnimating(false);
-      return;
-    }
-
-    setList(prev => {
-      let updatedHead = prev.head;
-      let updatedTail = prev.tail;
-      let prevNodeId: string | null = null;
-      let nextNodeId: string | null = null;
-
-      const updatedNodes = prev.nodes.filter(node => {
-        if (node.id === nodeToDeleteId) {
-          prevNodeId = node.prev;
-          nextNodeId = node.next;
-          return false;
-        }
-        return true;
-      }).map(node => ({ ...node }));
-
-      if (prev.head === nodeToDeleteId) {
-        updatedHead = nextNodeId;
-      }
-      if (prev.tail === nodeToDeleteId) {
-        updatedTail = prevNodeId;
-      }
-
-      if (prevNodeId) {
-        const prevNode = updatedNodes.find(node => node.id === prevNodeId);
-        if (prevNode) {
-          prevNode.next = nextNodeId;
-        }
-      }
-      if (nextNodeId) {
-        const nextNode = updatedNodes.find(node => node.id === nextNodeId);
-        if (nextNode) {
-          nextNode.prev = prevNodeId;
-        }
-      }
-
-      return {
-        ...prev,
-        head: updatedHead,
-        tail: updatedTail,
-        nodes: updatedNodes
-      };
-    });
-
-    setDeleteValue('');
-    setLastOperation(`Deleted node with value ${valueToDelete}`);
-
-    // Animation cleanup
-    if (animationRef.current) clearTimeout(animationRef.current);
-    animationRef.current = setTimeout(() => {
-      setList(prev => ({
-        ...prev,
-        nodes: prev.nodes.map(node => ({ ...node, status: 'default' }))
-      }));
+      
       setIsAnimating(false);
     }, 500);
   };
 
   const search = () => {
-    const value = parseInt(deleteValue.trim());
+    const value = parseInt(searchValue.trim());
     if (isNaN(value)) {
       setError('Please enter a valid number to search');
       return;
     }
 
-    setIsAnimating(true);
     resetError();
+    setIsAnimating(true);
 
-    if (list.nodes.length === 0) {
-      setError('List is empty! Nothing to search');
-      setIsAnimating(false);
-      return;
+    const foundNode = nodes.find(node => node.value === value);
+    if (foundNode) {
+      setNodes(prev => prev.map(node => 
+        node.id === foundNode.id ? { ...node, status: 'found' } : node
+      ));
+      setLastOperation(`Found ${value} in the list`);
+    } else {
+      setLastOperation(`${value} not found in the list`);
+      setError(`Value ${value} not found`);
     }
 
-    let found = false;
-    let current = list.head;
-    let position = 0;
-
-    const searchAnimation = () => {
-      if (current) {
-        const node = list.nodes.find(n => n.id === current);
-        if (node) {
-          setList(prev => ({
-            ...prev,
-            nodes: prev.nodes.map(n => ({
-              ...n,
-              status: n.id === current ? 'searching' : 'default'
-            }))
-          }));
-
-          if (node.value === value) {
-            found = true;
-            setLastOperation(`Found ${value} at position ${position}`);
-            setTimeout(() => {
-              setList(prev => ({
-                ...prev,
-                nodes: prev.nodes.map(n => ({
-                  ...n,
-                  status: n.id === current ? 'adding' : 'default'
-                }))
-              }));
-              setTimeout(() => {
-                setList(prev => ({
-                  ...prev,
-                  nodes: prev.nodes.map(n => ({ ...n, status: 'default' }))
-                }));
-                setIsAnimating(false);
-              }, 1000);
-            }, 500);
-            return;
-          }
-
-          current = node.next;
-          position++;
-          
-          if (current && (!listType.includes('circular') || position < list.nodes.length)) {
-            setTimeout(searchAnimation, 500);
-          } else {
-            setError(`${value} not found in the list`);
-            setList(prev => ({
-              ...prev,
-              nodes: prev.nodes.map(n => ({ ...n, status: 'default' }))
-            }));
-            setIsAnimating(false);
-          }
-        }
-      }
-    };
-
-    searchAnimation();
-    setDeleteValue('');
-  };
-
-  const reverse = () => {
-    setIsAnimating(true);
-    resetError();
-
-    if (list.nodes.length < 2) {
-      setError('Cannot reverse a list with fewer than 2 nodes');
-      setIsAnimating(false);
-      return;
-    }
-
-    setList(prev => {
-      const reversedNodes = [...prev.nodes].reverse().map((node, index, array) => {
-        const prevNode = array[index - 1] ? array[index - 1].id : null;
-        const nextNode = array[index + 1] ? array[index + 1].id : null;
-        return { ...node, next: nextNode, prev: prevNode };
-      });
-
-      const updatedHead = reversedNodes[0].id;
-      const updatedTail = reversedNodes[reversedNodes.length - 1].id;
-
-      return {
-        ...prev,
-        head: updatedHead,
-        tail: updatedTail,
-        nodes: reversedNodes
-      };
-    });
-
-    setLastOperation('Reversed list');
-
-    // Animation cleanup
+    // Reset highlight
     if (animationRef.current) clearTimeout(animationRef.current);
     animationRef.current = setTimeout(() => {
-      setList(prev => ({
-        ...prev,
-        nodes: prev.nodes.map(node => ({ ...node, status: 'default' }))
-      }));
+      setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
       setIsAnimating(false);
     }, 1000);
   };
 
+  const reverse = () => {
+    if (nodes.length <= 1) {
+      setError('Need at least 2 nodes to reverse');
+      return;
+    }
+
+    resetError();
+    setIsAnimating(true);
+
+    // Reverse the pointers
+    const reversedNodes = [...nodes].reverse().map((node, index) => {
+      const newNode = { ...node };
+      
+      if (listType === 'singly') {
+        if (index < nodes.length - 1) {
+          newNode.next = nodes[nodes.length - 2 - index].id;
+        } else {
+          newNode.next = null;
+        }
+      } else if (listType === 'doubly') {
+        const temp = newNode.next;
+        newNode.next = newNode.prev;
+        newNode.prev = temp;
+      }
+      
+      return newNode;
+    });
+
+    setNodes(reversedNodes);
+    const oldHead = head;
+    const oldTail = tail;
+    setHead(oldTail);
+    setTail(oldHead);
+    setLastOperation('Reversed the linked list');
+    setIsAnimating(false);
+  };
+
   const reset = () => {
-    setList({ head: null, tail: null, nodes: [] });
+    setNodes([]);
+    setHead(null);
+    setTail(null);
     setInputValue('');
-    setDeleteValue('');
+    setSearchValue('');
+    setInsertIndex('');
+    setDeleteIndex('');
     setLastOperation('List reset');
     setIsAnimating(false);
     resetError();
     if (animationRef.current) clearTimeout(animationRef.current);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
     if (e.key === 'Enter' && !isAnimating) {
-      insertAtEnd();
+      action();
     }
   };
 
@@ -451,71 +333,31 @@ const LinkedListVisualizer: React.FC = () => {
     };
   }, []);
 
-  const getNodeColor = (status: LinkedListNode['status']) => {
+  const getNodeColor = (status: ListNode['status']) => {
     switch (status) {
+      case 'inserting': return 'bg-green-500';
+      case 'deleting': return 'bg-red-500';
       case 'searching': return 'bg-yellow-500';
-      case 'adding': return 'bg-green-500';
-      case 'removing': return 'bg-red-500';
+      case 'found': return 'bg-purple-500';
+      case 'current': return 'bg-blue-500';
       default: return 'bg-primary';
     }
   };
 
-  const renderNode = (node: LinkedListNode) => {
-    const isHead = list.head === node.id;
-    const hasNext = node.next !== null;
-    const hasPrev = listType === 'doubly' && node.prev !== null;
-
+  const renderPointer = (fromNode: ListNode, toNodeId: string | null, isNext: boolean = true) => {
+    if (!toNodeId) return null;
+    
+    const direction = isNext ? 'right' : 'left';
+    const Icon = isNext ? ArrowRight : ArrowLeft;
+    
     return (
-      <motion.div
-        key={node.id}
-        className="flex items-center"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {/* Previous pointer for doubly linked lists */}
-        {hasPrev && (
-          <div className="flex items-center mr-2">
-            <div className="w-6 h-0.5 bg-blue-400"></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-          </div>
+      <div className="flex items-center mx-2">
+        <Icon className="h-4 w-4 text-muted-foreground" />
+        {listType === 'doubly' && !isNext && (
+          <Icon className="h-4 w-4 text-muted-foreground ml-1" />
         )}
-
-        {/* Node */}
-        <div className={`flex items-center ${isHead ? 'ring-2 ring-yellow-400' : ''}`}>
-          <div className={`${getNodeColor(node.status)} text-primary-foreground w-12 h-12 rounded-lg flex items-center justify-center font-bold text-sm shadow-lg`}>
-            {node.value}
-          </div>
-          
-          {/* Next pointer */}
-          {hasNext && (
-            <div className="flex items-center ml-2">
-              <div className="w-6 h-0.5 bg-green-400"></div>
-              <div className="w-0 h-0 border-l-4 border-l-green-400 border-t-2 border-b-2 border-t-transparent border-b-transparent"></div>
-            </div>
-          )}
-        </div>
-      </motion.div>
+      </div>
     );
-  };
-
-  const renderLinkedList = () => {
-    const renderedNodes: React.ReactNode[] = [];
-    let current = list.head;
-    let safetyCount = 0;
-
-    while (current && safetyCount < list.nodes.length) {
-      const node = list.nodes.find(n => n.id === current);
-      if (node) {
-        renderedNodes.push(renderNode(node));
-        current = node.next;
-      } else {
-        break;
-      }
-      safetyCount++;
-    }
-
-    return renderedNodes;
   };
 
   return (
@@ -525,26 +367,25 @@ const LinkedListVisualizer: React.FC = () => {
           <CardTitle>Linked List Visualizer</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* List Type Selector */}
-          <div className="flex gap-2 justify-center">
-            {(['singly', 'doubly', 'circular'] as const).map((type) => (
-              <Button
-                key={type}
-                variant={listType === type ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => {
-                  setListType(type);
-                  eraseExample();
-                }}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </Button>
-            ))}
+          {/* List Type Selection */}
+          <div className="flex gap-4 items-center">
+            <label className="text-sm font-medium">List Type:</label>
+            <Select value={listType} onValueChange={(value: ListType) => setListType(value)}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="singly">Singly Linked</SelectItem>
+                <SelectItem value="doubly">Doubly Linked</SelectItem>
+                <SelectItem value="circular">Circular</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Example Generation */}
           <div className="flex gap-2 justify-center">
             <Button onClick={generateExample} variant="outline" size="sm">
+              <Shuffle className="h-4 w-4 mr-2" />
               Generate Example
             </Button>
             <Button onClick={eraseExample} variant="outline" size="sm">
@@ -555,44 +396,49 @@ const LinkedListVisualizer: React.FC = () => {
           {/* Operations */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Insert Value</label>
+              <label className="text-sm font-medium">Insert Node</label>
               <div className="flex gap-2">
                 <Input 
                   placeholder="Value" 
                   type="number" 
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => handleKeyPress(e, insertAtHead)}
                   disabled={isAnimating}
-                  className="flex-1"
                 />
-                <Input 
-                  placeholder="Index" 
-                  type="number" 
-                  value={insertIndex}
-                  onChange={(e) => setInsertIndex(e.target.value)}
-                  disabled={isAnimating}
-                  className="w-20"
-                />
-                <Button size="sm" onClick={insertIndex.trim() === '' ? insertAtEnd : insertAtIndex} disabled={isAnimating || !inputValue.trim()}>
-                  <Plus className="h-4 w-4" />
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={insertAtHead} disabled={isAnimating || !inputValue.trim()}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Head
+                </Button>
+                <Button size="sm" onClick={insertAtTail} disabled={isAnimating || !inputValue.trim()}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Tail
                 </Button>
               </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">Delete/Search Value</label>
+              <label className="text-sm font-medium">Delete Node</label>
+              <Button size="sm" variant="destructive" onClick={deleteAtHead} disabled={isAnimating || nodes.length === 0}>
+                <Minus className="h-4 w-4 mr-2" />
+                Delete Head
+              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Search Node</label>
               <div className="flex gap-2">
                 <Input 
                   placeholder="Value" 
                   type="number" 
-                  value={deleteValue}
-                  onChange={(e) => setDeleteValue(e.target.value)}
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onKeyPress={(e) => handleKeyPress(e, search)}
                   disabled={isAnimating}
                 />
-                <Button size="sm" variant="destructive" onClick={deleteNode} disabled={isAnimating || !deleteValue.trim()}>
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <Button size="sm" variant="outline" onClick={search} disabled={isAnimating || !deleteValue.trim()}>
+                <Button size="sm" onClick={search} disabled={isAnimating || !searchValue.trim()}>
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -600,8 +446,8 @@ const LinkedListVisualizer: React.FC = () => {
             
             <div className="space-y-2">
               <label className="text-sm font-medium">Operations</label>
-              <Button size="sm" variant="outline" onClick={reverse} disabled={isAnimating || list.nodes.length < 2}>
-                <RotateCcw className="h-4 w-4 mr-2" />
+              <Button size="sm" variant="outline" onClick={reverse} disabled={isAnimating || nodes.length < 2}>
+                <Eye className="h-4 w-4 mr-2" />
                 Reverse
               </Button>
             </div>
@@ -609,66 +455,66 @@ const LinkedListVisualizer: React.FC = () => {
 
           {/* Error Display */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-sm">{error}</span>
             </div>
           )}
 
           {/* List Visualization */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[200px] flex items-center justify-center">
-            {list.nodes.length === 0 ? (
+          <div className="bg-muted/20 p-6 rounded-lg min-h-[200px] overflow-x-auto">
+            {nodes.length === 0 ? (
               <div className="text-center text-muted-foreground">
-                <p className="text-lg font-medium">Empty {listType} Linked List</p>
-                <p className="text-sm">Generate example or insert nodes</p>
+                <p className="text-lg font-medium">Empty Linked List</p>
+                <p className="text-sm">Insert nodes to see visualization</p>
               </div>
             ) : (
-              <div className="flex items-center space-x-4 overflow-x-auto">
-                {list.head !== null && (
-                  <div className="text-xs text-yellow-600 mr-2">
-                    HEAD →
-                  </div>
-                )}
-                {renderLinkedList()}
-                {listType === 'circular' && list.nodes.length > 1 && (
-                  <div className="ml-4 text-xs text-muted-foreground">
-                    ↻ to head
-                  </div>
-                )}
+              <div className="flex items-center gap-2 overflow-x-auto pb-4">
+                <div className="text-xs text-muted-foreground whitespace-nowrap">HEAD →</div>
+                <AnimatePresence>
+                  {nodes.map((node, index) => (
+                    <motion.div
+                      key={node.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex items-center"
+                    >
+                      <div className={`w-16 h-16 ${getNodeColor(node.status)} text-white border border-gray-300 flex items-center justify-center font-bold text-sm rounded-md transition-all duration-300`}>
+                        {node.value}
+                      </div>
+                      
+                      {/* Next pointer */}
+                      {node.next && renderPointer(node, node.next, true)}
+                      
+                      {/* Show circular connection */}
+                      {listType === 'circular' && index === nodes.length - 1 && (
+                        <div className="flex items-center mx-2">
+                          <div className="text-xs text-muted-foreground">→ HEAD</div>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                <div className="text-xs text-muted-foreground whitespace-nowrap">→ NULL</div>
               </div>
             )}
-          </div>
-
-          {/* Legend */}
-          <div className="flex justify-center space-x-4 text-xs text-muted-foreground">
-            <div className="flex items-center">
-              <div className="w-3 h-0.5 bg-green-400 mr-1"></div>
-              <span>Next</span>
-            </div>
-            {listType === 'doubly' && (
-              <div className="flex items-center">
-                <div className="w-3 h-0.5 bg-blue-400 mr-1"></div>
-                <span>Prev</span>
-              </div>
-            )}
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-yellow-400 rounded mr-1"></div>
-              <span>Head</span>
-            </div>
           </div>
 
           {/* Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="text-center p-3 bg-muted/50 rounded-lg">
               <div className="font-medium">Size</div>
-              <div className="text-lg font-bold">{list.nodes.length}</div>
-            </div>
-            <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <div className="font-medium">Type</div>
-              <div className="text-sm capitalize">{listType}</div>
+              <div className="text-lg font-bold">{nodes.length}/{maxSize}</div>
             </div>
             <div className="text-center p-3 bg-muted/50 rounded-lg">
               <div className="font-medium">Last Operation</div>
               <div className="text-sm">{lastOperation || 'None'}</div>
+            </div>
+            <div className="text-center p-3 bg-muted/50 rounded-lg">
+              <div className="font-medium">Type</div>
+              <div className="text-lg font-bold capitalize">{listType}</div>
             </div>
           </div>
 
@@ -692,11 +538,11 @@ const LinkedListVisualizer: React.FC = () => {
               <div>
                 <h4 className="font-semibold mb-2">Linked Lists are used in:</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Dynamic memory allocation</li>
-                  <li>• Implementation of other data structures</li>
-                  <li>• Music playlist (next/previous songs)</li>
-                  <li>• Undo functionality in software</li>
+                  <li>• Music player playlists (next/previous song)</li>
                   <li>• Browser history navigation</li>
+                  <li>• Undo/Redo functionality in editors</li>
+                  <li>• Implementation of other data structures</li>
+                  <li>• Memory management in operating systems</li>
                 </ul>
               </div>
               <div className="flex gap-2">
@@ -707,7 +553,7 @@ const LinkedListVisualizer: React.FC = () => {
                   </a>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
-                  <a href="https://www.geeksforgeeks.org/data-structures/linked-list/" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.geeksforgeeks.org/linked-list-data-structure/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     GeeksforGeeks
                   </a>
@@ -719,7 +565,7 @@ const LinkedListVisualizer: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Complexity Analysis</CardTitle>
+            <CardTitle>Complexity & Properties</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -727,19 +573,19 @@ const LinkedListVisualizer: React.FC = () => {
                 <h4 className="font-semibold mb-2">Time Complexity:</h4>
                 <ul className="text-sm space-y-1">
                   <li className="flex justify-between">
+                    <span>Insert (Head/Tail):</span>
+                    <span className="font-mono">O(1)</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Delete (Head):</span>
+                    <span className="font-mono">O(1)</span>
+                  </li>
+                  <li className="flex justify-between">
                     <span>Search:</span>
                     <span className="font-mono">O(n)</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Insert at head:</span>
-                    <span className="font-mono">O(1)</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Insert at tail:</span>
-                    <span className="font-mono">O(n)</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Delete:</span>
+                    <span>Access:</span>
                     <span className="font-mono">O(n)</span>
                   </li>
                 </ul>
@@ -747,10 +593,10 @@ const LinkedListVisualizer: React.FC = () => {
               <div>
                 <h4 className="font-semibold mb-2">Advantages:</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Dynamic size</li>
+                  <li>• Dynamic size allocation</li>
                   <li>• Efficient insertion/deletion</li>
+                  <li>• Memory efficient</li>
                   <li>• No memory waste</li>
-                  <li>• Easy to implement</li>
                 </ul>
               </div>
             </div>
