@@ -2,19 +2,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useTheme } from '../hooks/useTheme';
-import { Moon, Menu, X, Activity } from 'lucide-react';
+import { ThemeSwitcher } from './ThemeSwitcher';
+import { Menu, X, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 export const Navbar = () => {
   const location = useLocation();
-  const { theme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: 'Algorithms', path: '/visualizer', icon: Activity },
-    { name: 'Data Structures', path: '/data-structures', icon: Activity },
+    { name: 'Data Structures', path: '/data-structures' },
+    { name: 'Algorithms', path: '/algorithms' },
+    { name: 'Guide', path: '/guide' },
   ];
 
   const isActive = (path: string) => {
@@ -50,9 +50,8 @@ export const Navbar = () => {
                 <Button
                   variant={isActive(item.path) ? "default" : "ghost"}
                   size="sm"
-                  className="theme-transition"
+                  className="theme-transition hover:bg-accent/80"
                 >
-                  <item.icon className="h-4 w-4 mr-2" />
                   {item.name}
                 </Button>
               </motion.div>
@@ -60,19 +59,9 @@ export const Navbar = () => {
           ))}
         </div>
 
-        {/* Theme Display & Mobile Menu */}
+        {/* Theme Switcher & Mobile Menu */}
         <div className="flex items-center space-x-2">
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="theme-transition"
-              aria-label="Dark mode enabled"
-              disabled
-            >
-              <Moon className="h-4 w-4" />
-            </Button>
-          </motion.div>
+          <ThemeSwitcher />
 
           {/* Mobile Menu Button */}
           <Button
@@ -119,7 +108,6 @@ export const Navbar = () => {
                       size="sm"
                       className="w-full justify-start theme-transition"
                     >
-                      <item.icon className="h-4 w-4 mr-2" />
                       {item.name}
                     </Button>
                   </motion.div>

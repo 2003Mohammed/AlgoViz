@@ -27,6 +27,28 @@
     --radius: 0.5rem;
   }
 
+  .light {
+    --background: 0 0% 97%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 258 89% 42%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 258 89% 42%;
+  }
+
   * {
     @apply border-border;
   }
@@ -43,7 +65,7 @@
   }
 
   .cyber-panel {
-    @apply bg-gradient-to-br from-slate-900 to-slate-800 border border-primary/20 rounded-lg shadow-xl;
+    @apply bg-gradient-to-br from-card to-card/80 border border-border/50 rounded-lg shadow-xl;
   }
 
   .circuit-pattern {
@@ -56,6 +78,10 @@
     @apply transition-all duration-300 ease-in-out;
   }
 
+  .heading-xl {
+    @apply text-4xl md:text-6xl font-bold tracking-tight;
+  }
+
   .heading-lg {
     @apply text-3xl font-bold tracking-tight;
   }
@@ -66,6 +92,33 @@
 
   .heading-sm {
     @apply text-xl font-semibold tracking-tight;
+  }
+
+  .body-lg {
+    @apply text-lg leading-relaxed;
+  }
+
+  .cyber-button {
+    @apply relative overflow-hidden transition-all duration-300 hover:scale-105;
+  }
+
+  .cyber-card {
+    @apply bg-card/60 backdrop-blur-xl border border-border/40 rounded-xl p-6 hover:border-primary/40 transition-all duration-300;
+  }
+
+  .cyber-grid {
+    background-image: 
+      linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .neon-text {
+    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+  }
+
+  .pixel-header {
+    @apply font-heading font-bold;
   }
 }
 
@@ -82,4 +135,27 @@
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.3);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }

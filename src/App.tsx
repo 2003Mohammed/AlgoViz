@@ -6,11 +6,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
 
 // Import main pages
-import Home from './pages/Home';
+import Index from './pages/Index';
 import Algorithms from './pages/Algorithms';
 import DataStructures from './pages/DataStructures';
-import Guides from './pages/Guides';
-import { AlgorithmGuide } from './components/guides/AlgorithmGuide';
+import Guide from './pages/Guide';
 
 // Import individual data structure pages
 import ArrayVisualizerPage from './pages/data-structures/ArrayVisualizerPage';
@@ -43,14 +42,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background theme-transition">
           <Routes>
             {/* Main pages */}
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Index />} />
             <Route path="/algorithms" element={<Algorithms />} />
             <Route path="/data-structures" element={<DataStructures />} />
-            <Route path="/guides" element={<Guides />} />
-            <Route path="/guides/:algorithmId" element={<AlgorithmGuide algorithmId="bubble-sort" />} />
+            <Route path="/guide" element={<Guide />} />
 
             {/* Data Structure pages */}
             <Route path="/data-structures/array" element={<ArrayVisualizerPage />} />
