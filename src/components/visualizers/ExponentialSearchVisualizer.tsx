@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -33,14 +32,15 @@ const ExponentialSearchVisualizer: React.FC = () => {
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const generateRandomArray = () => {
-    const size = Math.floor(Math.random() * 8) + 8; // 8-15 elements
+    const size = Math.floor(Math.random() * 6) + 8; // 8-13 elements
+    const baseValue = Math.floor(Math.random() * 10) + 1;
     const newArray = Array.from({ length: size }, (_, i) => ({
-      value: (i + 1) * 2 + Math.floor(Math.random() * 3), // Sorted with some variation
+      value: baseValue + i * (Math.floor(Math.random() * 3) + 1), // Ensure sorted with gaps
       status: 'default' as const,
       index: i
     }));
     
-    // Ensure it's sorted
+    // Ensure it's properly sorted
     newArray.sort((a, b) => a.value - b.value);
     newArray.forEach((item, index) => item.index = index);
     
@@ -55,24 +55,41 @@ const ExponentialSearchVisualizer: React.FC = () => {
     const steps: SearchStep[] = [];
     const arr = [...array];
     
-    // Phase 1: Exponential Search
-    let bound = 1;
-    
     // Initial state
     steps.push({
       array: arr.map(item => ({ ...item, status: 'default' })),
-      description: `Starting exponential search for ${target}. Checking bounds exponentially.`,
+      description: `Starting exponential search for ${target}. First checking if element exists at index 0.`,
       phase: 'exponential'
     });
     
-    // Find the range for binary search
+    // Check if first element is the target
+    if (arr[0].value === target) {
+      steps.push({
+        array: arr.map((item, idx) => ({
+          ...item,
+          status: idx === 0 ? 'found' : 'default'
+        })),
+        description: `Found ${target} at index 0!`,
+        phase: 'exponential'
+      });
+      setSearchSteps(steps);
+      setFoundIndex(0);
+      setCurrentStep(0);
+      setIsAnimating(true);
+      return;
+    }
+    
+    // Phase 1: Find range for binary search
+    let bound = 1;
+    
+    // Exponential phase
     while (bound < arr.length && arr[bound].value < target) {
       steps.push({
         array: arr.map((item, idx) => ({
           ...item,
           status: idx === bound ? 'exponential' : 'default'
         })),
-        description: `Checking index ${bound} with value ${arr[bound].value}. ${arr[bound].value} < ${target}, so expand bound.`,
+        description: `Exponential jump: checking index ${bound} with value ${arr[bound].value}. ${arr[bound].value} < ${target}, so expand range.`,
         phase: 'exponential',
         bound: bound
       });
@@ -89,7 +106,7 @@ const ExponentialSearchVisualizer: React.FC = () => {
         ...item,
         status: (idx >= left && idx <= right) ? 'binary' : 'default'
       })),
-      description: `Range found: [${left}, ${right}]. Starting binary search in this range.`,
+      description: `Range found for binary search: [${left}, ${right}]. Target ${target} must be in this range if it exists.`,
       phase: 'binary',
       left: left,
       right: right
@@ -107,9 +124,9 @@ const ExponentialSearchVisualizer: React.FC = () => {
         array: arr.map((item, idx) => ({
           ...item,
           status: idx === mid ? 'binary' : 
-                 (idx >= l && idx <= r) ? 'binary' : 'default'
+                 (idx >= l && idx <= r) ? 'exponential' : 'default'
         })),
-        description: `Binary search: checking middle index ${mid} with value ${arr[mid].value}`,
+        description: `Binary search: checking middle element at index ${mid} with value ${arr[mid].value}`,
         phase: 'binary',
         left: l,
         right: r,
@@ -136,7 +153,7 @@ const ExponentialSearchVisualizer: React.FC = () => {
         steps.push({
           array: arr.map((item, idx) => ({
             ...item,
-            status: (idx >= l && idx <= r) ? 'binary' : 'default'
+            status: (idx >= l && idx <= r) ? 'exponential' : 'default'
           })),
           description: `${arr[mid].value} < ${target}, search right half [${l}, ${r}]`,
           phase: 'binary',
@@ -148,7 +165,7 @@ const ExponentialSearchVisualizer: React.FC = () => {
         steps.push({
           array: arr.map((item, idx) => ({
             ...item,
-            status: (idx >= l && idx <= r) ? 'binary' : 'default'
+            status: (idx >= l && idx <= r) ? 'exponential' : 'default'
           })),
           description: `${arr[mid].value} > ${target}, search left half [${l}, ${r}]`,
           phase: 'binary',
@@ -207,7 +224,7 @@ const ExponentialSearchVisualizer: React.FC = () => {
           } else {
             setIsAnimating(false);
           }
-        }, 1500);
+        }, 2000);
       }
     }
 
@@ -221,10 +238,10 @@ const ExponentialSearchVisualizer: React.FC = () => {
   const getBarColor = (status: string) => {
     switch (status) {
       case 'exponential': return 'bg-orange-500';
-      case 'binary': return 'bg-yellow-500';
+      case 'binary': return 'bg-blue-500';
       case 'found': return 'bg-green-500';
       case 'not-found': return 'bg-red-500';
-      default: return 'bg-blue-500';
+      default: return 'bg-gray-400';
     }
   };
 
@@ -283,9 +300,9 @@ const ExponentialSearchVisualizer: React.FC = () => {
           {/* Color Legend */}
           <div className="bg-muted/20 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                <div className="w-3 h-3 bg-gray-400 rounded"></div>
                 <span>🔵 Default</span>
               </div>
               <div className="flex items-center gap-2">
@@ -293,16 +310,12 @@ const ExponentialSearchVisualizer: React.FC = () => {
                 <span>🟠 Exponential Jump</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded"></div>
-                <span>🟡 Binary Search</span>
+                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                <span>🔵 Binary Search</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded"></div>
                 <span>🟢 Found</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded"></div>
-                <span>🔴 Not Found</span>
               </div>
             </div>
           </div>

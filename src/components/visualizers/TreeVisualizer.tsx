@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -32,19 +31,41 @@ const TreeVisualizer: React.FC = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const calculatePositions = (node: TreeNode | null, x = 300, y = 50, level = 0): void => {
+  const calculatePositions = (node: TreeNode | null, x = 400, y = 60, level = 0, minX = 50, maxX = 750): void => {
     if (!node) return;
     
-    const horizontalSpacing = Math.max(80, 200 / (level + 1));
-    node.x = x;
+    const availableWidth = maxX - minX;
+    const horizontalSpacing = Math.max(60, Math.min(120, availableWidth / Math.pow(2, level + 1)));
+    
+    node.x = Math.max(minX + 30, Math.min(maxX - 30, x));
     node.y = y;
     
     if (node.left) {
-      calculatePositions(node.left, x - horizontalSpacing, y + 80, level + 1);
+      calculatePositions(node.left, node.x - horizontalSpacing, y + 80, level + 1, minX, node.x - 30);
     }
     if (node.right) {
-      calculatePositions(node.right, x + horizontalSpacing, y + 80, level + 1);
+      calculatePositions(node.right, node.x + horizontalSpacing, y + 80, level + 1, node.x + 30, maxX);
     }
+  };
+
+  const getTreeBounds = (node: TreeNode | null): {minX: number, maxX: number, maxY: number} => {
+    if (!node) return {minX: 0, maxX: 0, maxY: 0};
+    
+    let minX = node.x || 0;
+    let maxX = node.x || 0;
+    let maxY = node.y || 0;
+    
+    const traverse = (n: TreeNode | null) => {
+      if (!n) return;
+      minX = Math.min(minX, n.x || 0);
+      maxX = Math.max(maxX, n.x || 0);
+      maxY = Math.max(maxY, n.y || 0);
+      traverse(n.left);
+      traverse(n.right);
+    };
+    
+    traverse(node);
+    return {minX, maxX, maxY};
   };
 
   const insertNode = (value: number) => {
@@ -56,6 +77,10 @@ const TreeVisualizer: React.FC = () => {
 
     if (!root) {
       setRoot(newNode);
+      setTimeout(() => {
+        calculatePositions(newNode);
+        setRoot({...newNode});
+      }, 10);
       return;
     }
 
@@ -238,7 +263,10 @@ const TreeVisualizer: React.FC = () => {
 
   const generateExample = () => {
     setRoot(null);
-    const values = treeType === 'bst' ? [50, 30, 70, 20, 40, 60, 80] : [1, 2, 3, 4, 5, 6, 7];
+    const baseValue = Math.floor(Math.random() * 20) + 10;
+    const values = treeType === 'bst' 
+      ? [baseValue, baseValue - 8, baseValue + 12, baseValue - 15, baseValue - 3, baseValue + 6, baseValue + 18] 
+      : Array.from({length: 7}, () => Math.floor(Math.random() * 50) + 1);
     
     setTimeout(() => {
       values.forEach(value => insertNode(value));
@@ -283,7 +311,6 @@ const TreeVisualizer: React.FC = () => {
       clearTimeout(animationRef.current);
     }
     
-    // Reset all node statuses
     const resetNodeStatus = (node: TreeNode | null): void => {
       if (node) {
         node.status = 'default';
@@ -304,7 +331,6 @@ const TreeVisualizer: React.FC = () => {
         const step = traversalSteps[currentStep];
         setCurrentDescription(step.description);
         
-        // Update the tree to highlight the current node
         const updateNodeStatus = (node: TreeNode | null, targetId: string): TreeNode | null => {
           if (!node) return null;
           
@@ -354,7 +380,6 @@ const TreeVisualizer: React.FC = () => {
 
     return (
       <g key={node.id}>
-        {/* Edges */}
         {node.left && (
           <line
             x1={node.x}
@@ -378,7 +403,6 @@ const TreeVisualizer: React.FC = () => {
           />
         )}
         
-        {/* Node */}
         <motion.circle
           cx={node.x}
           cy={node.y}
@@ -397,12 +421,15 @@ const TreeVisualizer: React.FC = () => {
           {node.value}
         </text>
         
-        {/* Render children */}
         {renderTree(node.left)}
         {renderTree(node.right)}
       </g>
     );
   };
+
+  const bounds = root ? getTreeBounds(root) : {minX: 0, maxX: 800, maxY: 300};
+  const svgWidth = Math.max(800, bounds.maxX - bounds.minX + 100);
+  const svgHeight = Math.max(300, bounds.maxY + 100);
 
   return (
     <div className="space-y-6">
@@ -411,7 +438,6 @@ const TreeVisualizer: React.FC = () => {
           <CardTitle>Tree Visualizer</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Controls */}
           <div className="flex gap-4 items-center justify-center flex-wrap">
             <div className="flex gap-2">
               <Button 
@@ -441,7 +467,6 @@ const TreeVisualizer: React.FC = () => {
             </Button>
           </div>
 
-          {/* Insert and Search */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex gap-2">
               <Input
@@ -449,6 +474,7 @@ const TreeVisualizer: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleInsert()}
+                className="flex-1"
               />
               <Button onClick={handleInsert} size="sm">Insert</Button>
             </div>
@@ -459,12 +485,12 @@ const TreeVisualizer: React.FC = () => {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                className="flex-1"
               />
               <Button onClick={handleSearch} size="sm">Search</Button>
             </div>
           </div>
 
-          {/* Traversal Controls */}
           <div className="flex gap-2 justify-center flex-wrap">
             <Button onClick={() => performTraversal('inorder')} variant="outline" size="sm">
               Inorder
@@ -477,7 +503,6 @@ const TreeVisualizer: React.FC = () => {
             </Button>
           </div>
 
-          {/* Animation Controls */}
           {traversalSteps.length > 0 && (
             <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
               <Button 
@@ -502,38 +527,43 @@ const TreeVisualizer: React.FC = () => {
             </div>
           )}
 
-          {/* Color Legend */}
           <div className="bg-muted/20 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span>Default</span>
+                <span>🔵 Default</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span>Visiting</span>
+                <span>🟡 Visiting</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span>Found</span>
+                <span>🟢 Found</span>
               </div>
             </div>
           </div>
 
-          {/* Step Description */}
           {currentDescription && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
 
-          {/* Tree Visualization */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-center justify-center">
+          <div className="bg-muted/20 p-6 rounded-lg min-h-[400px] flex items-center justify-center overflow-auto">
             {root ? (
-              <svg width="600" height="400" className="overflow-visible">
-                {renderTree(root)}
-              </svg>
+              <div className="w-full flex justify-center">
+                <svg 
+                  width={Math.min(svgWidth, 800)} 
+                  height={Math.min(svgHeight, 500)} 
+                  className="overflow-visible"
+                  viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  {renderTree(root)}
+                </svg>
+              </div>
             ) : (
               <div className="text-center text-muted-foreground">
                 <p className="text-lg font-medium">Empty Tree</p>

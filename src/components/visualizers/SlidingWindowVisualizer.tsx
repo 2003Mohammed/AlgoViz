@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -35,9 +34,9 @@ const SlidingWindowVisualizer: React.FC = () => {
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const generateRandomArray = () => {
-    const size = Math.floor(Math.random() * 5) + 8; // 8-12 elements
+    const size = Math.floor(Math.random() * 4) + 6; // 6-9 elements for better visualization
     const newArray = Array.from({ length: size }, (_, i) => ({
-      value: Math.floor(Math.random() * 20) + 1, // Random values 1-20
+      value: Math.floor(Math.random() * 15) + 1, // Random values 1-15
       status: 'default' as const,
       index: i
     }));
@@ -48,7 +47,7 @@ const SlidingWindowVisualizer: React.FC = () => {
   };
 
   const performSlidingWindow = () => {
-    if (array.length === 0 || windowSize > array.length) return;
+    if (array.length === 0 || windowSize > array.length || windowSize <= 0) return;
     
     const steps: WindowStep[] = [];
     const arr = [...array];
@@ -77,7 +76,7 @@ const SlidingWindowVisualizer: React.FC = () => {
         ...item,
         status: idx < windowSize ? 'window' : 'outside'
       })),
-      description: `Initial window [0, ${windowSize - 1}]: sum = ${currentSum}`,
+      description: `Initial window [0, ${windowSize - 1}]: sum = ${currentSum}. This is our first maximum.`,
       windowStart: 0,
       windowEnd: windowSize - 1,
       currentSum: currentSum,
@@ -90,7 +89,9 @@ const SlidingWindowVisualizer: React.FC = () => {
       const windowEnd = i + windowSize - 1;
       
       // Remove the leftmost element and add the rightmost element
-      currentSum = currentSum - arr[i - 1].value + arr[windowEnd].value;
+      const removedValue = arr[i - 1].value;
+      const addedValue = arr[windowEnd].value;
+      currentSum = currentSum - removedValue + addedValue;
       
       const isNewMax = currentSum > maxSum;
       if (isNewMax) {
@@ -104,7 +105,7 @@ const SlidingWindowVisualizer: React.FC = () => {
           ...item,
           status: (idx >= windowStart && idx <= windowEnd) ? 'window' : 'outside'
         })),
-        description: `Window [${windowStart}, ${windowEnd}]: sum = ${currentSum}${isNewMax ? ' (new maximum!)' : ''}`,
+        description: `Window [${windowStart}, ${windowEnd}]: removed ${removedValue}, added ${addedValue}. Sum = ${currentSum}${isNewMax ? ' (new maximum!)' : ''}`,
         windowStart: windowStart,
         windowEnd: windowEnd,
         currentSum: currentSum,
@@ -120,7 +121,7 @@ const SlidingWindowVisualizer: React.FC = () => {
         ...item,
         status: (idx >= optimalStart && idx <= optimalEnd) ? 'optimal' : 'outside'
       })),
-      description: `Maximum sum found: ${maxSum} in window [${optimalStart}, ${optimalEnd}]`,
+      description: `Maximum sum found: ${maxSum} in window [${optimalStart}, ${optimalEnd}]. Sliding window complete!`,
       windowStart: optimalStart,
       windowEnd: optimalEnd,
       currentSum: maxSum,
@@ -172,7 +173,7 @@ const SlidingWindowVisualizer: React.FC = () => {
           } else {
             setIsAnimating(false);
           }
-        }, 1500);
+        }, 1800);
       }
     }
 
