@@ -7,16 +7,12 @@ import {
   Play, 
   MousePointer, 
   Eye, 
-  Settings, 
   Database, 
   Zap, 
   Brain,
-  ArrowRight,
-  CheckCircle,
-  Lightbulb
+  Github,
+  Mail
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
 const Guide = () => {
   const containerVariants = {
@@ -43,64 +39,41 @@ const Guide = () => {
   const steps = [
     {
       icon: MousePointer,
-      title: "Choose Your Topic",
-      description: "Navigate to Data Structures or Algorithms section and select what you want to learn"
+      title: "Navigate",
+      description: "Choose either Data Structures or Algorithms section"
     },
     {
-      icon: Settings,
-      title: "Generate or Input Data",
-      description: "Use 'Generate Example' for random data or manually input your own values"
+      icon: Database,
+      title: "Select Topic",
+      description: "Pick a specific topic like Array, Linked List, or Bubble Sort"
     },
     {
       icon: Play,
-      title: "Start Visualization",
-      description: "Click Play to watch the algorithm animate step-by-step with narration"
+      title: "Visualize",
+      description: "Use Insert/Delete/Play buttons to see the concept in action"
     },
     {
       icon: Eye,
-      title: "Control & Learn",
-      description: "Pause, step through manually, adjust speed, and read explanations as you go"
+      title: "Learn",
+      description: "Follow the narration box and color legend to understand each step"
     }
   ];
 
-  const sections = [
+  const features = [
     {
       icon: Database,
       title: "Data Structures",
-      items: [
-        "Arrays - Dynamic operations and visualizations",
-        "Linked Lists - Node connections and traversal",
-        "Stacks - LIFO operations (Push, Pop)",
-        "Queues - FIFO operations (Enqueue, Dequeue)", 
-        "Trees - Binary tree operations and traversals",
-        "Graphs - Node relationships and connections"
-      ],
-      path: "/data-structures"
+      items: ["Arrays", "Linked Lists", "Stacks", "Queues", "Trees", "Graphs"]
     },
     {
       icon: Zap,
-      title: "Sorting Algorithms",
-      items: [
-        "Bubble Sort - Compare and swap adjacent elements",
-        "Selection Sort - Find minimum and place in position",
-        "Insertion Sort - Insert elements in correct position",
-        "Merge Sort - Divide and conquer approach",
-        "Quick Sort - Partition-based sorting",
-        "Heap Sort - Binary heap-based sorting"
-      ],
-      path: "/algorithms"
+      title: "Sorting & Searching",
+      items: ["Bubble Sort", "Quick Sort", "Merge Sort", "Binary Search", "Linear Search"]
     },
     {
       icon: Brain,
-      title: "Search & Graph Algorithms",
-      items: [
-        "Linear Search - Sequential element search",
-        "Binary Search - Divide and conquer search",
-        "BFS - Breadth-First graph traversal",
-        "DFS - Depth-First graph traversal",
-        "Dijkstra - Shortest path algorithm"
-      ],
-      path: "/algorithms"
+      title: "Graph Algorithms",
+      items: ["BFS", "DFS", "Dijkstra's Algorithm"]
     }
   ];
 
@@ -120,54 +93,14 @@ const Guide = () => {
             </div>
           </div>
           <h1 className="heading-lg mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            How to Use AlgoViz
+            Guide to Using AlgoViz
           </h1>
           <p className="body-lg text-muted-foreground max-w-3xl mx-auto">
-            Your comprehensive guide to mastering data structures and algorithms through interactive visualizations
+            Learn how to navigate and use AlgoViz for mastering data structures and algorithms
           </p>
         </motion.div>
 
-        {/* What is AlgoViz */}
-        <motion.section
-          className="mb-16"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <motion.div variants={itemVariants} className="cyber-card mb-8">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl">
-                <Lightbulb className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-semibold mb-4 text-foreground">What is AlgoViz?</h2>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  AlgoViz is an interactive learning platform that brings data structures and algorithms to life through 
-                  beautiful visualizations, step-by-step animations, and detailed explanations. Whether you're preparing 
-                  for interviews, studying computer science, or just curious about how algorithms work, AlgoViz makes 
-                  complex concepts easy to understand.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Interactive Animations</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Step-by-Step Narration</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Mobile Friendly</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.section>
-
-        {/* How to Use - Steps */}
+        {/* How to Use Steps */}
         <motion.section
           className="mb-16"
           variants={containerVariants}
@@ -179,7 +112,7 @@ const Guide = () => {
             variants={itemVariants}
             className="text-2xl font-semibold mb-8 text-center text-foreground"
           >
-            Getting Started in 4 Easy Steps
+            How to Use AlgoViz
           </motion.h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -189,7 +122,7 @@ const Guide = () => {
                 variants={itemVariants}
                 className="cyber-card text-center group hover:border-primary/40"
               >
-                <div className="mb-4">
+                <div className="mb-4 relative">
                   <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <step.icon className="h-8 w-8 text-primary" />
                   </div>
@@ -204,7 +137,7 @@ const Guide = () => {
           </div>
         </motion.section>
 
-        {/* Available Sections */}
+        {/* Features Section */}
         <motion.section
           className="mb-16"
           variants={containerVariants}
@@ -220,40 +153,33 @@ const Guide = () => {
           </motion.h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {sections.map((section, index) => (
+            {features.map((feature) => (
               <motion.div
-                key={section.title}
+                key={feature.title}
                 variants={itemVariants}
                 className="cyber-card group hover:border-primary/40"
               >
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                    <section.icon className="h-6 w-6 text-primary" />
+                    <feature.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground">{section.title}</h3>
+                  <h3 className="text-xl font-semibold text-foreground">{feature.title}</h3>
                 </div>
                 
-                <ul className="space-y-3 mb-6">
-                  {section.items.map((item, itemIndex) => (
-                    <li key={itemIndex} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <ul className="space-y-2">
+                  {feature.items.map((item, index) => (
+                    <li key={index} className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
-                
-                <Link to={section.path}>
-                  <Button variant="outline" className="w-full group-hover:bg-primary/10 group-hover:border-primary/50">
-                    <span>Explore {section.title}</span>
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
-        {/* Tips Section */}
+        {/* Contact Section */}
         <motion.section
           variants={containerVariants}
           initial="hidden"
@@ -261,52 +187,38 @@ const Guide = () => {
           viewport={{ once: true }}
         >
           <motion.div variants={itemVariants} className="cyber-card bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
-            <h2 className="text-2xl font-semibold mb-6 text-foreground flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg">
-                <Lightbulb className="h-6 w-6 text-primary" />
-              </div>
-              Pro Tips for Learning
-            </h2>
+            <h2 className="text-2xl font-semibold mb-6 text-foreground text-center">Contact & Feedback</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">Start Slow:</strong> Use the speed controls to slow down animations when learning new concepts
-                  </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+              <div className="flex flex-col items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl">
+                  <Mail className="h-6 w-6 text-primary" />
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">Step Through:</strong> Use manual stepping to understand each operation in detail
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">Try Examples:</strong> Generate random examples to see how algorithms behave with different data
-                  </p>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-2">Email</h3>
+                  <a 
+                    href="mailto:sammohammed2003@gmail.com" 
+                    className="text-primary hover:underline"
+                  >
+                    sammohammed2003@gmail.com
+                  </a>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">Read Narration:</strong> Pay attention to the step-by-step explanations during animations
-                  </p>
+              
+              <div className="flex flex-col items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl">
+                  <Github className="h-6 w-6 text-primary" />
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">Practice:</strong> Try creating your own examples and see how the algorithms handle them
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-accent rounded-full mt-2"></div>
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">Mobile Learning:</strong> All visualizations work great on mobile devices too!
-                  </p>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-2">GitHub</h3>
+                  <a 
+                    href="https://github.com/2003Mohammed" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    github.com/2003Mohammed
+                  </a>
                 </div>
               </div>
             </div>
