@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Minus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface TreeNode {
@@ -23,6 +24,7 @@ interface TraversalStep {
 const TreeVisualizer: React.FC = () => {
   const [root, setRoot] = useState<TreeNode | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [deleteValue, setDeleteValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [treeType, setTreeType] = useState<'binary' | 'bst'>('bst');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -31,41 +33,21 @@ const TreeVisualizer: React.FC = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const calculatePositions = (node: TreeNode | null, x = 400, y = 60, level = 0, minX = 50, maxX = 750): void => {
+  const calculatePositions = (node: TreeNode | null, x = 300, y = 60, level = 0, minX = 50, maxX = 550): void => {
     if (!node) return;
     
     const availableWidth = maxX - minX;
-    const horizontalSpacing = Math.max(60, Math.min(120, availableWidth / Math.pow(2, level + 1)));
+    const horizontalSpacing = Math.max(40, Math.min(80, availableWidth / Math.pow(2, level + 1)));
     
-    node.x = Math.max(minX + 30, Math.min(maxX - 30, x));
+    node.x = Math.max(minX + 25, Math.min(maxX - 25, x));
     node.y = y;
     
     if (node.left) {
-      calculatePositions(node.left, node.x - horizontalSpacing, y + 80, level + 1, minX, node.x - 30);
+      calculatePositions(node.left, node.x - horizontalSpacing, y + 70, level + 1, minX, node.x - 25);
     }
     if (node.right) {
-      calculatePositions(node.right, node.x + horizontalSpacing, y + 80, level + 1, node.x + 30, maxX);
+      calculatePositions(node.right, node.x + horizontalSpacing, y + 70, level + 1, node.x + 25, maxX);
     }
-  };
-
-  const getTreeBounds = (node: TreeNode | null): {minX: number, maxX: number, maxY: number} => {
-    if (!node) return {minX: 0, maxX: 0, maxY: 0};
-    
-    let minX = node.x || 0;
-    let maxX = node.x || 0;
-    let maxY = node.y || 0;
-    
-    const traverse = (n: TreeNode | null) => {
-      if (!n) return;
-      minX = Math.min(minX, n.x || 0);
-      maxX = Math.max(maxX, n.x || 0);
-      maxY = Math.max(maxY, n.y || 0);
-      traverse(n.left);
-      traverse(n.right);
-    };
-    
-    traverse(node);
-    return {minX, maxX, maxY};
   };
 
   const insertNode = (value: number) => {
@@ -121,8 +103,27 @@ const TreeVisualizer: React.FC = () => {
     }
   };
 
-  const deleteNode = (value: number) => {
+  const deleteNode = (value?: number) => {
     if (!root) return;
+    
+    let valueToDelete: number;
+    
+    if (value !== undefined) {
+      valueToDelete = value;
+    } else if (deleteValue.trim()) {
+      valueToDelete = parseInt(deleteValue);
+      if (isNaN(valueToDelete)) return;
+    } else {
+      // Find and delete the rightmost (largest) node
+      const findMax = (node: TreeNode | null): number => {
+        if (!node) return 0;
+        while (node.right) {
+          node = node.right;
+        }
+        return node.value;
+      };
+      valueToDelete = findMax(root);
+    }
     
     const deleteFromBST = (node: TreeNode | null, val: number): TreeNode | null => {
       if (!node) return null;
@@ -142,11 +143,12 @@ const TreeVisualizer: React.FC = () => {
       return node;
     };
     
-    const newRoot = deleteFromBST(root, value);
+    const newRoot = deleteFromBST(root, valueToDelete);
     if (newRoot) {
       calculatePositions(newRoot);
     }
     setRoot(newRoot);
+    setDeleteValue('');
   };
 
   const findMin = (node: TreeNode): TreeNode => {
@@ -263,10 +265,27 @@ const TreeVisualizer: React.FC = () => {
 
   const generateExample = () => {
     setRoot(null);
-    const baseValue = Math.floor(Math.random() * 20) + 10;
-    const values = treeType === 'bst' 
-      ? [baseValue, baseValue - 8, baseValue + 12, baseValue - 15, baseValue - 3, baseValue + 6, baseValue + 18] 
-      : Array.from({length: 7}, () => Math.floor(Math.random() * 50) + 1);
+    // Generate truly random tree each time
+    const numNodes = 5 + Math.floor(Math.random() * 5); // 5-9 nodes
+    const baseValue = 10 + Math.floor(Math.random() * 40); // 10-49 base
+    
+    let values: number[];
+    if (treeType === 'bst') {
+      // Generate sorted-ish values for BST
+      values = Array.from({length: numNodes}, (_, i) => 
+        baseValue + i * (3 + Math.floor(Math.random() * 5)) + Math.floor(Math.random() * 3)
+      );
+      // Shuffle for insertion order
+      for (let i = values.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [values[i], values[j]] = [values[j], values[i]];
+      }
+    } else {
+      // Generate random values for binary tree
+      values = Array.from({length: numNodes}, () => 
+        Math.floor(Math.random() * 90) + 10
+      );
+    }
     
     setTimeout(() => {
       values.forEach(value => insertNode(value));
@@ -286,6 +305,15 @@ const TreeVisualizer: React.FC = () => {
     if (!isNaN(value)) {
       insertNode(value);
       setInputValue('');
+    }
+  };
+
+  const handleDelete = () => {
+    const value = parseInt(deleteValue);
+    if (!isNaN(value)) {
+      deleteNode(value);
+    } else {
+      deleteNode(); // Delete last node
     }
   };
 
@@ -355,7 +383,7 @@ const TreeVisualizer: React.FC = () => {
           } else {
             setIsAnimating(false);
           }
-        }, 1500);
+        }, 1200);
       }
     }
 
@@ -406,15 +434,15 @@ const TreeVisualizer: React.FC = () => {
         <motion.circle
           cx={node.x}
           cy={node.y}
-          r="20"
+          r="18"
           className={`${getNodeColor(node.status)} stroke-foreground stroke-2`}
-          animate={{ scale: node.status === 'visiting' ? 1.2 : 1 }}
+          animate={{ scale: node.status === 'visiting' ? 1.3 : 1 }}
           transition={{ duration: 0.3 }}
         />
         
         <text
           x={node.x}
-          y={node.y + 5}
+          y={node.y + 4}
           textAnchor="middle"
           className="text-sm font-bold fill-white"
         >
@@ -427,18 +455,14 @@ const TreeVisualizer: React.FC = () => {
     );
   };
 
-  const bounds = root ? getTreeBounds(root) : {minX: 0, maxX: 800, maxY: 300};
-  const svgWidth = Math.max(800, bounds.maxX - bounds.minX + 100);
-  const svgHeight = Math.max(300, bounds.maxY + 100);
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Tree Visualizer</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Tree Visualizer</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex gap-4 items-center justify-center flex-wrap">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="flex gap-2 sm:gap-4 items-center justify-center flex-wrap">
             <div className="flex gap-2">
               <Button 
                 variant={treeType === 'bst' ? 'default' : 'outline'} 
@@ -467,16 +491,29 @@ const TreeVisualizer: React.FC = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="flex gap-2">
               <Input
                 placeholder="Insert value"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleInsert()}
-                className="flex-1"
+                className="flex-1 text-sm"
               />
               <Button onClick={handleInsert} size="sm">Insert</Button>
+            </div>
+            
+            <div className="flex gap-2">
+              <Input
+                placeholder="Delete value (empty = last)"
+                value={deleteValue}
+                onChange={(e) => setDeleteValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleDelete()}
+                className="flex-1 text-sm"
+              />
+              <Button onClick={handleDelete} size="sm" variant="destructive">
+                <Minus className="h-4 w-4" />
+              </Button>
             </div>
             
             <div className="flex gap-2">
@@ -485,7 +522,7 @@ const TreeVisualizer: React.FC = () => {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="flex-1"
+                className="flex-1 text-sm"
               />
               <Button onClick={handleSearch} size="sm">Search</Button>
             </div>
@@ -493,18 +530,21 @@ const TreeVisualizer: React.FC = () => {
 
           <div className="flex gap-2 justify-center flex-wrap">
             <Button onClick={() => performTraversal('inorder')} variant="outline" size="sm">
+              <Play className="h-4 w-4 mr-2" />
               Inorder
             </Button>
             <Button onClick={() => performTraversal('preorder')} variant="outline" size="sm">
+              <Play className="h-4 w-4 mr-2" />
               Preorder
             </Button>
             <Button onClick={() => performTraversal('postorder')} variant="outline" size="sm">
+              <Play className="h-4 w-4 mr-2" />
               Postorder
             </Button>
           </div>
 
           {traversalSteps.length > 0 && (
-            <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
+            <div className="flex gap-2 justify-center items-center p-2 sm:p-4 bg-muted/20 rounded-lg flex-wrap">
               <Button 
                 onClick={() => setIsAnimating(!isAnimating)} 
                 size="sm"
@@ -521,7 +561,7 @@ const TreeVisualizer: React.FC = () => {
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Reset
               </Button>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 Step {currentStep + 1} of {traversalSteps.length}
               </span>
             </div>
@@ -529,7 +569,7 @@ const TreeVisualizer: React.FC = () => {
 
           <div className="bg-muted/20 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                 <span>🔵 Default</span>
@@ -551,14 +591,14 @@ const TreeVisualizer: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[400px] flex items-center justify-center overflow-auto">
+          <div className="bg-muted/20 p-4 sm:p-6 rounded-lg min-h-[350px] flex items-center justify-center overflow-auto">
             {root ? (
               <div className="w-full flex justify-center">
                 <svg 
-                  width={Math.min(svgWidth, 800)} 
-                  height={Math.min(svgHeight, 500)} 
-                  className="overflow-visible"
-                  viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+                  width="600" 
+                  height="400" 
+                  className="overflow-visible max-w-full"
+                  viewBox="0 0 600 400"
                   preserveAspectRatio="xMidYMid meet"
                 >
                   {renderTree(root)}
