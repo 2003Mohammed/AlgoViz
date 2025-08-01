@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { Layout } from '../components/Layout';
 
 const algorithms = [
   // Sorting Algorithms
@@ -37,7 +38,8 @@ const Algorithms: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-2 sm:p-4 md:p-8">
+    <Layout>
+      <div className="min-h-screen bg-background p-2 sm:p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <motion.div
@@ -139,6 +141,7 @@ const Algorithms: React.FC = () => {
         </div>
       </div>
     </div>
+    </Layout>
   );
 };
 

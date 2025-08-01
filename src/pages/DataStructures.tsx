@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { Layout } from '../components/Layout';
 
 const dataStructures = [
   { id: 'array', name: 'Array', description: 'Linear collection of elements with indexed access', path: '/data-structures/array' },
@@ -22,7 +23,8 @@ const DataStructures: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-2 sm:p-4 md:p-8">
+    <Layout>
+      <div className="min-h-screen bg-background p-2 sm:p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <motion.div
@@ -67,6 +69,7 @@ const DataStructures: React.FC = () => {
         </Card>
       </div>
     </div>
+    </Layout>
   );
 };
 
