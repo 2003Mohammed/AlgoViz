@@ -1,361 +1,371 @@
-
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { motion } from 'framer-motion';
-import { 
-  BookOpen, 
-  Play, 
-  MousePointer, 
-  Eye, 
-  Database, 
-  Zap, 
-  Brain,
-  Github,
-  Mail,
-  ArrowRight,
-  CheckCircle,
-  Sparkles
-} from 'lucide-react';
+import { ArrowLeft, Database, Zap, Target, Eye, Play, RotateCcw, ArrowRight, Mail, Github, HelpCircle, BookOpen, Code, Activity } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 
 const Guide = () => {
+  const navigate = useNavigate();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15
+        delayChildren: 0.3,
+        staggerChildren: 0.2
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
-      opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
+      opacity: 1
     }
   };
 
   const steps = [
     {
-      number: "01",
-      icon: MousePointer,
-      title: "Navigate & Choose",
-      description: "Select either Data Structures or Algorithms from the main navigation",
-      color: "from-blue-500 to-cyan-500"
+      number: 1,
+      icon: <Target className="h-6 w-6" />,
+      title: "Choose Your Path",
+      description: "Navigate to either Data Structures or Algorithms section based on what you want to learn",
+      color: "from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))]"
     },
     {
-      number: "02",
-      icon: Database,
-      title: "Pick Your Topic",
-      description: "Choose a specific concept like Arrays, Trees, Bubble Sort, or Graph algorithms",
-      color: "from-purple-500 to-pink-500"
+      number: 2,
+      icon: <Eye className="h-6 w-6" />,
+      title: "Select a Topic",
+      description: "Pick a specific topic like Arrays, Linked Lists, Bubble Sort, or Binary Search from the grid",
+      color: "from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
     },
     {
-      number: "03",
-      icon: Play,
-      title: "Insert & Visualize",
-      description: "Use Insert/Delete buttons to add data, then click Play to see animations",
-      color: "from-green-500 to-emerald-500"
+      number: 3,
+      icon: <Play className="h-6 w-6" />,
+      title: "Interactive Controls",
+      description: "Use Insert, Delete, Play, Pause, and Step buttons to control the visualization",
+      color: "from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))]"
     },
     {
-      number: "04",
-      icon: Eye,
-      title: "Learn & Understand",
-      description: "Follow the color legend and narration box to understand each step",
-      color: "from-orange-500 to-red-500"
+      number: 4,
+      icon: <BookOpen className="h-6 w-6" />,
+      title: "Follow the Journey",
+      description: "Watch the color-coded animations and read the narration box to understand each step",
+      color: "from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))]"
     }
   ];
 
   const features = [
     {
-      icon: Database,
+      icon: <Database className="h-8 w-8" />,
       title: "Data Structure Simulators",
       items: [
-        "Interactive Arrays with sorting animations",
-        "Dynamic Linked Lists with pointer visualization", 
-        "Stack & Queue operations with real-time updates",
-        "Binary Trees with traversal algorithms",
-        "Graph structures with node/edge manipulation"
-      ],
-      gradient: "from-blue-500/10 to-purple-500/10"
+        "Arrays with sorting animations",
+        "Linked Lists with pointer visualization", 
+        "Stacks and Queues with LIFO/FIFO operations",
+        "Trees with traversal animations",
+        "Graphs with node and edge interactions"
+      ]
     },
     {
-      icon: Zap,
+      icon: <Code className="h-8 w-8" />,
       title: "Sorting & Searching Algorithms",
       items: [
-        "Bubble Sort with step-by-step comparisons",
-        "Quick Sort with partition visualization",
-        "Merge Sort with recursive breakdowns",
-        "Binary Search with interval narrowing",
-        "Linear Search with element highlighting"
-      ],
-      gradient: "from-green-500/10 to-teal-500/10"
+        "Bubble Sort with swap animations",
+        "Quick Sort with pivot selection",
+        "Merge Sort with divide-and-conquer",
+        "Binary Search with range narrowing",
+        "Linear Search with sequential checking"
+      ]
     },
     {
-      icon: Brain,
+      icon: <Activity className="h-8 w-8" />,
       title: "Advanced Graph Algorithms",
       items: [
         "Breadth-First Search (BFS) traversal",
-        "Depth-First Search (DFS) exploration",
-        "Dijkstra's shortest path algorithm",
-        "Interactive node and edge creation",
-        "Real-time pathfinding visualization"
-      ],
-      gradient: "from-orange-500/10 to-red-500/10"
+        "Depth-First Search (DFS) exploration", 
+        "Connected components detection",
+        "Cycle detection in graphs"
+      ]
     }
   ];
 
   return (
     <Layout>
-      <div className="min-h-screen">
-        {/* Hero Section */}
-        <section className="relative py-20 md:py-32 overflow-hidden">
-          <div className="absolute inset-0 cyber-grid opacity-20"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5"></div>
-          
-          <div className="container relative z-10">
-            <motion.div
-              className="text-center max-w-4xl mx-auto"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <motion.div 
-                className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl mb-8 backdrop-blur-xl border border-primary/30"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ duration: 0.3 }}
+      <div className="relative overflow-hidden">
+        {/* Floating Shapes */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-32 right-10 w-12 h-12 bg-gradient-to-r from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))] rounded-full opacity-20 animate-float-shapes"></div>
+          <div className="absolute bottom-40 left-16 w-16 h-16 bg-gradient-to-r from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))] rounded-lg opacity-15 animate-float-shapes" style={{ animationDelay: '3s' }}></div>
+        </div>
+
+        {/* Header with Back Button */}
+        <motion.section 
+          className="py-12 bg-gradient-to-r from-[hsl(var(--zady-pink))] via-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div variants={itemVariants} className="flex items-center justify-between mb-8">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
               >
-                <BookOpen className="h-12 w-12 text-primary" />
-              </motion.div>
-              
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Master AlgoViz
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+              <Button asChild variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
+                <Link to="/">
+                  Home
+                </Link>
+              </Button>
+            </motion.div>
+            
+            <motion.div variants={itemVariants} className="text-center text-white">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                Guide to Using AlgoViz
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Your complete guide to understanding data structures and algorithms through interactive visualization
+              <p className="text-xl text-white/90 max-w-3xl mx-auto">
+                Your comprehensive guide to mastering algorithms and data structures through interactive visualizations
               </p>
             </motion.div>
           </div>
-        </section>
+        </motion.section>
 
-        {/* How to Navigate Section */}
-        <section className="py-20 md:py-32 relative">
-          <div className="container">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                How to Navigate AlgoViz
+        {/* How to Navigate */}
+        <motion.section 
+          className="py-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div variants={itemVariants} className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                How to Navigate
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Follow these simple steps to get the most out of your learning experience
               </p>
             </motion.div>
 
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {steps.map((step, index) => (
                 <motion.div
-                  key={step.title}
+                  key={index}
                   variants={itemVariants}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="relative group"
+                  whileHover={{ scale: 1.05 }}
+                  className="relative"
                 >
-                  <div className="cyber-card text-center h-full relative overflow-hidden">
-                    {/* Step Number */}
-                    <div className="absolute top-4 right-4 text-6xl font-bold text-primary/10 group-hover:text-primary/20 transition-colors">
-                      {step.number}
+                  <Card className="zady-card h-full">
+                    <CardHeader className="text-center">
+                      <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center text-white`}>
+                        <span className="text-2xl font-bold">{step.number}</span>
+                      </div>
+                      <div className="text-[hsl(var(--zady-blue))] mb-2">
+                        {step.icon}
+                      </div>
+                      <CardTitle className="text-lg">{step.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-center">
+                        {step.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                  
+                  {index < steps.length - 1 && (
+                    <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
+                      <ArrowRight className="h-6 w-6 text-[hsl(var(--zady-blue))]" />
                     </div>
-                    
-                    {/* Icon */}
-                    <motion.div 
-                      className={`w-20 h-20 mx-auto mb-6 bg-gradient-to-br ${step.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-                      whileHover={{ rotate: 10 }}
-                    >
-                      <step.icon className="h-10 w-10 text-white drop-shadow-lg" />
-                    </motion.div>
-                    
-                    <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{step.description}</p>
-                    
-                    {/* Progress connector for larger screens */}
-                    {index < steps.length - 1 && (
-                      <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20 md:py-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent"></div>
-          
-          <div className="container relative z-10">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                What's Inside AlgoViz?
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Comprehensive coverage of essential computer science concepts with interactive learning
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -5 }}
-                  className={`cyber-card group hover:border-primary/40 relative overflow-hidden bg-gradient-to-br ${feature.gradient}`}
-                >
-                  {/* Header */}
-                  <div className="flex items-center gap-4 mb-8">
-                    <motion.div 
-                      className="p-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl group-hover:scale-110 transition-transform duration-300"
-                      whileHover={{ rotate: 5 }}
-                    >
-                      <feature.icon className="h-8 w-8 text-primary" />
-                    </motion.div>
-                    <h3 className="text-2xl font-semibold">{feature.title}</h3>
-                  </div>
-                  
-                  {/* Feature List */}
-                  <ul className="space-y-4">
-                    {feature.items.map((item, itemIndex) => (
-                      <motion.li 
-                        key={itemIndex}
-                        className="flex items-start gap-3 text-muted-foreground"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: itemIndex * 0.1 }}
-                        viewport={{ once: true }}
-                      >
-                        <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{item}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                  
-                  {/* Hover Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    animate={{
-                      background: [
-                        'linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.05) 50%, transparent 100%)',
-                        'linear-gradient(90deg, transparent 100%, rgba(59,130,246,0.05) 150%, transparent 200%)'
-                      ]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
+                  )}
                 </motion.div>
               ))}
             </div>
           </div>
-        </section>
+        </motion.section>
+
+        {/* What's Inside */}
+        <motion.section 
+          className="py-20 bg-gradient-to-b from-transparent to-muted/30"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div variants={itemVariants} className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                What's Inside AlgoViz?
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Comprehensive coverage of computer science fundamentals with interactive learning
+              </p>
+            </motion.div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <Card className="zady-card h-full">
+                    <CardHeader>
+                      <div className="text-[hsl(var(--zady-blue))] mb-4">
+                        {feature.icon}
+                      </div>
+                      <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-3">
+                        {feature.items.map((item, itemIndex) => (
+                          <li key={itemIndex} className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-[hsl(var(--zady-pink))] rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-muted-foreground">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Quick Tips */}
+        <motion.section 
+          className="py-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div variants={itemVariants} className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Pro Tips for Learning
+              </h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <motion.div variants={itemVariants}>
+                <Card className="zady-card">
+                  <CardHeader>
+                    <HelpCircle className="h-8 w-8 text-[hsl(var(--zady-blue))] mb-2" />
+                    <CardTitle>What is a Data Structure?</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      A data structure is a way of organizing and storing data so that it can be accessed and modified efficiently. 
+                      Examples include arrays, linked lists, trees, and graphs - each optimized for different types of operations.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <Card className="zady-card">
+                  <CardHeader>
+                    <Zap className="h-8 w-8 text-[hsl(var(--zady-pink))] mb-2" />
+                    <CardTitle>What is an Algorithm?</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      An algorithm is a step-by-step procedure for solving a problem or completing a task. 
+                      In computer science, algorithms define how to manipulate data structures to achieve specific goals efficiently.
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
 
         {/* Contact Section */}
-        <section className="py-20 md:py-32">
-          <div className="container">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="max-w-4xl mx-auto"
-            >
-              <div className="cyber-card bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 text-center">
-                <motion.div
-                  className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl mb-8 backdrop-blur-xl border border-primary/30"
-                  whileHover={{ scale: 1.1, rotate: -5 }}
-                  transition={{ duration: 0.3 }}
+        <motion.section 
+          className="py-20 bg-gradient-to-r from-[hsl(var(--zady-pink))] via-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div variants={itemVariants} className="text-center text-white">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8">
+                Contact & Feedback
+              </h2>
+              <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+                Have questions, suggestions, or just want to say hi? We'd love to hear from you!
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <motion.a
+                  href="mailto:sammohammed2003@gmail.com"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg border border-white/30 text-white transition-all"
                 >
-                  <Sparkles className="h-10 w-10 text-primary" />
-                </motion.div>
+                  <Mail className="h-5 w-5" />
+                  sammohammed2003@gmail.com
+                </motion.a>
                 
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  Contact & Feedback
-                </h2>
-                <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-                  Have questions, suggestions, or want to contribute? We'd love to hear from you!
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <motion.div 
-                    className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50"
-                    whileHover={{ y: -5, scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="p-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl">
-                      <Github className="h-8 w-8 text-primary" />
-                    </div>
-                    <div className="text-center">
-                      <h3 className="font-semibold text-lg mb-2">GitHub Repository</h3>
-                      <p className="text-muted-foreground mb-4">View source code, report issues, or contribute</p>
-                      <motion.a 
-                        href="https://github.com/2003Mohammed" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
-                        whileHover={{ x: 5 }}
-                      >
-                        github.com/2003Mohammed
-                        <ArrowRight className="h-4 w-4" />
-                      </motion.a>
-                    </div>
-                  </motion.div>
-                  
-                  <motion.div 
-                    className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50"
-                    whileHover={{ y: -5, scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="p-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl">
-                      <Mail className="h-8 w-8 text-primary" />
-                    </div>
-                    <div className="text-center">
-                      <h3 className="font-semibold text-lg mb-2">Direct Feedback</h3>
-                      <p className="text-muted-foreground mb-4">Send suggestions, bug reports, or just say hi</p>
-                      <motion.a 
-                        href="mailto:sammohammed2003@gmail.com" 
-                        className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
-                        whileHover={{ x: 5 }}
-                      >
-                        sammohammed2003@gmail.com
-                        <ArrowRight className="h-4 w-4" />
-                      </motion.a>
-                    </div>
-                  </motion.div>
-                </div>
+                <motion.a
+                  href="https://github.com/2003Mohammed"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg border border-white/30 text-white transition-all"
+                >
+                  <Github className="h-5 w-5" />
+                  GitHub Profile
+                </motion.a>
               </div>
             </motion.div>
           </div>
-        </section>
+        </motion.section>
+
+        {/* Bottom Navigation */}
+        <motion.section 
+          className="py-12 bg-card border-t border-border"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button asChild variant="outline" size="lg">
+                <Link to="/">
+                  <ArrowLeft className="mr-2 h-5 w-5" />
+                  Back to Home
+                </Link>
+              </Button>
+              <Button asChild size="lg">
+                <Link to="/data-structures">
+                  <Database className="mr-2 h-5 w-5" />
+                  Start with Data Structures
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/algorithms">
+                  <Zap className="mr-2 h-5 w-5" />
+                  Explore Algorithms
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+        </motion.section>
       </div>
     </Layout>
   );

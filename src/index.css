@@ -4,48 +4,56 @@
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
+    /* Zady-inspired color palette */
+    --background: 220 20% 6%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 220 25% 8%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 25% 8%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --primary: 225 100% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 320 65% 75%;
+    --secondary-foreground: 220 20% 6%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 225 100% 60%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --border: 220 15% 15%;
+    --input: 220 15% 15%;
+    --ring: 225 100% 60%;
     --radius: 0.5rem;
+    
+    /* Zady specific colors */
+    --zady-pink: 320 65% 75%;
+    --zady-blue: 225 100% 60%;
+    --zady-cream: 45 20% 90%;
+    --zady-dark: 220 20% 6%;
+    --zady-accent: 45 90% 70%;
   }
 
   .light {
-    --background: 0 0% 97%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 45 20% 95%;
+    --foreground: 220 20% 6%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 258 89% 42%;
+    --popover-foreground: 220 20% 6%;
+    --primary: 225 100% 50%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
+    --secondary: 320 50% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 45 15% 85%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 45 90% 70%;
+    --accent-foreground: 220 20% 6%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 258 89% 42%;
+    --border: 45 15% 85%;
+    --input: 45 15% 85%;
+    --ring: 225 100% 50%;
   }
 
   * {
@@ -55,6 +63,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
   }
 }
 
@@ -173,4 +182,45 @@
 
 .animate-gradient-shift {
   animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes float-shapes {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes zady-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px hsl(var(--zady-pink) / 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px hsl(var(--zady-blue) / 0.5);
+  }
+}
+
+.animate-float-shapes {
+  animation: float-shapes 6s ease-in-out infinite;
+}
+
+.animate-zady-glow {
+  animation: zady-glow 3s ease-in-out infinite;
+}
+
+.zady-gradient {
+  background: linear-gradient(135deg, hsl(var(--zady-pink)), hsl(var(--zady-blue)), hsl(var(--zady-accent)));
+  background-size: 300% 300%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.zady-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.zady-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }

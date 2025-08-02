@@ -1,10 +1,10 @@
-
 import React from 'react';
-import { Layout } from '../components/Layout';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Database, Zap, Brain, Play, Eye, MousePointer, Sparkles } from 'lucide-react';
+import { Layout } from '../components/Layout';
 import { motion } from 'framer-motion';
+import { Database, Zap, ArrowRight, Play, Target, Eye, Cpu, Code2, BookOpen } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 
 const Index = () => {
   const containerVariants = {
@@ -12,302 +12,281 @@ const Index = () => {
     visible: {
       opacity: 1,
       transition: {
+        delayChildren: 0.3,
         staggerChildren: 0.2
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
-      opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
+      opacity: 1
     }
   };
 
   const features = [
     {
-      icon: Database,
-      title: "Visual Data Structures",
-      description: "Interactive arrays, trees, graphs, stacks and queues with real-time manipulation"
+      icon: <Eye className="h-8 w-8" />,
+      title: "Interactive DSA Visualizations",
+      description: "Watch data structures and algorithms come to life with real-time animations"
     },
     {
-      icon: Zap,
-      title: "Interactive Algorithms",
-      description: "Step-by-step sorting and searching algorithms with color-coded visualization"
+      icon: <Play className="h-8 w-8" />,
+      title: "Real-time Animations", 
+      description: "Step-by-step visual execution with pause, play, and rewind controls"
     },
     {
-      icon: Brain,
-      title: "Real-time Animations",
-      description: "Watch BFS, DFS, and Dijkstra's algorithm solve problems in real-time"
+      icon: <Target className="h-8 w-8" />,
+      title: "Step-by-step Algorithm Tracing",
+      description: "Follow every operation with detailed explanations and visual feedback"
     },
     {
-      icon: Sparkles,
-      title: "Educational Narration",
-      description: "Follow along with detailed explanations and complexity analysis"
+      icon: <Cpu className="h-8 w-8" />,
+      title: "Dark/Light UI Mode",
+      description: "Beautiful themes that adapt to your preference for comfortable learning"
+    },
+    {
+      icon: <Code2 className="h-8 w-8" />,
+      title: "User-friendly Examples",
+      description: "Learn complex concepts through intuitive, relatable examples"
+    },
+    {
+      icon: <BookOpen className="h-8 w-8" />,
+      title: "Educational Content",
+      description: "Comprehensive guides and explanations for every concept"
     }
   ];
 
-  const demos = [
+  const demoHighlights = [
     {
       title: "Array Sorting",
-      description: "Visualize bubble, merge, and quick sort algorithms",
-      gradient: "from-blue-500/20 to-purple-500/20"
+      description: "Visualize bubble sort, quick sort, and merge sort with color-coded comparisons",
+      gradient: "from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))]"
     },
     {
-      title: "Tree Traversal",
-      description: "Explore binary trees with interactive node operations",
-      gradient: "from-green-500/20 to-teal-500/20"
+      title: "Tree Traversal", 
+      description: "Watch DFS and BFS algorithms navigate through binary trees step-by-step",
+      gradient: "from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
     },
     {
       title: "Graph Pathfinding",
-      description: "Watch Dijkstra find the shortest path dynamically",
-      gradient: "from-orange-500/20 to-red-500/20"
+      description: "See algorithms find paths with animated node exploration",
+      gradient: "from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))]"
     }
   ];
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 cyber-grid opacity-20"></div>
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%', '0% 0%']
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        
-        <div className="container relative z-10">
-          <motion.div 
-            className="text-center max-w-6xl mx-auto"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {/* Main Headlines */}
-            <motion.div variants={itemVariants} className="mb-8">
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_auto]">
-                  AlgoViz
-                </span>
-                <span className="block text-3xl md:text-4xl mt-4 text-muted-foreground font-medium">
-                  Visualize. Learn. Master DSA.
-                </span>
-              </h1>
-            </motion.div>
+      <div className="relative overflow-hidden">
+        {/* Floating Animated Shapes */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 w-16 h-16 bg-gradient-to-r from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))] rounded-full opacity-20 animate-float-shapes"></div>
+          <div className="absolute top-40 right-20 w-12 h-12 bg-gradient-to-r from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))] rounded-lg opacity-30 animate-float-shapes" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-40 left-20 w-20 h-20 bg-gradient-to-r from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))] rounded-full opacity-15 animate-float-shapes" style={{ animationDelay: '4s' }}></div>
+        </div>
 
-            {/* Subtitle */}
-            <motion.p
-              variants={itemVariants}
-              className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
-            >
-              Interactive animations of data structures & algorithms made for humans
-            </motion.p>
-
-            {/* CTA Button */}
+        {/* Hero Section */}
+        <motion.section 
+          className="relative py-20 md:py-32"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <div className="container mx-auto text-center">
             <motion.div
               variants={itemVariants}
-              className="mb-20"
+              className="space-y-8"
             >
-              <Link to="/data-structures">
-                <motion.div
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="inline-block"
+              <div className="space-y-4">
+                <motion.h1 
+                  className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-[hsl(var(--zady-pink))] via-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))] bg-clip-text text-transparent leading-tight"
+                  variants={itemVariants}
                 >
-                  <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-12 py-6 text-xl font-semibold rounded-2xl shadow-2xl hover:shadow-primary/25 transition-all duration-300 group">
-                    <Play className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-                    Get Started
-                    <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </motion.div>
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="w-6 h-10 border-2 border-primary rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse"></div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
-        
-        <div className="container relative z-10">
-          <motion.div 
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Everything You Need to Master DSA
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Interactive visualizations designed to make complex concepts simple and engaging
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="cyber-card group cursor-pointer"
-              >
-                <motion.div 
-                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
-                  whileHover={{ rotate: 5 }}
+                  Welcome to AlgoViz
+                </motion.h1>
+                <motion.p 
+                  className="text-xl md:text-2xl text-muted-foreground font-medium"
+                  variants={itemVariants}
                 >
-                  <feature.icon className="h-8 w-8 text-primary" />
-                </motion.div>
-                <h3 className="text-xl font-semibold mb-4 text-center">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground text-center leading-relaxed">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Live Demo Highlights */}
-      <section className="py-32 relative">
-        <div className="container">
-          <motion.div 
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              See Algorithms in Action
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Experience the beauty of algorithms through interactive visual demonstrations
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {demos.map((demo, index) => (
-              <motion.div
-                key={demo.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${demo.gradient} border border-border/40 p-8 backdrop-blur-xl group cursor-pointer`}
-              >
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-semibold mb-4">{demo.title}</h3>
-                  <p className="text-muted-foreground mb-6">{demo.description}</p>
-                  
-                  {/* Mock visualization preview */}
-                  <div className="h-20 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg flex items-center justify-center border border-primary/20">
-                    <div className="flex space-x-2">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className="w-4 h-8 bg-gradient-to-t from-primary to-accent rounded"
-                          animate={{ 
-                            height: [32, 16, 24, 40, 28][i],
-                            opacity: [0.5, 1, 0.7, 0.9, 0.6]
-                          }}
-                          transition={{ 
-                            duration: 2, 
-                            repeat: Infinity, 
-                            delay: i * 0.2,
-                            repeatType: "reverse"
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  animate={{
-                    background: [
-                      'linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.1) 50%, transparent 100%)',
-                      'linear-gradient(90deg, transparent 100%, rgba(59,130,246,0.1) 150%, transparent 200%)'
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-32 relative">
-        <div className="container text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Start Learning?
-            </h2>
-            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Join thousands of students mastering data structures and algorithms through visualization
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link to="/data-structures">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl shadow-xl">
-                    <Database className="mr-2 h-5 w-5" />
-                    Explore Data Structures
-                  </Button>
-                </motion.div>
-              </Link>
+                  Visualize. Learn. Master.
+                </motion.p>
+              </div>
               
-              <Link to="/algorithms">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-primary/30 hover:bg-primary/10">
-                    <Zap className="mr-2 h-5 w-5" />
-                    View Algorithms
+              <motion.p 
+                className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+                variants={itemVariants}
+              >
+                Experience the beauty of algorithms and data structures through interactive visualizations. 
+                Watch code come to life with step-by-step animations that make complex concepts crystal clear.
+              </motion.p>
+
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              >
+                <Button asChild size="lg" className="animate-zady-glow">
+                  <Link to="/guide">
+                    <Play className="mr-2 h-5 w-5" />
+                    Start Learning
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/data-structures">
+                    <Database className="mr-2 h-5 w-5" />
+                    Explore Structures
+                  </Link>
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Features Section */}
+        <motion.section 
+          className="py-20 bg-gradient-to-b from-transparent to-muted/30"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div className="text-center mb-16" variants={itemVariants}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Why Choose AlgoViz?
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Learning algorithms doesn't have to be boring. Our platform makes complex concepts 
+                accessible through beautiful, interactive visualizations.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.05 }}
+                  className="zady-card p-6"
+                >
+                  <div className="text-[hsl(var(--zady-blue))] mb-4">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Live Demo Highlights */}
+        <motion.section 
+          className="py-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto">
+            <motion.div className="text-center mb-16" variants={itemVariants}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                See It In Action
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Get a taste of what makes our visualizations special
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {demoHighlights.map((demo, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative group"
+                >
+                  <Card className="zady-card overflow-hidden">
+                    <div className={`h-32 bg-gradient-to-r ${demo.gradient} relative`}>
+                      <div className="absolute inset-0 bg-black/20"></div>
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <div className="flex space-x-1">
+                          {[...Array(8)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="h-8 bg-white/30 rounded"
+                              style={{ 
+                                width: `${Math.random() * 40 + 20}px`,
+                              }}
+                              animate={{
+                                height: [32, Math.random() * 40 + 20, 32]
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                delay: i * 0.2
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{demo.title}</CardTitle>
+                      <CardDescription>{demo.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        {/* CTA Section */}
+        <motion.section 
+          className="py-20 bg-gradient-to-r from-[hsl(var(--zady-pink))] via-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto text-center">
+            <motion.div variants={itemVariants} className="space-y-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
+                Ready to Master Algorithms?
+              </h2>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto">
+                Join thousands of developers who've transformed their understanding of computer science fundamentals
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button asChild size="lg" variant="secondary">
+                    <Link to="/data-structures">
+                      <Database className="mr-2 h-5 w-5" />
+                      Explore Data Structures
+                    </Link>
                   </Button>
                 </motion.div>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button asChild size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
+                    <Link to="/algorithms">
+                      <Zap className="mr-2 h-5 w-5" />
+                      View Algorithms
+                    </Link>
+                  </Button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
+      </div>
     </Layout>
   );
 };
