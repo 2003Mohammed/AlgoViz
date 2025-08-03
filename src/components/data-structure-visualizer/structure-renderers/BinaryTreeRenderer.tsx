@@ -6,6 +6,7 @@ interface TreeNode {
   value: any;
   left: number | null;
   right: number | null;
+  status?: 'default' | 'current' | 'visited' | 'completed' | 'root' | 'final';
 }
 
 interface BinaryTreeStructure {
@@ -15,10 +16,29 @@ interface BinaryTreeStructure {
 
 interface BinaryTreeRendererProps {
   tree: BinaryTreeStructure;
+  animationStep?: any;
+  currentStep?: number;
 }
 
-export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) => {
+export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree, animationStep, currentStep }) => {
   const { nodes, root } = tree;
+
+  const getNodeColor = (node: TreeNode, nodeIndex: number) => {
+    const status = animationStep?.nodes?.[nodeIndex]?.status || node.status || 'default';
+    switch (status) {
+      case 'current': return 'fill-yellow-500 stroke-yellow-600';
+      case 'visited': return 'fill-orange-500 stroke-orange-600';
+      case 'completed': return 'fill-green-500 stroke-green-600';
+      case 'root': return 'fill-purple-500 stroke-purple-600';
+      case 'final': return 'fill-blue-500 stroke-blue-600';
+      default: return 'fill-primary stroke-primary-foreground';
+    }
+  };
+
+  const getTextColor = (node: TreeNode, nodeIndex: number) => {
+    const status = animationStep?.nodes?.[nodeIndex]?.status || node.status || 'default';
+    return status === 'default' ? 'fill-primary-foreground' : 'fill-white';
+  };
 
   if (nodes.length === 0 || root === null) {
     return (
@@ -69,7 +89,7 @@ export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) 
           cx={x}
           cy={y}
           r={nodeSize / 2}
-          className="fill-primary stroke-primary-foreground stroke-2"
+          className={`${getNodeColor(node, nodeIndex)} stroke-2`}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.3, delay: level * 0.1 }}
@@ -80,7 +100,7 @@ export const BinaryTreeRenderer: React.FC<BinaryTreeRendererProps> = ({ tree }) 
           x={x}
           y={y + 5}
           textAnchor="middle"
-          className="fill-primary-foreground text-sm font-bold"
+          className={`${getTextColor(node, nodeIndex)} text-sm font-bold`}
         >
           {node.value}
         </text>
