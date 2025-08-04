@@ -1,259 +1,254 @@
-// Enhanced graph generation utilities with realistic examples
+import { GraphData, GraphNode, GraphEdge } from '../types/visualizer';
 
-export interface GraphNode {
-  id: string;
-  x: number;
-  y: number;
-  label?: string;
-  status?: 'default' | 'visited' | 'processing' | 'path' | 'found' | 'current';
-}
-
-export interface GraphEdge {
-  source: string;
-  target: string;
-  weight?: number;
-  status?: 'default' | 'visited' | 'path' | 'highlighted';
-}
-
-export interface GraphData {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-  type: 'social' | 'transport' | 'network' | 'dependency';
-}
-
-// Social network examples
-const socialNetworkExamples = [
-  {
-    nodes: [
-      { id: 'Alice', x: 150, y: 100, label: 'Alice' },
-      { id: 'Bob', x: 300, y: 50, label: 'Bob' },
-      { id: 'Charlie', x: 350, y: 150, label: 'Charlie' },
-      { id: 'Diana', x: 250, y: 200, label: 'Diana' },
-      { id: 'Eve', x: 100, y: 200, label: 'Eve' },
-      { id: 'Frank', x: 200, y: 120, label: 'Frank' }
-    ],
-    edges: [
-      { source: 'Alice', target: 'Bob', weight: 1 },
-      { source: 'Alice', target: 'Frank', weight: 1 },
-      { source: 'Bob', target: 'Charlie', weight: 1 },
-      { source: 'Charlie', target: 'Diana', weight: 1 },
-      { source: 'Diana', target: 'Eve', weight: 1 },
-      { source: 'Eve', target: 'Alice', weight: 1 },
-      { source: 'Frank', target: 'Diana', weight: 1 }
-    ],
-    type: 'social' as const
-  },
-  {
-    nodes: [
-      { id: 'John', x: 120, y: 80, label: 'John' },
-      { id: 'Sarah', x: 280, y: 60, label: 'Sarah' },
-      { id: 'Mike', x: 350, y: 140, label: 'Mike' },
-      { id: 'Lisa', x: 220, y: 180, label: 'Lisa' },
-      { id: 'Tom', x: 80, y: 180, label: 'Tom' },
-      { id: 'Anna', x: 180, y: 120, label: 'Anna' }
-    ],
-    edges: [
-      { source: 'John', target: 'Sarah', weight: 1 },
-      { source: 'John', target: 'Anna', weight: 1 },
-      { source: 'Sarah', target: 'Mike', weight: 1 },
-      { source: 'Mike', target: 'Lisa', weight: 1 },
-      { source: 'Lisa', target: 'Tom', weight: 1 },
-      { source: 'Tom', target: 'John', weight: 1 },
-      { source: 'Anna', target: 'Lisa', weight: 1 },
-      { source: 'Sarah', target: 'Anna', weight: 1 }
-    ],
-    type: 'social' as const
-  }
-];
-
-// Transport/Route map examples
-const transportExamples = [
-  {
-    nodes: [
-      { id: 'A', x: 100, y: 100, label: 'City A' },
-      { id: 'B', x: 250, y: 80, label: 'City B' },
-      { id: 'C', x: 350, y: 120, label: 'City C' },
-      { id: 'D', x: 300, y: 200, label: 'City D' },
-      { id: 'E', x: 150, y: 180, label: 'City E' },
-    ],
-    edges: [
-      { source: 'A', target: 'B', weight: 5 },
-      { source: 'A', target: 'E', weight: 3 },
-      { source: 'B', target: 'C', weight: 4 },
-      { source: 'B', target: 'D', weight: 6 },
-      { source: 'C', target: 'D', weight: 2 },
-      { source: 'E', target: 'D', weight: 4 }
-    ],
-    type: 'transport' as const
-  },
-  {
-    nodes: [
-      { id: 'Home', x: 80, y: 120, label: 'Home' },
-      { id: 'Mall', x: 200, y: 60, label: 'Mall' },
-      { id: 'Office', x: 320, y: 100, label: 'Office' },
-      { id: 'Gym', x: 280, y: 180, label: 'Gym' },
-      { id: 'Park', x: 140, y: 200, label: 'Park' },
-      { id: 'School', x: 360, y: 160, label: 'School' }
-    ],
-    edges: [
-      { source: 'Home', target: 'Mall', weight: 7 },
-      { source: 'Home', target: 'Park', weight: 3 },
-      { source: 'Mall', target: 'Office', weight: 5 },
-      { source: 'Office', target: 'School', weight: 2 },
-      { source: 'Office', target: 'Gym', weight: 4 },
-      { source: 'Gym', target: 'Park', weight: 6 },
-      { source: 'Park', target: 'Home', weight: 3 }
-    ],
-    type: 'transport' as const
-  }
-];
-
-// Network topology examples
-const networkExamples = [
-  {
-    nodes: [
-      { id: 'Router', x: 200, y: 100, label: 'Router' },
-      { id: 'Server1', x: 100, y: 50, label: 'Server 1' },
-      { id: 'Server2', x: 300, y: 50, label: 'Server 2' },
-      { id: 'PC1', x: 80, y: 180, label: 'PC 1' },
-      { id: 'PC2', x: 200, y: 200, label: 'PC 2' },
-      { id: 'PC3', x: 320, y: 180, label: 'PC 3' }
-    ],
-    edges: [
-      { source: 'Router', target: 'Server1', weight: 10 },
-      { source: 'Router', target: 'Server2', weight: 10 },
-      { source: 'Router', target: 'PC1', weight: 1 },
-      { source: 'Router', target: 'PC2', weight: 1 },
-      { source: 'Router', target: 'PC3', weight: 1 },
-      { source: 'Server1', target: 'Server2', weight: 8 }
-    ],
-    type: 'network' as const
-  }
-];
-
-// Dependency graph examples
-const dependencyExamples = [
-  {
-    nodes: [
-      { id: 'App', x: 200, y: 50, label: 'App' },
-      { id: 'UI', x: 120, y: 120, label: 'UI' },
-      { id: 'API', x: 280, y: 120, label: 'API' },
-      { id: 'DB', x: 280, y: 200, label: 'Database' },
-      { id: 'Auth', x: 120, y: 200, label: 'Auth' },
-      { id: 'Utils', x: 200, y: 170, label: 'Utils' }
-    ],
-    edges: [
-      { source: 'App', target: 'UI', weight: 1 },
-      { source: 'App', target: 'API', weight: 1 },
-      { source: 'UI', target: 'Auth', weight: 1 },
-      { source: 'UI', target: 'Utils', weight: 1 },
-      { source: 'API', target: 'DB', weight: 1 },
-      { source: 'API', target: 'Utils', weight: 1 },
-      { source: 'Auth', target: 'Utils', weight: 1 }
-    ],
-    type: 'dependency' as const
-  }
-];
-
-// Generate a random graph example
-export function generateRandomGraph(): GraphData {
-  const allExamples = [
-    ...socialNetworkExamples,
-    ...transportExamples,
-    ...networkExamples,
-    ...dependencyExamples
-  ];
+export const generateRandomGraph = (): GraphData => {
+  const graphTypes = ['social', 'transport', 'network'];
+  const graphType = graphTypes[Math.floor(Math.random() * graphTypes.length)];
   
-  const randomExample = allExamples[Math.floor(Math.random() * allExamples.length)];
-  
-  // Deep clone and add default status
-  return {
-    nodes: randomExample.nodes.map(node => ({ ...node, status: 'default' })),
-    edges: randomExample.edges.map(edge => ({ ...edge, status: 'default' })),
-    type: randomExample.type
-  };
-}
+  switch (graphType) {
+    case 'social':
+      return generateSocialNetworkGraph();
+    case 'transport':
+      return generateTransportGraph();
+    case 'network':
+      return generateDeviceNetworkGraph();
+    default:
+      return generateSocialNetworkGraph();
+  }
+};
 
-// Generate traversal steps for BFS/DFS
-export function getGraphTraversalSteps(graph: GraphData, startNodeId: string, traversalType: 'bfs' | 'dfs') {
-  const steps: Array<{ nodes: GraphNode[], edges: GraphEdge[], description: string }> = [];
-  const { nodes, edges } = graph;
+const generateSocialNetworkGraph = (): GraphData => {
+  const people = ['Alice', 'Bob', 'Carol', 'David', 'Eve', 'Frank'];
+  const shuffled = [...people].sort(() => Math.random() - 0.5);
+  const selectedPeople = shuffled.slice(0, 4 + Math.floor(Math.random() * 3));
   
-  // Create adjacency list
-  const adjacencyList: { [key: string]: string[] } = {};
-  nodes.forEach(node => {
-    adjacencyList[node.id] = [];
-  });
-  edges.forEach(edge => {
-    adjacencyList[edge.source].push(edge.target);
-    adjacencyList[edge.target].push(edge.source); // Undirected graph
-  });
+  const nodes: GraphNode[] = selectedPeople.map((person, index) => ({
+    id: person,
+    x: 100 + (index % 3) * 150,
+    y: 80 + Math.floor(index / 3) * 120,
+    status: 'default'
+  }));
   
-  // Initial state
-  const workingNodes = nodes.map(n => ({ ...n, status: 'default' as GraphNode['status'] }));
-  const workingEdges = edges.map(e => ({ ...e, status: 'default' as GraphEdge['status'] }));
+  const edges: GraphEdge[] = [];
+  const numEdges = Math.max(selectedPeople.length - 1, Math.floor(selectedPeople.length * 1.5));
+  
+  // Ensure connected graph
+  for (let i = 0; i < selectedPeople.length - 1; i++) {
+    edges.push({
+      source: selectedPeople[i],
+      target: selectedPeople[i + 1],
+      weight: Math.floor(Math.random() * 5) + 1,
+      status: 'default'
+    });
+  }
+  
+  // Add random additional connections
+  while (edges.length < numEdges) {
+    const source = selectedPeople[Math.floor(Math.random() * selectedPeople.length)];
+    const target = selectedPeople[Math.floor(Math.random() * selectedPeople.length)];
+    
+    if (source !== target && !edges.some(e => 
+      (e.source === source && e.target === target) || 
+      (e.source === target && e.target === source)
+    )) {
+      edges.push({
+        source,
+        target,
+        weight: Math.floor(Math.random() * 5) + 1,
+        status: 'default'
+      });
+    }
+  }
+  
+  return { nodes, edges };
+};
+
+const generateTransportGraph = (): GraphData => {
+  const cities = ['NYC', 'LA', 'Chicago', 'Houston', 'Phoenix', 'Miami'];
+  const shuffled = [...cities].sort(() => Math.random() - 0.5);
+  const selectedCities = shuffled.slice(0, 4 + Math.floor(Math.random() * 3));
+  
+  const nodes: GraphNode[] = selectedCities.map((city, index) => ({
+    id: city,
+    x: 80 + (index % 3) * 160,
+    y: 70 + Math.floor(index / 3) * 130,
+    status: 'default'
+  }));
+  
+  const edges: GraphEdge[] = [];
+  const numEdges = Math.max(selectedCities.length - 1, Math.floor(selectedCities.length * 1.3));
+  
+  // Create connected routes
+  for (let i = 0; i < selectedCities.length - 1; i++) {
+    edges.push({
+      source: selectedCities[i],
+      target: selectedCities[i + 1],
+      weight: Math.floor(Math.random() * 500) + 100, // Distance in miles
+      status: 'default'
+    });
+  }
+  
+  // Add additional routes
+  while (edges.length < numEdges) {
+    const source = selectedCities[Math.floor(Math.random() * selectedCities.length)];
+    const target = selectedCities[Math.floor(Math.random() * selectedCities.length)];
+    
+    if (source !== target && !edges.some(e => 
+      (e.source === source && e.target === target) || 
+      (e.source === target && e.target === source)
+    )) {
+      edges.push({
+        source,
+        target,
+        weight: Math.floor(Math.random() * 500) + 100,
+        status: 'default'
+      });
+    }
+  }
+  
+  return { nodes, edges };
+};
+
+const generateDeviceNetworkGraph = (): GraphData => {
+  const devices = ['Router', 'Server', 'PC1', 'PC2', 'Laptop', 'Printer'];
+  const shuffled = [...devices].sort(() => Math.random() - 0.5);
+  const selectedDevices = shuffled.slice(0, 4 + Math.floor(Math.random() * 3));
+  
+  const nodes: GraphNode[] = selectedDevices.map((device, index) => ({
+    id: device,
+    x: 90 + (index % 3) * 140,
+    y: 75 + Math.floor(index / 3) * 125,
+    status: 'default'
+  }));
+  
+  const edges: GraphEdge[] = [];
+  const numEdges = Math.max(selectedDevices.length - 1, Math.floor(selectedDevices.length * 1.4));
+  
+  // Ensure network connectivity
+  for (let i = 0; i < selectedDevices.length - 1; i++) {
+    edges.push({
+      source: selectedDevices[i],
+      target: selectedDevices[i + 1],
+      weight: Math.floor(Math.random() * 10) + 1, // Latency in ms
+      status: 'default'
+    });
+  }
+  
+  // Add network connections
+  while (edges.length < numEdges) {
+    const source = selectedDevices[Math.floor(Math.random() * selectedDevices.length)];
+    const target = selectedDevices[Math.floor(Math.random() * selectedDevices.length)];
+    
+    if (source !== target && !edges.some(e => 
+      (e.source === source && e.target === target) || 
+      (e.source === target && e.target === source)
+    )) {
+      edges.push({
+        source,
+        target,
+        weight: Math.floor(Math.random() * 10) + 1,
+        status: 'default'
+      });
+    }
+  }
+  
+  return { nodes, edges };
+};
+
+// Graph traversal algorithms
+export const generateBFSSteps = (graph: GraphData, startNodeId: string): any[] => {
+  const steps: any[] = [];
+  const visited = new Set<string>();
+  const queue: string[] = [startNodeId];
   
   steps.push({
-    nodes: workingNodes.map(n => ({ ...n })),
-    edges: workingEdges.map(e => ({ ...e })),
-    description: `Starting ${traversalType.toUpperCase()} from ${startNodeId}`
+    nodes: graph.nodes.map(n => ({ 
+      ...n, 
+      status: n.id === startNodeId ? 'current' : 'default' 
+    })),
+    edges: graph.edges.map(e => ({ ...e, status: 'default' })),
+    description: `Starting BFS from ${startNodeId}`
   });
-  
-  const visited = new Set<string>();
-  const queue = [startNodeId];
   
   while (queue.length > 0) {
-    const currentNodeId = traversalType === 'bfs' ? queue.shift()! : queue.pop()!;
+    const currentId = queue.shift()!;
+    visited.add(currentId);
     
-    if (visited.has(currentNodeId)) continue;
-    
-    // Mark current node as processing
-    const currentNodeIndex = workingNodes.findIndex(n => n.id === currentNodeId);
-    if (currentNodeIndex !== -1) {
-      workingNodes[currentNodeIndex].status = 'processing';
-    }
-    
-    steps.push({
-      nodes: workingNodes.map(n => ({ ...n })),
-      edges: workingEdges.map(e => ({ ...e })),
-      description: `Processing node: ${currentNodeId}`
-    });
-    
-    visited.add(currentNodeId);
-    if (currentNodeIndex !== -1) {
-      workingNodes[currentNodeIndex].status = 'visited';
-    }
+    // Find neighbors
+    const neighbors = graph.edges
+      .filter(e => e.source === currentId || e.target === currentId)
+      .map(e => e.source === currentId ? e.target : e.source)
+      .filter(nodeId => !visited.has(nodeId) && !queue.includes(nodeId));
     
     // Add neighbors to queue
-    const neighbors = adjacencyList[currentNodeId] || [];
-    for (const neighbor of neighbors) {
-      if (!visited.has(neighbor)) {
-        queue.push(neighbor);
-        
-        // Highlight edge
-        const edgeIndex = workingEdges.findIndex(e => 
-          (e.source === currentNodeId && e.target === neighbor) ||
-          (e.source === neighbor && e.target === currentNodeId)
-        );
-        if (edgeIndex !== -1) {
-          workingEdges[edgeIndex].status = 'visited';
-        }
+    neighbors.forEach(neighborId => {
+      if (!queue.includes(neighborId)) {
+        queue.push(neighborId);
       }
-    }
+    });
     
     steps.push({
-      nodes: workingNodes.map(n => ({ ...n })),
-      edges: workingEdges.map(e => ({ ...e })),
-      description: `Added neighbors of ${currentNodeId} to queue`
+      nodes: graph.nodes.map(n => ({ 
+        ...n, 
+        status: n.id === currentId ? 'completed' : 
+                visited.has(n.id) ? 'visited' : 
+                queue.includes(n.id) ? 'processing' : 'default'
+      })),
+      edges: graph.edges.map(e => ({
+        ...e,
+        status: (e.source === currentId || e.target === currentId) && 
+                (visited.has(e.source) || visited.has(e.target)) ? 'visited' : 'default'
+      })),
+      description: `Visited ${currentId}, exploring neighbors: ${neighbors.join(', ')}`
     });
   }
   
-  // Final state
+  return steps;
+};
+
+export const generateDFSSteps = (graph: GraphData, startNodeId: string): any[] => {
+  const steps: any[] = [];
+  const visited = new Set<string>();
+  
+  const dfsHelper = (nodeId: string) => {
+    visited.add(nodeId);
+    
+    steps.push({
+      nodes: graph.nodes.map(n => ({ 
+        ...n, 
+        status: n.id === nodeId ? 'completed' : 
+                visited.has(n.id) ? 'visited' : 'default'
+      })),
+      edges: graph.edges.map(e => ({
+        ...e,
+        status: (visited.has(e.source) && visited.has(e.target)) ? 'visited' : 'default'
+      })),
+      description: `Visited ${nodeId} using DFS`
+    });
+    
+    // Find unvisited neighbors
+    const neighbors = graph.edges
+      .filter(e => (e.source === nodeId || e.target === nodeId))
+      .map(e => e.source === nodeId ? e.target : e.source)
+      .filter(neighborId => !visited.has(neighborId));
+    
+    // Recursively visit neighbors
+    neighbors.forEach(neighborId => {
+      if (!visited.has(neighborId)) {
+        dfsHelper(neighborId);
+      }
+    });
+  };
+  
   steps.push({
-    nodes: workingNodes.map(n => ({ ...n })),
-    edges: workingEdges.map(e => ({ ...e })),
-    description: `${traversalType.toUpperCase()} traversal completed!`
+    nodes: graph.nodes.map(n => ({ 
+      ...n, 
+      status: n.id === startNodeId ? 'current' : 'default' 
+    })),
+    edges: graph.edges.map(e => ({ ...e, status: 'default' })),
+    description: `Starting DFS from ${startNodeId}`
   });
   
+  dfsHelper(startNodeId);
+  
   return steps;
-}
+};

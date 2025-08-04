@@ -1,5 +1,3 @@
-// Enhanced tree generation utilities with realistic examples
-
 export interface TreeNode {
   value: any;
   left: number | null;
@@ -7,333 +5,361 @@ export interface TreeNode {
   status?: 'default' | 'current' | 'visited' | 'completed' | 'root' | 'final';
 }
 
-export interface TreeStructure {
+export interface BinaryTreeStructure {
   nodes: TreeNode[];
   root: number | null;
-  type: 'family' | 'organization' | 'file-system' | 'decision' | 'binary-search';
 }
 
-// Family tree examples
-const familyTreeExamples = [
-  {
-    nodes: [
-      { value: 'Grandpa John', left: 1, right: 2 },
-      { value: 'Dad Mike', left: 3, right: 4 },
-      { value: 'Uncle Tom', left: 5, right: null },
-      { value: 'You', left: null, right: null },
-      { value: 'Sister Amy', left: null, right: null },
-      { value: 'Cousin Sam', left: null, right: null }
-    ],
-    root: 0,
-    type: 'family' as const
-  },
-  {
-    nodes: [
-      { value: 'Great-Grandma', left: 1, right: 2 },
-      { value: 'Grandma Alice', left: 3, right: 4 },
-      { value: 'Grandpa Bob', left: 5, right: null },
-      { value: 'Mom Sarah', left: 6, right: 7 },
-      { value: 'Aunt Lisa', left: null, right: null },
-      { value: 'Uncle Mark', left: null, right: null },
-      { value: 'Brother Jake', left: null, right: null },
-      { value: 'You', left: null, right: null }
-    ],
-    root: 0,
-    type: 'family' as const
+export const generateRandomTree = (): BinaryTreeStructure => {
+  const treeTypes = ['family', 'organization', 'filesystem'];
+  const treeType = treeTypes[Math.floor(Math.random() * treeTypes.length)];
+  
+  switch (treeType) {
+    case 'family':
+      return generateFamilyTree();
+    case 'organization':
+      return generateOrgTree();
+    case 'filesystem':
+      return generateFileSystemTree();
+    default:
+      return generateFamilyTree();
   }
-];
+};
 
-// Organization structure examples
-const organizationExamples = [
-  {
-    nodes: [
-      { value: 'CEO', left: 1, right: 2 },
-      { value: 'CTO', left: 3, right: 4 },
-      { value: 'CFO', left: 5, right: null },
-      { value: 'Dev Lead', left: null, right: null },
-      { value: 'QA Lead', left: null, right: null },
-      { value: 'Accountant', left: null, right: null }
-    ],
-    root: 0,
-    type: 'organization' as const
-  },
-  {
-    nodes: [
-      { value: 'Director', left: 1, right: 2 },
-      { value: 'Engineering', left: 3, right: 4 },
-      { value: 'Marketing', left: 5, right: 6 },
-      { value: 'Frontend', left: null, right: null },
-      { value: 'Backend', left: null, right: null },
-      { value: 'Social Media', left: null, right: null },
-      { value: 'Content', left: null, right: null }
-    ],
-    root: 0,
-    type: 'organization' as const
-  }
-];
-
-// File system examples
-const fileSystemExamples = [
-  {
-    nodes: [
-      { value: 'Documents/', left: 1, right: 2 },
-      { value: 'Projects/', left: 3, right: 4 },
-      { value: 'Photos/', left: 5, right: null },
-      { value: 'AlgoViz/', left: null, right: null },
-      { value: 'Website/', left: null, right: null },
-      { value: 'Vacation/', left: null, right: null }
-    ],
-    root: 0,
-    type: 'file-system' as const
-  },
-  {
-    nodes: [
-      { value: 'Home/', left: 1, right: 2 },
-      { value: 'Desktop/', left: 3, right: null },
-      { value: 'Downloads/', left: 4, right: 5 },
-      { value: 'Apps/', left: null, right: null },
-      { value: 'Music/', left: null, right: null },
-      { value: 'Videos/', left: null, right: null }
-    ],
-    root: 0,
-    type: 'file-system' as const
-  }
-];
-
-// Decision tree examples
-const decisionTreeExamples = [
-  {
-    nodes: [
-      { value: 'Hungry?', left: 1, right: 2 },
-      { value: 'Cook?', left: 3, right: 4 },
-      { value: 'Study', left: null, right: null },
-      { value: 'Make Food', left: null, right: null },
-      { value: 'Order Food', left: null, right: null }
-    ],
-    root: 0,
-    type: 'decision' as const
-  },
-  {
-    nodes: [
-      { value: 'Weekend?', left: 1, right: 2 },
-      { value: 'Sunny?', left: 3, right: 4 },
-      { value: 'Work', left: null, right: null },
-      { value: 'Go Outside', left: null, right: null },
-      { value: 'Stay Home', left: null, right: null }
-    ],
-    root: 0,
-    type: 'decision' as const
-  }
-];
-
-// Binary search tree examples with numbers
-const binarySearchExamples = [
-  {
-    nodes: [
-      { value: 50, left: 1, right: 2 },
-      { value: 30, left: 3, right: 4 },
-      { value: 70, left: 5, right: 6 },
-      { value: 20, left: null, right: null },
-      { value: 40, left: null, right: null },
-      { value: 60, left: null, right: null },
-      { value: 80, left: null, right: null }
-    ],
-    root: 0,
-    type: 'binary-search' as const
-  },
-  {
-    nodes: [
-      { value: 25, left: 1, right: 2 },
-      { value: 15, left: 3, right: 4 },
-      { value: 35, left: 5, right: 6 },
-      { value: 10, left: null, right: null },
-      { value: 22, left: null, right: null },
-      { value: 28, left: null, right: null },
-      { value: 45, left: null, right: null }
-    ],
-    root: 0,
-    type: 'binary-search' as const
-  }
-];
-
-// Generate a random tree example
-export function generateRandomTree(): TreeStructure {
-  const allExamples = [
-    ...familyTreeExamples,
-    ...organizationExamples,
-    ...fileSystemExamples,
-    ...decisionTreeExamples,
-    ...binarySearchExamples
+const generateFamilyTree = (): BinaryTreeStructure => {
+  const families = [
+    {
+      root: 'Grandpa John',
+      children: [
+        { name: 'Father Mike', children: [{ name: 'Son Alex' }, { name: 'Daughter Emma' }] },
+        { name: 'Uncle Tom', children: [{ name: 'Cousin Jake' }] }
+      ]
+    },
+    {
+      root: 'Grandma Mary',
+      children: [
+        { name: 'Mother Lisa', children: [{ name: 'Son David' }, { name: 'Daughter Sarah' }] },
+        { name: 'Aunt Kate', children: [{ name: 'Cousin Lily' }, { name: 'Cousin Max' }] }
+      ]
+    }
   ];
   
-  const randomExample = allExamples[Math.floor(Math.random() * allExamples.length)];
+  const family = families[Math.floor(Math.random() * families.length)];
+  const nodes: TreeNode[] = [];
   
-  // Deep clone to avoid mutations
-  return {
-    nodes: randomExample.nodes.map(node => ({ ...node, status: 'default' })),
-    root: randomExample.root,
-    type: randomExample.type
-  };
-}
+  // Add root
+  nodes.push({ value: family.root, left: null, right: null });
+  
+  // Add children recursively
+  let nodeIndex = 0;
+  family.children.forEach((child, index) => {
+    const childIndex = nodes.length;
+    nodes.push({ value: child.name, left: null, right: null });
+    
+    if (index === 0) {
+      nodes[nodeIndex].left = childIndex;
+    } else {
+      nodes[nodeIndex].right = childIndex;
+    }
+    
+    // Add grandchildren
+    child.children?.forEach((grandchild, gIndex) => {
+      const grandchildIndex = nodes.length;
+      nodes.push({ value: grandchild.name, left: null, right: null });
+      
+      if (gIndex === 0) {
+        nodes[childIndex].left = grandchildIndex;
+      } else {
+        nodes[childIndex].right = grandchildIndex;
+      }
+    });
+  });
+  
+  return { nodes, root: 0 };
+};
 
-// Generate a balanced BST with random values
-export function generateRandomBST(size: number = 7): TreeStructure {
-  const values = Array.from({ length: size }, () => Math.floor(Math.random() * 90) + 10);
-  values.sort((a, b) => a - b);
+const generateOrgTree = (): BinaryTreeStructure => {
+  const orgs = [
+    {
+      root: 'CEO Sarah',
+      children: [
+        { name: 'CTO John', children: [{ name: 'Dev Lead Alice' }, { name: 'QA Lead Bob' }] },
+        { name: 'CFO Maria', children: [{ name: 'Accountant Tom' }] }
+      ]
+    },
+    {
+      root: 'Director Alex',
+      children: [
+        { name: 'Manager Kate', children: [{ name: 'Team Lead Mike' }, { name: 'Sr Dev Lisa' }] },
+        { name: 'Manager Jim', children: [{ name: 'Analyst Amy' }, { name: 'Designer Sam' }] }
+      ]
+    }
+  ];
   
-  function buildBalancedBST(sortedValues: number[]): { nodes: TreeNode[], root: number | null } {
-    if (sortedValues.length === 0) return { nodes: [], root: null };
+  const org = orgs[Math.floor(Math.random() * orgs.length)];
+  const nodes: TreeNode[] = [];
+  
+  // Add root
+  nodes.push({ value: org.root, left: null, right: null });
+  
+  // Add children recursively
+  let nodeIndex = 0;
+  org.children.forEach((child, index) => {
+    const childIndex = nodes.length;
+    nodes.push({ value: child.name, left: null, right: null });
     
-    const nodes: TreeNode[] = [];
-    
-    function build(start: number, end: number): number | null {
-      if (start > end) return null;
-      
-      const mid = Math.floor((start + end) / 2);
-      const nodeIndex = nodes.length;
-      
-      nodes.push({
-        value: sortedValues[mid],
-        left: null,
-        right: null,
-        status: 'default'
-      });
-      
-      nodes[nodeIndex].left = build(start, mid - 1);
-      nodes[nodeIndex].right = build(mid + 1, end);
-      
-      return nodeIndex;
+    if (index === 0) {
+      nodes[nodeIndex].left = childIndex;
+    } else {
+      nodes[nodeIndex].right = childIndex;
     }
     
-    const rootIndex = build(0, sortedValues.length - 1);
-    return { nodes, root: rootIndex };
-  }
+    // Add team members
+    child.children?.forEach((member, mIndex) => {
+      const memberIndex = nodes.length;
+      nodes.push({ value: member.name, left: null, right: null });
+      
+      if (mIndex === 0) {
+        nodes[childIndex].left = memberIndex;
+      } else {
+        nodes[childIndex].right = memberIndex;
+      }
+    });
+  });
   
-  const result = buildBalancedBST(values);
-  return {
-    nodes: result.nodes,
-    root: result.root,
-    type: 'binary-search'
-  };
-}
+  return { nodes, root: 0 };
+};
 
-// Get tree traversal steps
-export function getTraversalSteps(tree: TreeStructure, traversalType: 'inorder' | 'preorder' | 'postorder' | 'bfs') {
-  const steps: Array<{ nodes: TreeNode[], description: string, currentNode?: number }> = [];
-  const { nodes, root } = tree;
+const generateFileSystemTree = (): BinaryTreeStructure => {
+  const filesystems = [
+    {
+      root: 'Documents',
+      children: [
+        { name: 'Work', children: [{ name: 'Reports.docx' }, { name: 'Budget.xlsx' }] },
+        { name: 'Personal', children: [{ name: 'Photos' }, { name: 'Music' }] }
+      ]
+    },
+    {
+      root: 'Projects',
+      children: [
+        { name: 'WebApp', children: [{ name: 'src' }, { name: 'dist' }] },
+        { name: 'MobileApp', children: [{ name: 'android' }, { name: 'ios' }] }
+      ]
+    }
+  ];
   
-  if (root === null) return steps;
+  const fs = filesystems[Math.floor(Math.random() * filesystems.length)];
+  const nodes: TreeNode[] = [];
   
-  // Initial state
-  steps.push({
-    nodes: nodes.map(n => ({ ...n, status: 'default' })),
-    description: `Starting ${traversalType} traversal`,
+  // Add root
+  nodes.push({ value: fs.root, left: null, right: null });
+  
+  // Add children recursively
+  let nodeIndex = 0;
+  fs.children.forEach((child, index) => {
+    const childIndex = nodes.length;
+    nodes.push({ value: child.name, left: null, right: null });
+    
+    if (index === 0) {
+      nodes[nodeIndex].left = childIndex;
+    } else {
+      nodes[nodeIndex].right = childIndex;
+    }
+    
+    // Add sub-files/folders
+    child.children?.forEach((subItem, sIndex) => {
+      const subIndex = nodes.length;
+      nodes.push({ value: subItem.name, left: null, right: null });
+      
+      if (sIndex === 0) {
+        nodes[childIndex].left = subIndex;
+      } else {
+        nodes[childIndex].right = subIndex;
+      }
+    });
   });
   
-  const workingNodes = nodes.map(n => ({ ...n }));
+  return { nodes, root: 0 };
+};
+
+// Tree traversal visualization generators
+export const generateInorderTraversal = (tree: BinaryTreeStructure): any[] => {
+  const steps: any[] = [];
   
-  if (traversalType === 'bfs') {
-    const queue = [root];
-    const visited: number[] = [];
+  const inorderHelper = (nodeIndex: number | null) => {
+    if (nodeIndex === null || !tree.nodes[nodeIndex]) return;
     
-    while (queue.length > 0) {
-      const currentIndex = queue.shift()!;
-      const currentNode = workingNodes[currentIndex];
-      
-      // Mark as current
-      workingNodes[currentIndex].status = 'current';
+    const node = tree.nodes[nodeIndex];
+    
+    // Process left subtree
+    if (node.left !== null) {
       steps.push({
-        nodes: workingNodes.map(n => ({ ...n })),
-        description: `Visiting node: ${currentNode.value}`,
-        currentNode: currentIndex
+        nodes: tree.nodes.map((n, i) => ({
+          ...n,
+          status: i === nodeIndex ? 'current' : i === node.left ? 'visited' : 'default'
+        })),
+        description: `Visiting left child of ${node.value}`
       });
-      
-      visited.push(currentIndex);
-      
-      // Mark as visited
-      workingNodes[currentIndex].status = 'visited';
-      
-      // Add children to queue
-      if (currentNode.left !== null) {
-        queue.push(currentNode.left);
-      }
-      if (currentNode.right !== null) {
-        queue.push(currentNode.right);
-      }
-      
-      steps.push({
-        nodes: workingNodes.map(n => ({ ...n })),
-        description: `Node ${currentNode.value} processed, added children to queue`,
-      });
-    }
-  } else {
-    // DFS traversals
-    function traverse(nodeIndex: number | null): void {
-      if (nodeIndex === null) return;
-      
-      const node = workingNodes[nodeIndex];
-      
-      if (traversalType === 'preorder') {
-        // Visit root first
-        workingNodes[nodeIndex].status = 'current';
-        steps.push({
-          nodes: workingNodes.map(n => ({ ...n })),
-          description: `Visiting node: ${node.value}`,
-          currentNode: nodeIndex
-        });
-        
-        workingNodes[nodeIndex].status = 'visited';
-        
-        // Then left and right
-        traverse(node.left);
-        traverse(node.right);
-      } else if (traversalType === 'inorder') {
-        // Left first
-        traverse(node.left);
-        
-        // Then visit root
-        workingNodes[nodeIndex].status = 'current';
-        steps.push({
-          nodes: workingNodes.map(n => ({ ...n })),
-          description: `Visiting node: ${node.value}`,
-          currentNode: nodeIndex
-        });
-        
-        workingNodes[nodeIndex].status = 'visited';
-        
-        // Then right
-        traverse(node.right);
-      } else if (traversalType === 'postorder') {
-        // Left and right first
-        traverse(node.left);
-        traverse(node.right);
-        
-        // Then visit root
-        workingNodes[nodeIndex].status = 'current';
-        steps.push({
-          nodes: workingNodes.map(n => ({ ...n })),
-          description: `Visiting node: ${node.value}`,
-          currentNode: nodeIndex
-        });
-        
-        workingNodes[nodeIndex].status = 'visited';
-      }
+      inorderHelper(node.left);
     }
     
-    traverse(root);
+    // Process current node
+    steps.push({
+      nodes: tree.nodes.map((n, i) => ({
+        ...n,
+        status: i === nodeIndex ? 'completed' : 'default'
+      })),
+      description: `Processing ${node.value}`
+    });
+    
+    // Process right subtree
+    if (node.right !== null) {
+      steps.push({
+        nodes: tree.nodes.map((n, i) => ({
+          ...n,
+          status: i === nodeIndex ? 'current' : i === node.right ? 'visited' : 'default'
+        })),
+        description: `Visiting right child of ${node.value}`
+      });
+      inorderHelper(node.right);
+    }
+  };
+  
+  if (tree.root !== null) {
+    inorderHelper(tree.root);
   }
-  
-  // Final state
-  workingNodes.forEach(node => {
-    if (node.status === 'visited') {
-      node.status = 'completed';
-    }
-  });
-  
-  steps.push({
-    nodes: workingNodes.map(n => ({ ...n })),
-    description: `${traversalType} traversal completed!`
-  });
   
   return steps;
-}
+};
+
+export const generatePreorderTraversal = (tree: BinaryTreeStructure): any[] => {
+  const steps: any[] = [];
+  
+  const preorderHelper = (nodeIndex: number | null) => {
+    if (nodeIndex === null || !tree.nodes[nodeIndex]) return;
+    
+    const node = tree.nodes[nodeIndex];
+    
+    // Process current node first
+    steps.push({
+      nodes: tree.nodes.map((n, i) => ({
+        ...n,
+        status: i === nodeIndex ? 'completed' : 'default'
+      })),
+      description: `Processing ${node.value}`
+    });
+    
+    // Process left subtree
+    if (node.left !== null) {
+      steps.push({
+        nodes: tree.nodes.map((n, i) => ({
+          ...n,
+          status: i === node.left ? 'current' : 'default'
+        })),
+        description: `Visiting left child of ${node.value}`
+      });
+      preorderHelper(node.left);
+    }
+    
+    // Process right subtree
+    if (node.right !== null) {
+      steps.push({
+        nodes: tree.nodes.map((n, i) => ({
+          ...n,
+          status: i === node.right ? 'current' : 'default'
+        })),
+        description: `Visiting right child of ${node.value}`
+      });
+      preorderHelper(node.right);
+    }
+  };
+  
+  if (tree.root !== null) {
+    preorderHelper(tree.root);
+  }
+  
+  return steps;
+};
+
+export const generatePostorderTraversal = (tree: BinaryTreeStructure): any[] => {
+  const steps: any[] = [];
+  
+  const postorderHelper = (nodeIndex: number | null) => {
+    if (nodeIndex === null || !tree.nodes[nodeIndex]) return;
+    
+    const node = tree.nodes[nodeIndex];
+    
+    // Process left subtree
+    if (node.left !== null) {
+      steps.push({
+        nodes: tree.nodes.map((n, i) => ({
+          ...n,
+          status: i === node.left ? 'current' : 'default'
+        })),
+        description: `Visiting left child of ${node.value}`
+      });
+      postorderHelper(node.left);
+    }
+    
+    // Process right subtree
+    if (node.right !== null) {
+      steps.push({
+        nodes: tree.nodes.map((n, i) => ({
+          ...n,
+          status: i === node.right ? 'current' : 'default'
+        })),
+        description: `Visiting right child of ${node.value}`
+      });
+      postorderHelper(node.right);
+    }
+    
+    // Process current node last
+    steps.push({
+      nodes: tree.nodes.map((n, i) => ({
+        ...n,
+        status: i === nodeIndex ? 'completed' : 'default'
+      })),
+      description: `Processing ${node.value}`
+    });
+  };
+  
+  if (tree.root !== null) {
+    postorderHelper(tree.root);
+  }
+  
+  return steps;
+};
+
+export const generateBFSTraversal = (tree: BinaryTreeStructure): any[] => {
+  const steps: any[] = [];
+  
+  if (tree.root === null) return steps;
+  
+  const queue: number[] = [tree.root];
+  const visited: Set<number> = new Set();
+  
+  while (queue.length > 0) {
+    const currentIndex = queue.shift()!;
+    const currentNode = tree.nodes[currentIndex];
+    
+    visited.add(currentIndex);
+    
+    steps.push({
+      nodes: tree.nodes.map((n, i) => ({
+        ...n,
+        status: i === currentIndex ? 'completed' : visited.has(i) ? 'visited' : 'default'
+      })),
+      description: `Processing ${currentNode.value} (BFS level-order)`
+    });
+    
+    // Add children to queue
+    if (currentNode.left !== null) {
+      queue.push(currentNode.left);
+    }
+    if (currentNode.right !== null) {
+      queue.push(currentNode.right);
+    }
+  }
+  
+  return steps;
+};

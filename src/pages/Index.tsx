@@ -126,16 +126,16 @@ const Index = () => {
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
-                <Button asChild size="lg" className="animate-zady-glow">
-                  <Link to="/guide">
-                    <Play className="mr-2 h-5 w-5" />
-                    Start Learning
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg">
+                <Button asChild size="lg" className="pixel-button animate-zady-glow">
                   <Link to="/data-structures">
                     <Database className="mr-2 h-5 w-5" />
                     Explore Structures
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="pixel-button">
+                  <Link to="/algorithms">
+                    <Zap className="mr-2 h-5 w-5" />
+                    View Algorithms
                   </Link>
                 </Button>
               </motion.div>
@@ -181,6 +181,42 @@ const Index = () => {
           </div>
         </motion.section>
 
+        {/* Quote Section */}
+        <motion.section
+          className="py-16 bg-gradient-to-r from-muted/50 to-transparent"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <div className="container mx-auto text-center">
+            <motion.div variants={itemVariants} className="space-y-6">
+              <div className="relative">
+                <h2 className="text-2xl md:text-3xl font-bold pixel-text mb-4">
+                  "Learning algorithms is like learning to see the matrix of code"
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Transform complex concepts into visual understanding through interactive exploration
+                </p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6 mt-12">
+                <div className="zady-card p-4">
+                  <h3 className="font-bold text-lg mb-2">💡 Pro Tip</h3>
+                  <p className="text-sm text-muted-foreground">Start with simpler data structures like arrays and stacks before moving to trees and graphs</p>
+                </div>
+                <div className="zady-card p-4">
+                  <h3 className="font-bold text-lg mb-2">🎯 Focus</h3>
+                  <p className="text-sm text-muted-foreground">Watch how each step affects the overall structure - patterns will emerge naturally</p>
+                </div>
+                <div className="zady-card p-4">
+                  <h3 className="font-bold text-lg mb-2">🚀 Practice</h3>
+                  <p className="text-sm text-muted-foreground">Use different input sizes to see how time complexity affects real performance</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
+
         {/* Live Demo Highlights */}
         <motion.section 
           className="py-20"
@@ -191,7 +227,7 @@ const Index = () => {
         >
           <div className="container mx-auto">
             <motion.div className="text-center mb-16" variants={itemVariants}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 pixel-text">
                 See It In Action
               </h2>
               <p className="text-lg text-muted-foreground">
