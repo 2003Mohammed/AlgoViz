@@ -214,6 +214,9 @@ const TreeVisualizer: React.FC = () => {
   const performTraversal = (type: 'inorder' | 'preorder' | 'postorder') => {
     if (!root) return;
     
+    // Reset any previous animation state
+    resetAnimation();
+    
     const steps: TraversalStep[] = [];
     
     const inorder = (node: TreeNode | null): void => {
@@ -260,31 +263,74 @@ const TreeVisualizer: React.FC = () => {
     
     setTraversalSteps(steps);
     setCurrentStep(0);
+    // AUTOMATIC START: Begin animation immediately when traversal button is clicked
     setIsAnimating(true);
   };
 
   const generateExample = () => {
     setRoot(null);
-    // Generate truly random tree each time
-    const numNodes = 5 + Math.floor(Math.random() * 5); // 5-9 nodes
-    const baseValue = 10 + Math.floor(Math.random() * 40); // 10-49 base
+    
+    // STRICT: Always generate minimum 2+ nodes with relatable, random examples
+    const exampleTypes = ['family', 'organization', 'filesystem', 'decision'];
+    const typeIndex = Math.floor(Math.random() * exampleTypes.length);
+    const exampleType = exampleTypes[typeIndex];
     
     let values: number[];
+    let numNodes: number;
+    
+    // Ensure minimum 3-7 nodes (never single node)
+    numNodes = 3 + Math.floor(Math.random() * 5); // 3-7 nodes minimum
+    
     if (treeType === 'bst') {
-      // Generate sorted-ish values for BST
-      values = Array.from({length: numNodes}, (_, i) => 
-        baseValue + i * (3 + Math.floor(Math.random() * 5)) + Math.floor(Math.random() * 3)
-      );
-      // Shuffle for insertion order
+      // Generate contextual BST values based on example type
+      switch (exampleType) {
+        case 'family':
+          // Family ages (realistic family tree)
+          values = [45, 25, 65, 15, 35, 55, 75].slice(0, numNodes);
+          break;
+        case 'organization':
+          // Employee IDs or levels
+          values = [50, 30, 70, 20, 40, 60, 80].slice(0, numNodes);
+          break;
+        case 'filesystem':
+          // File sizes in MB
+          values = [100, 50, 150, 25, 75, 125, 175].slice(0, numNodes);
+          break;
+        case 'decision':
+          // Priority scores
+          values = [10, 5, 15, 3, 8, 12, 18].slice(0, numNodes);
+          break;
+        default:
+          values = [20, 10, 30, 5, 15, 25, 35].slice(0, numNodes);
+      }
+      
+      // Shuffle for realistic insertion order
       for (let i = values.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [values[i], values[j]] = [values[j], values[i]];
       }
     } else {
-      // Generate random values for binary tree
-      values = Array.from({length: numNodes}, () => 
-        Math.floor(Math.random() * 90) + 10
-      );
+      // Generate relatable binary tree values
+      switch (exampleType) {
+        case 'family':
+          values = [45, 25, 35, 15, 55, 65].slice(0, numNodes);
+          break;
+        case 'organization':
+          // Organization levels: CEO=1, Manager=2, etc.
+          values = [1, 2, 3, 4, 5, 6].slice(0, numNodes);
+          break;
+        case 'filesystem':
+          // File system hierarchy: Root=10, Docs=20, etc.
+          values = [10, 20, 30, 40, 50, 60].slice(0, numNodes);
+          break;
+        default:
+          values = [1, 2, 3, 4, 5, 6, 7].slice(0, numNodes);
+      }
+    }
+    
+    // STRICT VALIDATION: Never allow less than 2 nodes
+    if (values.length < 2) {
+      values = [10, 20, 30]; // Fallback minimum structure
     }
     
     setTimeout(() => {
@@ -529,15 +575,30 @@ const TreeVisualizer: React.FC = () => {
           </div>
 
           <div className="flex gap-2 justify-center flex-wrap">
-            <Button onClick={() => performTraversal('inorder')} variant="outline" size="sm">
+            <Button 
+              onClick={() => performTraversal('inorder')} 
+              variant="outline" 
+              size="sm"
+              disabled={!root || isAnimating}
+            >
               <Play className="h-4 w-4 mr-2" />
               Inorder
             </Button>
-            <Button onClick={() => performTraversal('preorder')} variant="outline" size="sm">
+            <Button 
+              onClick={() => performTraversal('preorder')} 
+              variant="outline" 
+              size="sm"
+              disabled={!root || isAnimating}
+            >
               <Play className="h-4 w-4 mr-2" />
               Preorder
             </Button>
-            <Button onClick={() => performTraversal('postorder')} variant="outline" size="sm">
+            <Button 
+              onClick={() => performTraversal('postorder')} 
+              variant="outline" 
+              size="sm"
+              disabled={!root || isAnimating}
+            >
               <Play className="h-4 w-4 mr-2" />
               Postorder
             </Button>
