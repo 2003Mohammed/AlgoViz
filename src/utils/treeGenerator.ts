@@ -59,7 +59,7 @@ const generateFamilyTree = (): BinaryTreeStructure => {
       root: 'Great-Grandpa William',
       children: [
         { name: 'Dad Robert', children: [{ name: 'Brother Sam' }, { name: 'Sister Anna' }] },
-        { name: 'Uncle George', children: [{ name: 'Cousin Mark' }] }
+        { name: 'Uncle George', children: [{ name: 'Cousin Mark' }, { name: 'Cousin Beth' }] }
       ]
     },
     {
@@ -77,10 +77,11 @@ const generateFamilyTree = (): BinaryTreeStructure => {
   const family = families[familyIndex];
   const nodes: TreeNode[] = [];
   
+  // STRICT: Ensure minimum 2 nodes - always add root + at least one child
   // Add root
   nodes.push({ value: family.root, left: null, right: null });
   
-  // Add children recursively
+  // Add children recursively - ENFORCE minimum structure
   let nodeIndex = 0;
   family.children.forEach((child, index) => {
     const childIndex = nodes.length;
@@ -92,7 +93,7 @@ const generateFamilyTree = (): BinaryTreeStructure => {
       nodes[nodeIndex].right = childIndex;
     }
     
-    // Add grandchildren
+    // Add grandchildren - ensure we always have meaningful depth
     child.children?.forEach((grandchild, gIndex) => {
       const grandchildIndex = nodes.length;
       nodes.push({ value: grandchild.name, left: null, right: null });
@@ -104,6 +105,13 @@ const generateFamilyTree = (): BinaryTreeStructure => {
       }
     });
   });
+  
+  // STRICT VALIDATION: Never return single node
+  if (nodes.length < 2) {
+    // Force add minimum structure if somehow we have < 2 nodes
+    nodes.push({ value: 'Child Node', left: null, right: null });
+    nodes[0].left = 1;
+  }
   
   return { nodes, root: 0 };
 };

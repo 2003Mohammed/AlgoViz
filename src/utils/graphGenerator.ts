@@ -39,11 +39,16 @@ const generateSocialNetworkGraph = (): GraphData => {
   
   const peopleSet = peopleSets[Math.abs(graphSeed) % peopleSets.length];
   const shuffled = [...peopleSet].sort(() => (graphSeed % 1000) / 500 - 1);
-  // Ensure minimum 2 nodes, maximum 6
+  // STRICT: Enforce minimum 2 nodes, maximum 6 - NO SINGLE NODE GRAPHS
   const minNodes = 2;
   const maxNodes = Math.min(peopleSet.length, 6);
   const numNodes = Math.max(minNodes, Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes);
   const selectedPeople = shuffled.slice(0, numNodes);
+  
+  // STRICT VALIDATION: Never allow single node
+  if (selectedPeople.length < 2) {
+    selectedPeople.push(peopleSet[1] || 'Person2');
+  }
   
   const nodes: GraphNode[] = selectedPeople.map((person, index) => ({
     id: person,

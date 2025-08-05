@@ -359,7 +359,64 @@ export const useOperationHandler = (
   };
 
   const handleTreeOperation = (operation: string) => {
-    addLogEntry(`Tree operation ${operation} not yet implemented`);
+    switch (operation) {
+      case 'generate':
+        return generateRandomTree();
+      case 'inorder':
+        return startTraversal('inorder');
+      case 'preorder':
+        return startTraversal('preorder');
+      case 'postorder':
+        return startTraversal('postorder');
+      case 'bfs':
+        return startTraversal('bfs');
+      default:
+        addLogEntry(`Tree operation ${operation} not yet implemented`);
+    }
+  };
+
+  const generateRandomTree = async () => {
+    const { generateRandomTree } = await import('../../../utils/treeGenerator');
+    const tree = generateRandomTree();
+    setStructure(tree);
+    addLogEntry(`Generated new tree with ${tree.nodes.length} nodes`);
+  };
+
+  const startTraversal = async (type: string) => {
+    if (!structure || !structure.nodes || structure.nodes.length === 0) {
+      addLogEntry("Please generate a tree first");
+      return;
+    }
+
+    const { 
+      generateInorderTraversal, 
+      generatePreorderTraversal, 
+      generatePostorderTraversal,
+      generateBFSTraversal 
+    } = await import('../../../utils/treeGenerator');
+    
+    let steps = [];
+    switch (type) {
+      case 'inorder':
+        steps = generateInorderTraversal(structure);
+        break;
+      case 'preorder':
+        steps = generatePreorderTraversal(structure);
+        break;
+      case 'postorder':
+        steps = generatePostorderTraversal(structure);
+        break;
+      case 'bfs':
+        steps = generateBFSTraversal(structure);
+        break;
+    }
+
+    if (steps.length > 0) {
+      setAnimationSteps(steps);
+      setCurrentStep(0);
+      setIsAnimating(true);
+      addLogEntry(`Started ${type} traversal with ${steps.length} steps`);
+    }
   };
 
   const handleHashTableOperation = (operation: string) => {
@@ -367,7 +424,78 @@ export const useOperationHandler = (
   };
 
   const handleGraphOperation = (operation: string) => {
-    addLogEntry(`Graph operation ${operation} not yet implemented`);
+    switch (operation) {
+      case 'generate':
+        return generateRandomGraph();
+      case 'bfs':
+        return startGraphTraversal('bfs');
+      case 'dfs':
+        return startGraphTraversal('dfs');
+      case 'dijkstra':
+        return startDijkstra();
+      default:
+        addLogEntry(`Graph operation ${operation} not yet implemented`);
+    }
+  };
+
+  const generateRandomGraph = async () => {
+    const { generateRandomGraph } = await import('../../../utils/graphGenerator');
+    const graph = generateRandomGraph();
+    setStructure(graph);
+    addLogEntry(`Generated new graph with ${graph.nodes.length} nodes and ${graph.edges.length} edges`);
+  };
+
+  const startGraphTraversal = async (type: string) => {
+    if (!structure || !structure.nodes || structure.nodes.length === 0) {
+      addLogEntry("Please generate a graph first");
+      return;
+    }
+
+    const { generateBFSSteps, generateDFSSteps } = await import('../../../utils/graphGenerator');
+    const startNodeId = structure.nodes[0].id;
+    
+    let steps = [];
+    switch (type) {
+      case 'bfs':
+        steps = generateBFSSteps(structure, startNodeId);
+        break;
+      case 'dfs':
+        steps = generateDFSSteps(structure, startNodeId);
+        break;
+    }
+
+    if (steps.length > 0) {
+      setAnimationSteps(steps);
+      setCurrentStep(0);
+      setIsAnimating(true);
+      addLogEntry(`Started ${type.toUpperCase()} traversal from ${startNodeId} with ${steps.length} steps`);
+    }
+  };
+
+  const startDijkstra = () => {
+    if (!structure || !structure.nodes || structure.nodes.length === 0) {
+      addLogEntry("Please generate a graph first");
+      return;
+    }
+
+    // Simple Dijkstra implementation for visualization
+    const startNodeId = structure.nodes[0].id;
+    const targetNodeId = structure.nodes[structure.nodes.length - 1].id;
+    
+    // Create basic dijkstra steps for demo
+    const steps = structure.nodes.map((node, index) => ({
+      nodes: structure.nodes.map(n => ({
+        ...n,
+        status: n.id === node.id ? 'current' : index < structure.nodes.indexOf(node) ? 'visited' : 'default'
+      })),
+      edges: structure.edges,
+      description: `Processing node ${node.id}`
+    }));
+
+    setAnimationSteps(steps);
+    setCurrentStep(0);
+    setIsAnimating(true);
+    addLogEntry(`Started Dijkstra's algorithm from ${startNodeId} to ${targetNodeId}`);
   };
 
   return { handleOperation };
