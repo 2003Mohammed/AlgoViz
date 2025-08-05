@@ -10,9 +10,22 @@ export interface BinaryTreeStructure {
   root: number | null;
 }
 
+// Track previous generations to ensure variety
+let lastGeneratedType: string | null = null;
+let generationSeed = Date.now();
+
 export const generateRandomTree = (): BinaryTreeStructure => {
+  // Increment seed to ensure different results each time
+  generationSeed += Math.floor(Math.random() * 1000) + 1;
+  
   const treeTypes = ['family', 'organization', 'filesystem'];
-  const treeType = treeTypes[Math.floor(Math.random() * treeTypes.length)];
+  // Avoid repeating the same type consecutively
+  const availableTypes = lastGeneratedType 
+    ? treeTypes.filter(type => type !== lastGeneratedType)
+    : treeTypes;
+  
+  const treeType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+  lastGeneratedType = treeType;
   
   switch (treeType) {
     case 'family':
@@ -32,7 +45,7 @@ const generateFamilyTree = (): BinaryTreeStructure => {
       root: 'Grandpa John',
       children: [
         { name: 'Father Mike', children: [{ name: 'Son Alex' }, { name: 'Daughter Emma' }] },
-        { name: 'Uncle Tom', children: [{ name: 'Cousin Jake' }] }
+        { name: 'Uncle Tom', children: [{ name: 'Cousin Jake' }, { name: 'Nephew Ben' }] }
       ]
     },
     {
@@ -41,10 +54,27 @@ const generateFamilyTree = (): BinaryTreeStructure => {
         { name: 'Mother Lisa', children: [{ name: 'Son David' }, { name: 'Daughter Sarah' }] },
         { name: 'Aunt Kate', children: [{ name: 'Cousin Lily' }, { name: 'Cousin Max' }] }
       ]
+    },
+    {
+      root: 'Great-Grandpa William',
+      children: [
+        { name: 'Dad Robert', children: [{ name: 'Brother Sam' }, { name: 'Sister Anna' }] },
+        { name: 'Uncle George', children: [{ name: 'Cousin Mark' }] }
+      ]
+    },
+    {
+      root: 'Elder Patricia',
+      children: [
+        { name: 'Mom Jennifer', children: [{ name: 'Son Luke' }, { name: 'Daughter Maya' }] },
+        { name: 'Aunt Rachel', children: [{ name: 'Cousin Noah' }, { name: 'Cousin Zoe' }] }
+      ]
     }
   ];
   
-  const family = families[Math.floor(Math.random() * families.length)];
+  // Use seed-based randomization for consistent variety
+  const familyIndex = Math.abs(generationSeed) % families.length;
+  
+  const family = families[familyIndex];
   const nodes: TreeNode[] = [];
   
   // Add root
@@ -84,7 +114,7 @@ const generateOrgTree = (): BinaryTreeStructure => {
       root: 'CEO Sarah',
       children: [
         { name: 'CTO John', children: [{ name: 'Dev Lead Alice' }, { name: 'QA Lead Bob' }] },
-        { name: 'CFO Maria', children: [{ name: 'Accountant Tom' }] }
+        { name: 'CFO Maria', children: [{ name: 'Accountant Tom' }, { name: 'Finance Lead Jane' }] }
       ]
     },
     {
@@ -93,10 +123,26 @@ const generateOrgTree = (): BinaryTreeStructure => {
         { name: 'Manager Kate', children: [{ name: 'Team Lead Mike' }, { name: 'Sr Dev Lisa' }] },
         { name: 'Manager Jim', children: [{ name: 'Analyst Amy' }, { name: 'Designer Sam' }] }
       ]
+    },
+    {
+      root: 'President Rebecca',
+      children: [
+        { name: 'VP Engineering', children: [{ name: 'Architect James' }, { name: 'DevOps Lead Carol' }] },
+        { name: 'VP Sales', children: [{ name: 'Sales Manager Paul' }, { name: 'Account Exec Helen' }] }
+      ]
+    },
+    {
+      root: 'Chairman David',
+      children: [
+        { name: 'COO Michael', children: [{ name: 'Operations Lead Emma' }, { name: 'Process Manager Tyler' }] },
+        { name: 'CMO Sophie', children: [{ name: 'Marketing Lead Oliver' }] }
+      ]
     }
   ];
   
-  const org = orgs[Math.floor(Math.random() * orgs.length)];
+  const orgIndex = Math.abs(generationSeed * 3) % orgs.length;
+  
+  const org = orgs[orgIndex];
   const nodes: TreeNode[] = [];
   
   // Add root
@@ -145,10 +191,26 @@ const generateFileSystemTree = (): BinaryTreeStructure => {
         { name: 'WebApp', children: [{ name: 'src' }, { name: 'dist' }] },
         { name: 'MobileApp', children: [{ name: 'android' }, { name: 'ios' }] }
       ]
+    },
+    {
+      root: 'System',
+      children: [
+        { name: 'bin', children: [{ name: 'bash' }, { name: 'python' }] },
+        { name: 'etc', children: [{ name: 'config' }, { name: 'hosts' }] }
+      ]
+    },
+    {
+      root: 'Users',
+      children: [
+        { name: 'admin', children: [{ name: 'Desktop' }, { name: 'Downloads' }] },
+        { name: 'guest', children: [{ name: 'temp' }, { name: 'cache' }] }
+      ]
     }
   ];
   
-  const fs = filesystems[Math.floor(Math.random() * filesystems.length)];
+  const fsIndex = Math.abs(generationSeed * 7) % filesystems.length;
+  
+  const fs = filesystems[fsIndex];
   const nodes: TreeNode[] = [];
   
   // Add root

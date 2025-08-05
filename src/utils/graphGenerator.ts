@@ -1,8 +1,21 @@
 import { GraphData, GraphNode, GraphEdge } from '../types/visualizer';
 
+// Track previous generations to ensure variety
+let lastGraphType: string | null = null;
+let graphSeed = Date.now();
+
 export const generateRandomGraph = (): GraphData => {
+  // Increment seed for different results each time
+  graphSeed += Math.floor(Math.random() * 1000) + 1;
+  
   const graphTypes = ['social', 'transport', 'network'];
-  const graphType = graphTypes[Math.floor(Math.random() * graphTypes.length)];
+  // Avoid repeating the same type consecutively
+  const availableTypes = lastGraphType 
+    ? graphTypes.filter(type => type !== lastGraphType)
+    : graphTypes;
+  
+  const graphType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+  lastGraphType = graphType;
   
   switch (graphType) {
     case 'social':
@@ -17,9 +30,20 @@ export const generateRandomGraph = (): GraphData => {
 };
 
 const generateSocialNetworkGraph = (): GraphData => {
-  const people = ['Alice', 'Bob', 'Carol', 'David', 'Eve', 'Frank'];
-  const shuffled = [...people].sort(() => Math.random() - 0.5);
-  const selectedPeople = shuffled.slice(0, 4 + Math.floor(Math.random() * 3));
+  const peopleSets = [
+    ['Alice', 'Bob', 'Carol', 'David', 'Eve', 'Frank'],
+    ['John', 'Jane', 'Mike', 'Sarah', 'Tom', 'Lisa'],
+    ['Alex', 'Emma', 'Ryan', 'Sofia', 'Luke', 'Maya'],
+    ['Chris', 'Anna', 'Jake', 'Zoe', 'Noah', 'Lily']
+  ];
+  
+  const peopleSet = peopleSets[Math.abs(graphSeed) % peopleSets.length];
+  const shuffled = [...peopleSet].sort(() => (graphSeed % 1000) / 500 - 1);
+  // Ensure minimum 2 nodes, maximum 6
+  const minNodes = 2;
+  const maxNodes = Math.min(peopleSet.length, 6);
+  const numNodes = Math.max(minNodes, Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes);
+  const selectedPeople = shuffled.slice(0, numNodes);
   
   const nodes: GraphNode[] = selectedPeople.map((person, index) => ({
     id: person,
@@ -63,9 +87,20 @@ const generateSocialNetworkGraph = (): GraphData => {
 };
 
 const generateTransportGraph = (): GraphData => {
-  const cities = ['NYC', 'LA', 'Chicago', 'Houston', 'Phoenix', 'Miami'];
-  const shuffled = [...cities].sort(() => Math.random() - 0.5);
-  const selectedCities = shuffled.slice(0, 4 + Math.floor(Math.random() * 3));
+  const citySets = [
+    ['NYC', 'LA', 'Chicago', 'Houston', 'Phoenix', 'Miami'],
+    ['London', 'Paris', 'Berlin', 'Rome', 'Madrid', 'Vienna'],
+    ['Tokyo', 'Seoul', 'Beijing', 'Bangkok', 'Sydney', 'Mumbai'],
+    ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Ottawa', 'Quebec']
+  ];
+  
+  const citySet = citySets[Math.abs(graphSeed * 3) % citySets.length];
+  const shuffled = [...citySet].sort(() => (graphSeed % 1000) / 500 - 1);
+  // Ensure minimum 2 nodes, maximum 6
+  const minNodes = 2;
+  const maxNodes = Math.min(citySet.length, 6);
+  const numNodes = Math.max(minNodes, Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes);
+  const selectedCities = shuffled.slice(0, numNodes);
   
   const nodes: GraphNode[] = selectedCities.map((city, index) => ({
     id: city,
@@ -109,9 +144,20 @@ const generateTransportGraph = (): GraphData => {
 };
 
 const generateDeviceNetworkGraph = (): GraphData => {
-  const devices = ['Router', 'Server', 'PC1', 'PC2', 'Laptop', 'Printer'];
-  const shuffled = [...devices].sort(() => Math.random() - 0.5);
-  const selectedDevices = shuffled.slice(0, 4 + Math.floor(Math.random() * 3));
+  const deviceSets = [
+    ['Router', 'Server', 'PC1', 'PC2', 'Laptop', 'Printer'],
+    ['Switch', 'Gateway', 'Workstation', 'Database', 'Firewall', 'Scanner'],
+    ['Hub', 'Modem', 'Desktop', 'Tablet', 'Phone', 'Camera'],
+    ['Bridge', 'Proxy', 'Terminal', 'Storage', 'Monitor', 'Keyboard']
+  ];
+  
+  const deviceSet = deviceSets[Math.abs(graphSeed * 7) % deviceSets.length];
+  const shuffled = [...deviceSet].sort(() => (graphSeed % 1000) / 500 - 1);
+  // Ensure minimum 2 nodes, maximum 6
+  const minNodes = 2;
+  const maxNodes = Math.min(deviceSet.length, 6);
+  const numNodes = Math.max(minNodes, Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes);
+  const selectedDevices = shuffled.slice(0, numNodes);
   
   const nodes: GraphNode[] = selectedDevices.map((device, index) => ({
     id: device,
