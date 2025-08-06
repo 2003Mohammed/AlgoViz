@@ -211,60 +211,115 @@ const TreeVisualizer: React.FC = () => {
     setIsAnimating(true);
   };
 
-  const performTraversal = (type: 'inorder' | 'preorder' | 'postorder') => {
-    if (!root) return;
-    
-    // Reset any previous animation state
-    resetAnimation();
-    
-    const steps: TraversalStep[] = [];
-    
-    const inorder = (node: TreeNode | null): void => {
-      if (!node) return;
-      inorder(node.left);
-      steps.push({
-        node: { ...node, status: 'visiting' },
-        description: `Visiting node ${node.value} (Inorder: Left, Root, Right)`
-      });
-      inorder(node.right);
-    };
-    
-    const preorder = (node: TreeNode | null): void => {
-      if (!node) return;
-      steps.push({
-        node: { ...node, status: 'visiting' },
-        description: `Visiting node ${node.value} (Preorder: Root, Left, Right)`
-      });
-      preorder(node.left);
-      preorder(node.right);
-    };
-    
-    const postorder = (node: TreeNode | null): void => {
-      if (!node) return;
-      postorder(node.left);
-      postorder(node.right);
-      steps.push({
-        node: { ...node, status: 'visiting' },
-        description: `Visiting node ${node.value} (Postorder: Left, Right, Root)`
-      });
-    };
-    
-    switch (type) {
-      case 'inorder':
-        inorder(root);
-        break;
-      case 'preorder':
-        preorder(root);
-        break;
-      case 'postorder':
-        postorder(root);
-        break;
+  // 🔥 STRICT: Play traversal with automatic animation and result display
+  const [traversalResult, setTraversalResult] = useState<number[]>([]);
+  const [isTraversalComplete, setIsTraversalComplete] = useState(false);
+
+  const playTraversal = async (type: 'inorder' | 'preorder' | 'postorder') => {
+    // 🚨 STRICT VALIDATION: Block invalid trees
+    if (!root) {
+      console.warn("No tree to traverse");
+      return;
     }
     
-    setTraversalSteps(steps);
-    setCurrentStep(0);
-    // AUTOMATIC START: Begin animation immediately when traversal button is clicked
-    setIsAnimating(true);
+    const nodeCount = countTreeNodes(root);
+    if (nodeCount < 3) {
+      console.warn("Tree must have at least 3 nodes for traversal");
+      return;
+    }
+    
+    // Reset state
+    resetAnimation();
+    setTraversalResult([]);
+    setIsTraversalComplete(false);
+    
+    const traversalPath: number[] = [];
+    const steps: TraversalStep[] = [];
+    
+    // 🔥 STRICT: Async traversal with proper highlighting
+    const visitNode = async (node: TreeNode): Promise<void> => {
+      // Highlight current node
+      const updatedRoot = highlightNodeInTree(root, node.id, 'visiting');
+      if (updatedRoot) setRoot(updatedRoot);
+      
+      // Add to result path
+      traversalPath.push(node.value);
+      
+      // Add step for animation
+      steps.push({
+        node: { ...node, status: 'visiting' },
+        description: `Visiting node ${node.value} (${type.charAt(0).toUpperCase() + type.slice(1)})`
+      });
+      
+      // 🔥 STRICT: 600ms delay per node as specified
+      await new Promise(resolve => setTimeout(resolve, 600));
+    };
+    
+    // 🔥 STRICT: Execute traversal with proper order
+    try {
+      if (type === 'inorder') {
+        await inorderTraversal(root, visitNode);
+      } else if (type === 'preorder') {
+        await preorderTraversal(root, visitNode);
+      } else {
+        await postorderTraversal(root, visitNode);
+      }
+      
+      // 🔥 STRICT: Show final result
+      setTraversalResult(traversalPath);
+      setIsTraversalComplete(true);
+      setTraversalSteps(steps);
+      
+      // Reset tree highlighting
+      setTimeout(() => {
+        resetAnimation();
+      }, 1000);
+      
+    } catch (error) {
+      console.error("Traversal failed:", error);
+      resetAnimation();
+    }
+  };
+
+  // Helper functions
+  const countTreeNodes = (node: TreeNode | null): number => {
+    if (!node) return 0;
+    return 1 + countTreeNodes(node.left) + countTreeNodes(node.right);
+  };
+
+  const highlightNodeInTree = (node: TreeNode | null, targetId: string, status: 'default' | 'visiting' | 'visited' | 'found'): TreeNode | null => {
+    if (!node) return null;
+    
+    const updatedNode: TreeNode = {
+      ...node,
+      status: node.id === targetId ? status : 'default',
+      left: highlightNodeInTree(node.left, targetId, status),
+      right: highlightNodeInTree(node.right, targetId, status)
+    };
+    
+    return updatedNode;
+  };
+
+  // Async traversal functions (L→N→R, N→L→R, L→R→N)
+  const inorderTraversal = async (node: TreeNode | null, visit: (node: TreeNode) => Promise<void>): Promise<void> => {
+    if (!node) return;
+    await inorderTraversal(node.left, visit);  // Left
+    await visit(node);                         // Node
+    await inorderTraversal(node.right, visit); // Right
+  };
+
+  const preorderTraversal = async (node: TreeNode | null, visit: (node: TreeNode) => Promise<void>): Promise<void> => {
+    if (!node) return;
+    await visit(node);                          // Node
+    await preorderTraversal(node.left, visit);  // Left
+    await preorderTraversal(node.right, visit); // Right
+  };
+
+  const postorderTraversal = async (node: TreeNode | null, visit: (node: TreeNode) => Promise<void>): Promise<void> => {
+    if (!node) return;
+    await postorderTraversal(node.left, visit);  // Left
+    await postorderTraversal(node.right, visit); // Right
+    await visit(node);                          // Node
   };
 
   // 🚨 STRICT: Generate balanced binary tree with minimum 3 nodes
@@ -617,35 +672,53 @@ const TreeVisualizer: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex gap-2 justify-center flex-wrap">
+          {/* 🔥 STRICT: Play Traversal Buttons */}
+          <div className="flex gap-2 sm:gap-4 items-center justify-center flex-wrap">
             <Button 
-              onClick={() => performTraversal('inorder')} 
+              onClick={() => playTraversal('inorder')} 
               variant="outline" 
               size="sm"
-              disabled={!root || isAnimating}
+              disabled={!root || isAnimating || (root && countTreeNodes(root) < 3)}
+              className="flex items-center gap-2"
             >
-              <Play className="h-4 w-4 mr-2" />
-              Inorder
+              <Play className="h-4 w-4" />
+              Play Inorder (L→N→R)
             </Button>
             <Button 
-              onClick={() => performTraversal('preorder')} 
+              onClick={() => playTraversal('preorder')} 
               variant="outline" 
               size="sm"
-              disabled={!root || isAnimating}
+              disabled={!root || isAnimating || (root && countTreeNodes(root) < 3)}
+              className="flex items-center gap-2"
             >
-              <Play className="h-4 w-4 mr-2" />
-              Preorder
+              <Play className="h-4 w-4" />
+              Play Preorder (N→L→R)
             </Button>
             <Button 
-              onClick={() => performTraversal('postorder')} 
+              onClick={() => playTraversal('postorder')} 
               variant="outline" 
               size="sm"
-              disabled={!root || isAnimating}
+              disabled={!root || isAnimating || (root && countTreeNodes(root) < 3)}
+              className="flex items-center gap-2"
             >
-              <Play className="h-4 w-4 mr-2" />
-              Postorder
+              <Play className="h-4 w-4" />
+              Play Postorder (L→R→N)
             </Button>
           </div>
+
+          {/* 🔥 STRICT: Traversal Result Display */}
+          {isTraversalComplete && traversalResult.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-muted/50 rounded-lg p-4 text-center"
+            >
+              <h4 className="font-semibold text-lg mb-2 text-primary">Traversal Result:</h4>
+              <p className="text-2xl font-mono font-bold tracking-wider">
+                {traversalResult.join(' → ')}
+              </p>
+            </motion.div>
+          )}
 
           {traversalSteps.length > 0 && (
             <div className="flex gap-2 justify-center items-center p-2 sm:p-4 bg-muted/20 rounded-lg flex-wrap">

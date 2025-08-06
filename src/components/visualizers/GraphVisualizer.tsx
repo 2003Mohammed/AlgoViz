@@ -119,10 +119,10 @@ const GraphVisualizer: React.FC = () => {
     setTargetNode('');
   };
 
+  // 🔥 STRICT: Generate connected graph with minimum 5 nodes
   const generateExample = () => {
-    // Generate truly random graph each time
     const nodeLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-    const numNodes = 4 + Math.floor(Math.random() * 3); // 4-6 nodes
+    const numNodes = 5 + Math.floor(Math.random() * 3); // STRICT: 5-7 nodes minimum
     const selectedLabels = nodeLabels.slice(0, numNodes);
     
     const exampleNodes: GraphNode[] = selectedLabels.map((label, index) => {
@@ -312,25 +312,110 @@ const GraphVisualizer: React.FC = () => {
     setIsAnimating(true);
   };
 
-  const performDijkstra = () => {
+  // 🔥 STRICT: Dijkstra's algorithm with full implementation and result display
+  const [dijkstraResult, setDijkstraResult] = useState<{ path: string[], cost: number } | null>(null);
+
+  const performDijkstra = async () => {
     if (!startNode) return;
+    
+    // 🚨 STRICT VALIDATION: Must have minimum 5 nodes
+    if (nodes.length < 5) {
+      console.warn("Graph must have at least 5 nodes for Dijkstra");
+      return;
+    }
+    
+    // Find a valid end node (different from start)
+    const possibleEndNodes = nodes.filter(n => n.value !== startNode);
+    if (possibleEndNodes.length === 0) return;
+    
+    const endNode = possibleEndNodes[Math.floor(Math.random() * possibleEndNodes.length)].value;
     
     const steps: TraversalStep[] = [];
     const distances: { [key: string]: number } = {};
+    const previous: { [key: string]: string | null } = {};
     const visited = new Set<string>();
     
     // Initialize distances
     nodes.forEach(node => {
-      distances[node.id] = node.value === startNode ? 0 : Infinity;
+      distances[node.value] = node.value === startNode ? 0 : Infinity;
+      previous[node.value] = null;
     });
     
     steps.push({
-      nodes: nodes.map(node => ({ ...node, status: 'default' })),
+      nodes: nodes.map(node => ({ 
+        ...node, 
+        status: node.value === startNode ? 'current' : 'default' 
+      })),
       edges: edges.map(edge => ({ ...edge, status: 'default' })),
-      description: `Starting Dijkstra from node ${startNode}`,
+      description: `Starting Dijkstra's algorithm from ${startNode} to ${endNode}`,
       currentNode: startNode
     });
     
+    while (true) {
+      // Find unvisited node with minimum distance
+      const current = Object.keys(distances)
+        .filter(nodeId => !visited.has(nodeId))
+        .sort((a, b) => distances[a] - distances[b])[0];
+      
+      if (!current || distances[current] === Infinity) break;
+      
+      visited.add(current);
+      
+      steps.push({
+        nodes: nodes.map(node => ({
+          ...node,
+          status: node.value === current ? 'visiting' : 
+                  visited.has(node.value) ? 'visited' : 'default'
+        })),
+        edges: edges.map(edge => ({ ...edge, status: 'default' })),
+        description: `Processing node ${current} (distance: ${distances[current]})`,
+        currentNode: current
+      });
+      
+      // If we reached the destination
+      if (current === endNode) break;
+      
+      // Update distances to neighbors
+      const neighbors = edges
+        .filter(edge => edge.source === current || edge.target === current)
+        .map(edge => ({
+          nodeId: edge.source === current ? edge.target : edge.source,
+          weight: 1 // Default weight
+        }))
+        .filter(neighbor => !visited.has(neighbor.nodeId));
+      
+      neighbors.forEach(neighbor => {
+        const newDistance = distances[current] + neighbor.weight;
+        if (newDistance < distances[neighbor.nodeId]) {
+          distances[neighbor.nodeId] = newDistance;
+          previous[neighbor.nodeId] = current;
+        }
+      });
+    }
+    
+    // Reconstruct shortest path
+    const path: string[] = [];
+    let currentNode: string | null = endNode;
+    while (currentNode) {
+      path.unshift(currentNode);
+      currentNode = previous[currentNode];
+    }
+    
+    // Highlight final path
+    steps.push({
+      nodes: nodes.map(node => ({
+        ...node,
+        status: path.includes(node.value) ? 'path' : 'visited'
+      })),
+      edges: edges.map(edge => ({
+        ...edge,
+        status: (path.includes(edge.source) && path.includes(edge.target)) ? 'path' : 'default'
+      })),
+      description: `Shortest path found: ${path.join(' → ')} | Total cost: ${distances[endNode]}`,
+      currentNode: endNode
+    });
+    
+    setDijkstraResult({ path, cost: distances[endNode] });
     setTraversalSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
@@ -500,12 +585,35 @@ const GraphVisualizer: React.FC = () => {
                 placeholder="Start node"
                 value={startNode}
                 onChange={(e) => setStartNode(e.target.value)}
-                className="max-w-32 text-sm"
+                className="w-32 text-sm"
               />
-              <Button onClick={startTraversal} size="sm">
-                Start {algorithm.toUpperCase()}
+              <Button 
+                onClick={startTraversal} 
+                size="sm"
+                disabled={!startNode || nodes.length < 5 || isAnimating}
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                ▶️ Play {algorithm.toUpperCase()}
               </Button>
             </div>
+
+            {/* 🔥 STRICT: Dijkstra Result Display */}
+            {algorithm === 'dijkstra' && dijkstraResult && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-muted/50 rounded-lg p-4 text-center"
+              >
+                <h4 className="font-semibold text-lg mb-2 text-primary">Dijkstra's Shortest Path:</h4>
+                <p className="text-xl font-mono font-bold tracking-wider mb-1">
+                  {dijkstraResult.path.join(' → ')}
+                </p>
+                <p className="text-lg text-muted-foreground">
+                  Total Cost: <span className="font-bold text-primary">{dijkstraResult.cost}</span>
+                </p>
+              </motion.div>
+            )}
           </div>
 
           {/* Animation Controls */}
