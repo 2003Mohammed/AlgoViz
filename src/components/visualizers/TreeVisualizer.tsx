@@ -267,75 +267,103 @@ const TreeVisualizer: React.FC = () => {
     setIsAnimating(true);
   };
 
+  // 🚨 STRICT: Generate balanced binary tree with minimum 3 nodes
+  const generateBalancedTree = (values: number[]): TreeNode | null => {
+    if (!values || values.length < 3) {
+      throw new Error("Cannot generate tree with fewer than 3 nodes.");
+    }
+
+    values.sort((a, b) => a - b);
+    
+    const buildBalanced = (start: number, end: number): TreeNode | null => {
+      if (start > end) return null;
+      
+      const mid = Math.floor((start + end) / 2);
+      const node: TreeNode = {
+        id: Math.random().toString(36).substr(2, 9),
+        value: values[mid],
+        status: 'default'
+      };
+      
+      node.left = buildBalanced(start, mid - 1);
+      node.right = buildBalanced(mid + 1, end);
+      
+      return node;
+    };
+
+    return buildBalanced(0, values.length - 1);
+  };
+
   const generateExample = () => {
+    // 🚨 STRICT VALIDATION: Block invalid generation requests
+    if (root && isAnimating) {
+      console.warn("Cannot generate new tree while animation is running");
+      return;
+    }
+
+    resetAnimation();
     setRoot(null);
     
-    // STRICT: Always generate minimum 2+ nodes with relatable, random examples
+    // 🚨 STRICT: Always generate minimum 3+ nodes with balanced structure
     const exampleTypes = ['family', 'organization', 'filesystem', 'decision'];
     const typeIndex = Math.floor(Math.random() * exampleTypes.length);
     const exampleType = exampleTypes[typeIndex];
     
     let values: number[];
-    let numNodes: number;
+    // Strict minimum: 3-7 nodes (NEVER single node)
+    const numNodes = 3 + Math.floor(Math.random() * 5); // 3-7 nodes minimum
     
-    // Ensure minimum 3-7 nodes (never single node)
-    numNodes = 3 + Math.floor(Math.random() * 5); // 3-7 nodes minimum
+    // Generate contextual values based on example type
+    switch (exampleType) {
+      case 'family':
+        // Family ages (realistic family tree)
+        values = [45, 25, 65, 15, 35, 55, 75, 85, 95].slice(0, numNodes);
+        break;
+      case 'organization':
+        // Employee IDs or levels  
+        values = [50, 30, 70, 20, 40, 60, 80, 90, 100].slice(0, numNodes);
+        break;
+      case 'filesystem':
+        // File sizes in MB
+        values = [100, 50, 150, 25, 75, 125, 175, 200, 250].slice(0, numNodes);
+        break;
+      case 'decision':
+        // Priority scores
+        values = [10, 5, 15, 3, 8, 12, 18, 22, 25].slice(0, numNodes);
+        break;
+      default:
+        values = [20, 10, 30, 5, 15, 25, 35, 40, 45].slice(0, numNodes);
+    }
     
-    if (treeType === 'bst') {
-      // Generate contextual BST values based on example type
-      switch (exampleType) {
-        case 'family':
-          // Family ages (realistic family tree)
-          values = [45, 25, 65, 15, 35, 55, 75].slice(0, numNodes);
-          break;
-        case 'organization':
-          // Employee IDs or levels
-          values = [50, 30, 70, 20, 40, 60, 80].slice(0, numNodes);
-          break;
-        case 'filesystem':
-          // File sizes in MB
-          values = [100, 50, 150, 25, 75, 125, 175].slice(0, numNodes);
-          break;
-        case 'decision':
-          // Priority scores
-          values = [10, 5, 15, 3, 8, 12, 18].slice(0, numNodes);
-          break;
-        default:
-          values = [20, 10, 30, 5, 15, 25, 35].slice(0, numNodes);
-      }
+    // 🚨 STRICT VALIDATION: Never allow less than 3 nodes
+    if (values.length < 3) {
+      values = [10, 20, 30]; // Emergency fallback
+    }
+    
+    try {
+      // Generate balanced binary tree
+      const balancedRoot = generateBalancedTree(values);
       
-      // Shuffle for realistic insertion order
-      for (let i = values.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [values[i], values[j]] = [values[j], values[i]];
+      if (balancedRoot) {
+        setTimeout(() => {
+          calculatePositions(balancedRoot);
+          setRoot(balancedRoot);
+        }, 100);
+      } else {
+        throw new Error("Failed to generate balanced tree");
       }
-    } else {
-      // Generate relatable binary tree values
-      switch (exampleType) {
-        case 'family':
-          values = [45, 25, 35, 15, 55, 65].slice(0, numNodes);
-          break;
-        case 'organization':
-          // Organization levels: CEO=1, Manager=2, etc.
-          values = [1, 2, 3, 4, 5, 6].slice(0, numNodes);
-          break;
-        case 'filesystem':
-          // File system hierarchy: Root=10, Docs=20, etc.
-          values = [10, 20, 30, 40, 50, 60].slice(0, numNodes);
-          break;
-        default:
-          values = [1, 2, 3, 4, 5, 6, 7].slice(0, numNodes);
+    } catch (error) {
+      console.error("Tree generation failed:", error);
+      // Emergency fallback: generate simple 3-node tree
+      const fallbackValues = [20, 10, 30];
+      const fallbackRoot = generateBalancedTree(fallbackValues);
+      if (fallbackRoot) {
+        setTimeout(() => {
+          calculatePositions(fallbackRoot);
+          setRoot(fallbackRoot);
+        }, 100);
       }
     }
-    
-    // STRICT VALIDATION: Never allow less than 2 nodes
-    if (values.length < 2) {
-      values = [10, 20, 30]; // Fallback minimum structure
-    }
-    
-    setTimeout(() => {
-      values.forEach(value => insertNode(value));
-    }, 100);
   };
 
   const eraseTree = () => {
@@ -346,12 +374,22 @@ const TreeVisualizer: React.FC = () => {
     setIsAnimating(false);
   };
 
+  // 🚨 STRICT: Validate insertions to prevent invalid trees
   const handleInsert = () => {
     const value = parseInt(inputValue);
-    if (!isNaN(value)) {
-      insertNode(value);
-      setInputValue('');
+    if (isNaN(value)) {
+      console.warn("Invalid input: must be a number");
+      return;
     }
+    
+    // Prevent insertion during animation
+    if (isAnimating) {
+      console.warn("Cannot insert while animation is running");
+      return;
+    }
+    
+    insertNode(value);
+    setInputValue('');
   };
 
   const handleDelete = () => {
@@ -526,9 +564,14 @@ const TreeVisualizer: React.FC = () => {
               </Button>
             </div>
             
-            <Button onClick={generateExample} variant="outline" size="sm">
+            <Button 
+              onClick={generateExample} 
+              variant="outline" 
+              size="sm"
+              disabled={isAnimating}
+            >
               <Shuffle className="h-4 w-4 mr-2" />
-              Generate Example
+              Generate Balanced Tree
             </Button>
             
             <Button onClick={eraseTree} variant="outline" size="sm">
