@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
 
 interface GraphNode {
   id: string;
@@ -24,6 +25,7 @@ interface TraversalStep {
   edges: GraphEdge[];
   description: string;
   currentNode?: string;
+  visitOrder: string[];
 }
 
 const GraphVisualizer: React.FC = () => {
@@ -38,7 +40,9 @@ const GraphVisualizer: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [traversalSteps, setTraversalSteps] = useState<TraversalStep[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
-  const [algorithm, setAlgorithm] = useState<'bfs' | 'dfs' | 'dijkstra'>('bfs');
+  const [algorithm, setAlgorithm] = useState<'bfs' | 'dfs'>('bfs');
+  const [animationSpeed, setAnimationSpeed] = useState(1000);
+  const [visitOrder, setVisitOrder] = useState<string[]>([]);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const addNode = () => {
@@ -119,10 +123,10 @@ const GraphVisualizer: React.FC = () => {
     setTargetNode('');
   };
 
-  // 🔥 STRICT: Generate connected graph with minimum 5 nodes
+  // Generate connected graph with minimum 5 nodes for BFS/DFS
   const generateExample = () => {
     const nodeLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-    const numNodes = 5 + Math.floor(Math.random() * 3); // STRICT: 5-7 nodes minimum
+    const numNodes = 5 + Math.floor(Math.random() * 3); // 5-7 nodes minimum
     const selectedLabels = nodeLabels.slice(0, numNodes);
     
     const exampleNodes: GraphNode[] = selectedLabels.map((label, index) => {
@@ -140,33 +144,36 @@ const GraphVisualizer: React.FC = () => {
       };
     });
     
-    // Generate random edges
+    // Generate logical edges for BFS/DFS traversal
     const exampleEdges: GraphEdge[] = [];
-    for (let i = 0; i < selectedLabels.length; i++) {
-      for (let j = i + 1; j < selectedLabels.length; j++) {
-        if (Math.random() < 0.4) { // 40% chance for each possible edge
-          exampleEdges.push({
-            source: selectedLabels[i],
-            target: selectedLabels[j],
-            status: 'default'
-          });
-        }
-      }
-    }
     
-    // Ensure connectivity by adding at least one edge per node
-    selectedLabels.forEach((label, index) => {
-      const hasEdge = exampleEdges.some(edge => 
-        edge.source === label || edge.target === label
-      );
-      if (!hasEdge && index < selectedLabels.length - 1) {
+    // Create a connected graph structure
+    for (let i = 0; i < selectedLabels.length - 1; i++) {
+      // Connect each node to the next one
+      exampleEdges.push({
+        source: selectedLabels[i],
+        target: selectedLabels[i + 1],
+        status: 'default'
+      });
+      
+      // Add some cross connections for more interesting traversal
+      if (i < selectedLabels.length - 2 && Math.random() < 0.6) {
         exampleEdges.push({
-          source: label,
-          target: selectedLabels[index + 1],
+          source: selectedLabels[i],
+          target: selectedLabels[i + 2],
           status: 'default'
         });
       }
-    });
+    }
+    
+    // Ensure the last node connects back to create cycles
+    if (selectedLabels.length > 2) {
+      exampleEdges.push({
+        source: selectedLabels[selectedLabels.length - 1],
+        target: selectedLabels[0],
+        status: 'default'
+      });
+    }
     
     setNodes(exampleNodes);
     setEdges(exampleEdges);
@@ -178,6 +185,7 @@ const GraphVisualizer: React.FC = () => {
     setTraversalSteps([]);
     setCurrentStep(0);
     setCurrentDescription('');
+    setVisitOrder([]);
     setIsAnimating(false);
   };
 
@@ -190,13 +198,15 @@ const GraphVisualizer: React.FC = () => {
     const steps: TraversalStep[] = [];
     const visited = new Set<string>();
     const queue: string[] = [startNode];
+    const visitOrder: string[] = [];
     
     // Initial state
     steps.push({
       nodes: nodes.map(node => ({ ...node, status: 'default' })),
       edges: edges.map(edge => ({ ...edge, status: 'default' })),
       description: `Starting BFS from node ${startNode}`,
-      currentNode: startNode
+      currentNode: startNode,
+      visitOrder: []
     });
     
     while (queue.length > 0) {
@@ -205,6 +215,7 @@ const GraphVisualizer: React.FC = () => {
       if (visited.has(currentNodeValue)) continue;
       
       visited.add(currentNodeValue);
+      visitOrder.push(currentNodeValue);
       
       // Mark current node as visiting
       steps.push({
@@ -215,7 +226,8 @@ const GraphVisualizer: React.FC = () => {
         })),
         edges: edges.map(edge => ({ ...edge, status: 'default' })),
         description: `Visiting node ${currentNodeValue}`,
-        currentNode: currentNodeValue
+        currentNode: currentNodeValue,
+        visitOrder: [...visitOrder]
       });
       
       // Find neighbors
@@ -239,10 +251,12 @@ const GraphVisualizer: React.FC = () => {
         })),
         edges: edges.map(edge => ({ ...edge, status: 'default' })),
         description: `Node ${currentNodeValue} visited. Added neighbors to queue: ${neighbors.join(', ')}`,
-        currentNode: currentNodeValue
+        currentNode: currentNodeValue,
+        visitOrder: [...visitOrder]
       });
     }
     
+    setVisitOrder(visitOrder);
     setTraversalSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
@@ -256,9 +270,11 @@ const GraphVisualizer: React.FC = () => {
     
     const steps: TraversalStep[] = [];
     const visited = new Set<string>();
+    const visitOrder: string[] = [];
     
     const dfsRecursive = (nodeValue: string) => {
       visited.add(nodeValue);
+      visitOrder.push(nodeValue);
       
       // Mark current node as visiting
       steps.push({
@@ -269,7 +285,8 @@ const GraphVisualizer: React.FC = () => {
         })),
         edges: edges.map(edge => ({ ...edge, status: 'default' })),
         description: `Visiting node ${nodeValue} (DFS)`,
-        currentNode: nodeValue
+        currentNode: nodeValue,
+        visitOrder: [...visitOrder]
       });
       
       // Find unvisited neighbors
@@ -293,7 +310,8 @@ const GraphVisualizer: React.FC = () => {
         })),
         edges: edges.map(edge => ({ ...edge, status: 'default' })),
         description: `Finished processing node ${nodeValue}`,
-        currentNode: nodeValue
+        currentNode: nodeValue,
+        visitOrder: [...visitOrder]
       });
     };
     
@@ -302,120 +320,13 @@ const GraphVisualizer: React.FC = () => {
       nodes: nodes.map(node => ({ ...node, status: 'default' })),
       edges: edges.map(edge => ({ ...edge, status: 'default' })),
       description: `Starting DFS from node ${startNode}`,
-      currentNode: startNode
+      currentNode: startNode,
+      visitOrder: []
     });
     
     dfsRecursive(startNode);
     
-    setTraversalSteps(steps);
-    setCurrentStep(0);
-    setIsAnimating(true);
-  };
-
-  // 🔥 STRICT: Dijkstra's algorithm with full implementation and result display
-  const [dijkstraResult, setDijkstraResult] = useState<{ path: string[], cost: number } | null>(null);
-
-  const performDijkstra = async () => {
-    if (!startNode) return;
-    
-    // 🚨 STRICT VALIDATION: Must have minimum 5 nodes
-    if (nodes.length < 5) {
-      console.warn("Graph must have at least 5 nodes for Dijkstra");
-      return;
-    }
-    
-    // Find a valid end node (different from start)
-    const possibleEndNodes = nodes.filter(n => n.value !== startNode);
-    if (possibleEndNodes.length === 0) return;
-    
-    const endNode = possibleEndNodes[Math.floor(Math.random() * possibleEndNodes.length)].value;
-    
-    const steps: TraversalStep[] = [];
-    const distances: { [key: string]: number } = {};
-    const previous: { [key: string]: string | null } = {};
-    const visited = new Set<string>();
-    
-    // Initialize distances
-    nodes.forEach(node => {
-      distances[node.value] = node.value === startNode ? 0 : Infinity;
-      previous[node.value] = null;
-    });
-    
-    steps.push({
-      nodes: nodes.map(node => ({ 
-        ...node, 
-        status: node.value === startNode ? 'current' : 'default' 
-      })),
-      edges: edges.map(edge => ({ ...edge, status: 'default' })),
-      description: `Starting Dijkstra's algorithm from ${startNode} to ${endNode}`,
-      currentNode: startNode
-    });
-    
-    while (true) {
-      // Find unvisited node with minimum distance
-      const current = Object.keys(distances)
-        .filter(nodeId => !visited.has(nodeId))
-        .sort((a, b) => distances[a] - distances[b])[0];
-      
-      if (!current || distances[current] === Infinity) break;
-      
-      visited.add(current);
-      
-      steps.push({
-        nodes: nodes.map(node => ({
-          ...node,
-          status: node.value === current ? 'visiting' : 
-                  visited.has(node.value) ? 'visited' : 'default'
-        })),
-        edges: edges.map(edge => ({ ...edge, status: 'default' })),
-        description: `Processing node ${current} (distance: ${distances[current]})`,
-        currentNode: current
-      });
-      
-      // If we reached the destination
-      if (current === endNode) break;
-      
-      // Update distances to neighbors
-      const neighbors = edges
-        .filter(edge => edge.source === current || edge.target === current)
-        .map(edge => ({
-          nodeId: edge.source === current ? edge.target : edge.source,
-          weight: 1 // Default weight
-        }))
-        .filter(neighbor => !visited.has(neighbor.nodeId));
-      
-      neighbors.forEach(neighbor => {
-        const newDistance = distances[current] + neighbor.weight;
-        if (newDistance < distances[neighbor.nodeId]) {
-          distances[neighbor.nodeId] = newDistance;
-          previous[neighbor.nodeId] = current;
-        }
-      });
-    }
-    
-    // Reconstruct shortest path
-    const path: string[] = [];
-    let currentNode: string | null = endNode;
-    while (currentNode) {
-      path.unshift(currentNode);
-      currentNode = previous[currentNode];
-    }
-    
-    // Highlight final path
-    steps.push({
-      nodes: nodes.map(node => ({
-        ...node,
-        status: path.includes(node.value) ? 'path' : 'visited'
-      })),
-      edges: edges.map(edge => ({
-        ...edge,
-        status: (path.includes(edge.source) && path.includes(edge.target)) ? 'path' : 'default'
-      })),
-      description: `Shortest path found: ${path.join(' → ')} | Total cost: ${distances[endNode]}`,
-      currentNode: endNode
-    });
-    
-    setDijkstraResult({ path, cost: distances[endNode] });
+    setVisitOrder(visitOrder);
     setTraversalSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
@@ -424,10 +335,8 @@ const GraphVisualizer: React.FC = () => {
   const startTraversal = () => {
     if (algorithm === 'bfs') {
       performBFS();
-    } else if (algorithm === 'dfs') {
-      performDFS();
     } else {
-      performDijkstra();
+      performDFS();
     }
   };
 
@@ -441,6 +350,7 @@ const GraphVisualizer: React.FC = () => {
     setCurrentStep(0);
     setIsAnimating(false);
     setCurrentDescription('');
+    setVisitOrder([]);
     if (animationRef.current) {
       clearTimeout(animationRef.current);
     }
@@ -457,6 +367,7 @@ const GraphVisualizer: React.FC = () => {
         setCurrentDescription(step.description);
         setNodes(step.nodes);
         setEdges(step.edges);
+        setVisitOrder(step.visitOrder);
         
         animationRef.current = setTimeout(() => {
           if (currentStep < traversalSteps.length - 1) {
@@ -464,7 +375,7 @@ const GraphVisualizer: React.FC = () => {
           } else {
             setIsAnimating(false);
           }
-        }, 1500);
+        }, animationSpeed);
       }
     }
 
@@ -473,7 +384,7 @@ const GraphVisualizer: React.FC = () => {
         clearTimeout(animationRef.current);
       }
     };
-  }, [isAnimating, currentStep, traversalSteps]);
+  }, [isAnimating, currentStep, traversalSteps, animationSpeed]);
 
   const getNodeColor = (status: string) => {
     switch (status) {
@@ -489,7 +400,7 @@ const GraphVisualizer: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Graph Visualizer</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Graph Data Structure - BFS & DFS Visualizer</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
           {/* Controls */}
@@ -562,21 +473,14 @@ const GraphVisualizer: React.FC = () => {
                 size="sm"
                 onClick={() => setAlgorithm('bfs')}
               >
-                BFS
+                BFS (Breadth-First Search)
               </Button>
               <Button 
                 variant={algorithm === 'dfs' ? 'default' : 'outline'} 
                 size="sm"
                 onClick={() => setAlgorithm('dfs')}
               >
-                DFS
-              </Button>
-              <Button 
-                variant={algorithm === 'dijkstra' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setAlgorithm('dijkstra')}
-              >
-                Dijkstra
+                DFS (Depth-First Search)
               </Button>
             </div>
             
@@ -598,19 +502,41 @@ const GraphVisualizer: React.FC = () => {
               </Button>
             </div>
 
-            {/* 🔥 STRICT: Dijkstra Result Display */}
-            {algorithm === 'dijkstra' && dijkstraResult && (
+            {/* Speed Control */}
+            <div className="flex flex-col items-center space-y-2">
+              <label className="text-sm font-medium">Animation Speed</label>
+              <div className="w-64 flex items-center space-x-2">
+                <span className="text-xs text-muted-foreground">Slow</span>
+                <Slider
+                  value={[animationSpeed]}
+                  onValueChange={(value) => setAnimationSpeed(value[0])}
+                  min={500}
+                  max={3000}
+                  step={100}
+                  className="flex-1"
+                />
+                <span className="text-xs text-muted-foreground">Fast</span>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                {animationSpeed}ms per step
+              </span>
+            </div>
+
+            {/* Final Result Display */}
+            {visitOrder.length > 0 && !isAnimating && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-muted/50 rounded-lg p-4 text-center"
               >
-                <h4 className="font-semibold text-lg mb-2 text-primary">Dijkstra's Shortest Path:</h4>
+                <h4 className="font-semibold text-lg mb-2 text-primary">
+                  {algorithm.toUpperCase()} Traversal Complete!
+                </h4>
                 <p className="text-xl font-mono font-bold tracking-wider mb-1">
-                  {dijkstraResult.path.join(' → ')}
+                  Visit Order: {visitOrder.join(' → ')}
                 </p>
                 <p className="text-lg text-muted-foreground">
-                  Total Cost: <span className="font-bold text-primary">{dijkstraResult.cost}</span>
+                  Total Nodes Visited: <span className="font-bold text-primary">{visitOrder.length}</span>
                 </p>
               </motion.div>
             )}
@@ -651,7 +577,7 @@ const GraphVisualizer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span>🟡 Visiting</span>
+                <span>🟡 Currently Visiting</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>

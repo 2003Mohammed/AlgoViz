@@ -10,6 +10,7 @@ import Index from './pages/Index';
 import Algorithms from './pages/Algorithms';
 import DataStructures from './pages/DataStructures';
 import Guide from './pages/Guide';
+import BuyMeACoffeePage from './pages/BuyMeACoffeePage';
 
 // Import individual data structure pages
 import ArrayVisualizerPage from './pages/data-structures/ArrayVisualizerPage';
@@ -49,6 +50,7 @@ function App() {
             <Route path="/algorithms" element={<Algorithms />} />
             <Route path="/data-structures" element={<DataStructures />} />
             <Route path="/guide" element={<Guide />} />
+            <Route path="/buy-me-a-coffee" element={<BuyMeACoffeePage />} />
 
             {/* Data Structure pages */}
             <Route path="/data-structures/array" element={<ArrayVisualizerPage />} />

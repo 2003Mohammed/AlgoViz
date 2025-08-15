@@ -44,17 +44,7 @@ export const Footer: React.FC = () => {
             viewport={{ once: true }}
           >
             <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-2">
-              <span>Built with</span>
-              <motion.span
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  color: ['#ef4444', '#ec4899', '#ef4444']
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Heart className="h-4 w-4 inline mx-1" />
-              </motion.span>
-              <span>by</span>
+              <span>Built by</span>
               <motion.span 
                 className="font-semibold text-primary"
                 whileHover={{ 
@@ -63,6 +53,17 @@ export const Footer: React.FC = () => {
                 }}
               >
                 Mohammed A
+              </motion.span>
+              <span>|</span>
+              <span>© 2025</span>
+              <motion.span 
+                className="font-semibold text-primary"
+                whileHover={{ 
+                  scale: 1.05,
+                  textShadow: "0 0 8px rgba(59, 130, 246, 0.5)"
+                }}
+              >
+                AlgoViz™
               </motion.span>
             </div>
           </motion.div>
