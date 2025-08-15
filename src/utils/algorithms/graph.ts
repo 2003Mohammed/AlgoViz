@@ -125,7 +125,7 @@ export const graphAlgorithms: Algorithm[] = [
       }
     ]
   },
-  {
+ /* {
     id: 'dijkstra',
     name: 'Dijkstra\'s Algorithm',
     category: 'graph',
@@ -177,5 +177,5 @@ export const graphAlgorithms: Algorithm[] = [
         industry: "Logistics"
       }
     ]
-  }
+  }*/
 ];
