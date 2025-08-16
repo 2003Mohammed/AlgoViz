@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ArrayItem {
@@ -387,6 +387,29 @@ const QuickSortVisualizer: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Learn More */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Learn More</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="text-sm space-y-2">
+            <li>
+              <ExternalLink className="h-4 w-4 inline-block mr-1" />
+              <a href="https://www.w3schools.com/algorithms/quick_sort.asp" target="_blank" rel="noopener noreferrer" className="underline">
+                W3Schools Quick Sort Tutorial
+              </a>
+            </li>
+            <li>
+              <ExternalLink className="h-4 w-4 inline-block mr-1" />
+              <a href="https://www.geeksforgeeks.org/quick-sort/" target="_blank" rel="noopener noreferrer" className="underline">
+                GeeksforGeeks Quick Sort Explanation
+              </a>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 };

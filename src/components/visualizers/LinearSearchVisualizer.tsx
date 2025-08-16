@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ArrayItem {
@@ -361,6 +361,32 @@ const LinearSearchVisualizer: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Learn More */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Learn More
+            <ExternalLink className="h-4 w-4" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="text-sm space-y-2">
+            <li>
+              <a href="https://www.w3schools.com/algorithms/algorithm_search.asp" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
+                W3Schools - Linear Search
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </li>
+            <li>
+              <a href="https://www.geeksforgeeks.org/linear-search/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
+                GeeksforGeeks - Linear Search
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 };

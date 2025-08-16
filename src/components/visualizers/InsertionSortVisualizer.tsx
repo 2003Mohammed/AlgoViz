@@ -429,6 +429,12 @@ const InsertionSortVisualizer: React.FC = () => {
               </ul>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" asChild>
+                  <a href="https://www.w3schools.com/algorithms/insertion_sort.asp" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    W3Schools
+                  </a>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/insertion-sort/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     GeeksforGeeks

@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Plus, Minus, Eye, RotateCcw, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Slider } from '../ui/slider';
+import { Plus, Minus, Eye, RotateCcw, ExternalLink, AlertTriangle, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface QueueItem {
@@ -19,6 +20,7 @@ const QueueVisualizer: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [peekedValue, setPeekedValue] = useState<number | null>(null);
   const [error, setError] = useState<string>('');
+  const [animationSpeed, setAnimationSpeed] = useState([0.5]); // Default: 0.5 seconds
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxSize = 8;
 
@@ -80,7 +82,7 @@ const QueueVisualizer: React.FC = () => {
     animationRef.current = setTimeout(() => {
       setQueue(prev => prev.map(item => ({ ...item, status: 'default' as const })));
       setIsAnimating(false);
-    }, 500);
+    }, animationSpeed[0] * 1000);
   };
 
   const dequeue = () => {
@@ -105,7 +107,7 @@ const QueueVisualizer: React.FC = () => {
     animationRef.current = setTimeout(() => {
       setQueue(prev => prev.slice(1));
       setIsAnimating(false);
-    }, 500);
+    }, animationSpeed[0] * 1000);
   };
 
   const peek = () => {
@@ -131,7 +133,7 @@ const QueueVisualizer: React.FC = () => {
     animationRef.current = setTimeout(() => {
       setQueue(prev => prev.map(item => ({ ...item, status: 'default' as const })));
       setIsAnimating(false);
-    }, 1000);
+    }, animationSpeed[0] * 1000);
   };
 
   const reset = () => {
@@ -179,6 +181,32 @@ const QueueVisualizer: React.FC = () => {
             <Button onClick={eraseExample} variant="outline" size="sm">
               Erase Example
             </Button>
+          </div>
+
+          {/* Speed Controller */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider
+                value={animationSpeed}
+                onValueChange={setAnimationSpeed}
+                max={2}
+                min={0.1}
+                step={0.1}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground min-w-[60px]">
+                {animationSpeed[0]}s
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Fast</span>
+              <span>Medium</span>
+              <span>Slow</span>
+            </div>
           </div>
 
           {/* Operations */}
@@ -319,9 +347,9 @@ const QueueVisualizer: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" asChild>
-                  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.w3schools.com/dsa/dsa_theory_queue.php" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    MDN
+                    W3Schools
                   </a>
                 </Button>
                 <Button variant="outline" size="sm" asChild>

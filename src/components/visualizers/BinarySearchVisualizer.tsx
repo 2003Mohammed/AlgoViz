@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ArrowUp } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ArrowUp, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ArrayItem {
@@ -415,6 +415,33 @@ const BinarySearchVisualizer: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Learn More Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Learn More
+            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            For a more detailed explanation and examples, check out these resources:
+          </p>
+          <ul className="text-sm space-y-1">
+            <li>
+              <a href="https://www.w3schools.com/algorithms/algorithm_binary_search.asp" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                W3Schools - Binary Search Algorithm
+              </a>
+            </li>
+            <li>
+              <a href="https://www.geeksforgeeks.org/binary-search/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                GeeksforGeeks - Binary Search
+              </a>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 };

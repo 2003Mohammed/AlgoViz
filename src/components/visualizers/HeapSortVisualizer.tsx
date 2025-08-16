@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ArrayItem {
@@ -427,6 +427,35 @@ const HeapSortVisualizer: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Learn More */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Learn More</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            <a
+              href="https://www.w3schools.com/algorithms/heap_sort.asp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-blue-600 hover:underline"
+            >
+              <ExternalLink className="h-4 w-4" />
+              W3Schools
+            </a>
+            <a
+              href="https://www.geeksforgeeks.org/heap-sort/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-blue-600 hover:underline"
+            >
+              <ExternalLink className="h-4 w-4" />
+              GeeksforGeeks
+            </a>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

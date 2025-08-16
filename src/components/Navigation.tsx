@@ -15,7 +15,6 @@ export const Navigation = () => {
     { name: 'Data Structures', path: '/data-structures' },
     { name: 'Algorithms', path: '/algorithms' },
     { name: 'Guide', path: '/guide' },
-    { name: '☕ Coffee', path: '/buy-me-a-coffee' },
   ];
 
   const isActive = (path: string) => {

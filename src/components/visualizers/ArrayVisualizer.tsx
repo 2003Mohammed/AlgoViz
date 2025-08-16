@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus, Search, ExternalLink } from 'lucide-react';
+import { Slider } from '../ui/slider';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus, Search, ExternalLink, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ArrayItem {
@@ -28,6 +29,7 @@ const ArrayVisualizer: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [animationSteps, setAnimationSteps] = useState<ArrayItem[][]>([]);
   const [error, setError] = useState('');
+  const [animationSpeed, setAnimationSpeed] = useState([0.8]); // Default: 0.8 seconds
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetError = () => setError('');
@@ -324,7 +326,7 @@ const ArrayVisualizer: React.FC = () => {
           const nextStep = currentStep + 1;
           setCurrentStep(nextStep);
           setArray(animationSteps[nextStep]);
-        }, 800);
+        }, animationSpeed[0] * 1000);
       } else {
         setIsAnimating(false);
       }
@@ -364,6 +366,32 @@ const ArrayVisualizer: React.FC = () => {
             <Button onClick={eraseExample} variant="outline" size="sm">
               Erase Example
             </Button>
+          </div>
+
+          {/* Speed Controller */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider
+                value={animationSpeed}
+                onValueChange={setAnimationSpeed}
+                max={2}
+                min={0.1}
+                step={0.1}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground min-w-[60px]">
+                {animationSpeed[0]}s
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Fast</span>
+              <span>Medium</span>
+              <span>Slow</span>
+            </div>
           </div>
 
           {/* Animation Controls */}
@@ -543,6 +571,63 @@ const ArrayVisualizer: React.FC = () => {
 
       {/* Educational Content */}
       <div className="grid md:grid-cols-2 gap-6">
+        {/* Real-world Applications */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Real-world Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-medium text-blue-800 mb-2">📊 Database Management Systems</h4>
+                <p className="text-sm text-blue-700">
+                  Arrays are fundamental in database indexing, where they store references to data records. 
+                  This enables fast O(1) access to any record by its index, making database queries efficient. 
+                  Modern databases use sophisticated array-based structures like B-trees and hash tables for optimal performance.
+                </p>
+              </div>
+              <ul className="text-sm space-y-1">
+                <li>• Image processing (pixel arrays)</li>
+                <li>• Dynamic programming tables</li>
+                <li>• Buffer management</li>
+                <li>• Mathematical computations</li>
+                <li>• Game state management</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Complexity & Properties */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Complexity & Properties</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="font-medium">Time Complexity:</div>
+                  <div className="font-mono">O(1) - Access</div>
+                  <div className="font-mono">O(n) - Search/Insert/Delete</div>
+                </div>
+                <div>
+                  <div className="font-medium">Space Complexity:</div>
+                  <div className="font-mono">O(n)</div>
+                  <div className="text-xs text-muted-foreground">Linear space</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-medium">Properties:</div>
+                <ul className="text-xs space-y-1 text-muted-foreground">
+                  <li>• Contiguous memory allocation</li>
+                  <li>• Random access capability</li>
+                  <li>• Fixed size (static arrays)</li>
+                  <li>• Dynamic sizing (dynamic arrays)</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>Time Complexity</CardTitle>
@@ -571,29 +656,31 @@ const ArrayVisualizer: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Real-world Applications</CardTitle>
+            <CardTitle>Learn More</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="text-sm space-y-1">
-              <li>• Database indexing</li>
-              <li>• Image processing (pixel arrays)</li>
-              <li>• Dynamic programming tables</li>
-              <li>• Buffer management</li>
-              <li>• Mathematical computations</li>
-            </ul>
-            <div className="mt-4 flex gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  MDN
-                </a>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <a href="https://www.geeksforgeeks.org/array-data-structure/" target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  GeeksforGeeks
-                </a>
-              </Button>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Explore comprehensive resources to deepen your understanding of arrays and data structures.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <a href="https://www.w3schools.com/js/js_arrays.asp" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    W3Schools - JavaScript Arrays
+                  </a>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <a href="https://www.geeksforgeeks.org/array-data-structure/" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    GeeksforGeeks - Array Data Structure
+                  </a>
+                </Button>
+              </div>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p><strong>W3Schools:</strong> Interactive tutorials with examples and exercises</p>
+                <p><strong>GeeksforGeeks:</strong> In-depth articles with implementation examples</p>
+              </div>
             </div>
           </CardContent>
         </Card>

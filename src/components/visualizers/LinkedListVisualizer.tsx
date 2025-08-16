@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Slider } from '../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Plus, Minus, Search, RotateCcw, ExternalLink, AlertTriangle, Shuffle, Eye, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Plus, Minus, Search, RotateCcw, ExternalLink, AlertTriangle, Shuffle, Eye, ArrowRight, ArrowLeft, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ListNode {
@@ -29,6 +30,7 @@ const LinkedListVisualizer: React.FC = () => {
   const [lastOperation, setLastOperation] = useState<string>('');
   const [isAnimating, setIsAnimating] = useState(false);
   const [error, setError] = useState<string>('');
+  const [animationSpeed, setAnimationSpeed] = useState([0.5]); // Default: 0.5 seconds
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxSize = 8;
 
@@ -146,7 +148,7 @@ const LinkedListVisualizer: React.FC = () => {
     animationRef.current = setTimeout(() => {
       setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
       setIsAnimating(false);
-    }, 500);
+    }, animationSpeed[0] * 1000);
   };
 
   const insertAtTail = () => {
@@ -198,7 +200,7 @@ const LinkedListVisualizer: React.FC = () => {
     animationRef.current = setTimeout(() => {
       setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
       setIsAnimating(false);
-    }, 500);
+    }, animationSpeed[0] * 1000);
   };
 
   const deleteAtHead = () => {
@@ -238,7 +240,7 @@ const LinkedListVisualizer: React.FC = () => {
       }
       
       setIsAnimating(false);
-    }, 500);
+    }, animationSpeed[0] * 1000);
   };
 
   const search = () => {
@@ -391,6 +393,32 @@ const LinkedListVisualizer: React.FC = () => {
             <Button onClick={eraseExample} variant="outline" size="sm">
               Erase Example
             </Button>
+          </div>
+
+          {/* Speed Controller */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider
+                value={animationSpeed}
+                onValueChange={setAnimationSpeed}
+                max={2}
+                min={0.1}
+                step={0.1}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground min-w-[60px]">
+                {animationSpeed[0]}s
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Fast</span>
+              <span>Medium</span>
+              <span>Slow</span>
+            </div>
           </div>
 
           {/* Operations */}
@@ -547,9 +575,9 @@ const LinkedListVisualizer: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" asChild>
-                  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.w3schools.com/dsa/dsa_theory_linkedlist.php" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    MDN
+                    W3Schools
                   </a>
                 </Button>
                 <Button variant="outline" size="sm" asChild>

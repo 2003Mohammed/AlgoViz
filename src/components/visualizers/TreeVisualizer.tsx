@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Minus } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Minus, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface TreeNode {
@@ -790,6 +790,91 @@ const TreeVisualizer: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Educational Content */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Real-world Applications */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Real-world Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm space-y-1">
+              <li>• File system organization</li>
+              <li>• Database indexing (B-trees)</li>
+              <li>• Expression parsing and evaluation</li>
+              <li>• Decision tree algorithms</li>
+              <li>• Huffman coding compression</li>
+              <li>• Game AI decision making</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Complexity & Properties */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Complexity & Properties</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="font-medium">Time Complexity:</div>
+                  <div className="font-mono">O(log n) - Balanced</div>
+                  <div className="font-mono">O(n) - Unbalanced</div>
+                </div>
+                <div>
+                  <div className="font-medium">Space Complexity:</div>
+                  <div className="font-mono">O(n)</div>
+                  <div className="text-xs text-muted-foreground">For n nodes</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-medium">Properties:</div>
+                <ul className="text-xs space-y-1 text-muted-foreground">
+                  <li>• Hierarchical data structure</li>
+                  <li>• Each node has at most 2 children</li>
+                  <li>• BST maintains sorted order</li>
+                  <li>• Efficient search and traversal</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Learn More */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Learn More</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm space-y-1">
+              <li>
+                <a 
+                  href="https://www.w3schools.com/data_structures/data_structures_binary_tree.asp" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  W3Schools Binary Tree
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.geeksforgeeks.org/binary-search-tree-data-structure/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  GeeksforGeeks BST
+                </a>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Coffee, Heart, CreditCard, Globe, Zap, Star } from 'lucide-react';
+import { ArrowLeft, Coffee, Heart, CreditCard, Globe, Zap, Star, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -10,7 +10,7 @@ import { Layout } from '../components/Layout';
 
 const BuyMeACoffeePage: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'international'>('upi');
-  const [upiId, setUpiId] = useState('sammohammed2003@okicici');
+  const [upiId, setUpiId] = useState('mohammed192003@ibl');
   const [amount, setAmount] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
 
@@ -20,9 +20,28 @@ const BuyMeACoffeePage: React.FC = () => {
     window.open(upiUrl, '_blank');
   };
 
+  const handlePhonePePayment = () => {
+    // PhonePe UPI payment redirect - try to open PhonePe app first, then fallback to website
+    try {
+      // Try to open PhonePe app
+      const phonePeAppUrl = `phonepe://pay?pa=${upiId}&am=${amount}&cu=INR&tn=AlgoViz%20Support`;
+      window.open(phonePeAppUrl, '_blank');
+      
+      // Fallback to PhonePe website after a short delay
+      setTimeout(() => {
+        const phonePeWebUrl = `https://www.phonepe.com/pay?pa=${upiId}&am=${amount}&cu=INR&tn=AlgoViz%20Support`;
+        window.open(phonePeWebUrl, '_blank');
+      }, 1000);
+    } catch (error) {
+      // If app doesn't open, redirect to website
+      const phonePeWebUrl = `https://www.phonepe.com/pay?pa=${upiId}&am=${amount}&cu=INR&tn=AlgoViz%20Support`;
+      window.open(phonePeWebUrl, '_blank');
+    }
+  };
+
   const handleInternationalPayment = () => {
     // Simulate international payment redirect
-    alert('Redirecting to international payment gateway...');
+    alert('Redirecting to international payment gateway... (Dummy implementation)');
   };
 
   const presetAmounts = ['25', '50', '100', '200', '500'];
@@ -130,10 +149,12 @@ const BuyMeACoffeePage: React.FC = () => {
                   <label className="text-sm font-medium">UPI ID</label>
                   <Input
                     value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    placeholder="Enter UPI ID"
-                    className="font-mono"
+                    readOnly
+                    className="font-mono bg-muted/50"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Fixed UPI ID: <span className="font-mono font-semibold">{upiId}</span>
+                  </p>
                 </div>
                 
                 <div className="space-y-2">
@@ -165,14 +186,26 @@ const BuyMeACoffeePage: React.FC = () => {
                   />
                 </div>
                 
-                <Button 
-                  onClick={handleUpiPayment}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
-                  size="lg"
-                >
-                  <Coffee className="h-5 w-5 mr-2" />
-                  Pay with UPI
-                </Button>
+                <div className="space-y-2">
+                  <Button 
+                    onClick={handleUpiPayment}
+                    className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+                    size="lg"
+                  >
+                    <Coffee className="h-5 w-5 mr-2" />
+                    Pay with UPI
+                  </Button>
+                  
+                  <Button 
+                    onClick={handlePhonePePayment}
+                    variant="outline"
+                    className="w-full border-purple-500 text-purple-600 hover:bg-purple-50"
+                    size="lg"
+                  >
+                    <Smartphone className="h-5 w-5 mr-2" />
+                    Pay with PhonePe
+                  </Button>
+                </div>
                 
                 <p className="text-xs text-muted-foreground text-center">
                   Works with Google Pay, PhonePe, Paytm, and all UPI apps
@@ -196,9 +229,8 @@ const BuyMeACoffeePage: React.FC = () => {
                       <SelectValue placeholder="Select payment method" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="paypal">PayPal</SelectItem>
-                      <SelectItem value="stripe">Credit/Debit Card</SelectItem>
-                      <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                      <SelectItem value="credit">Credit Card</SelectItem>
+                      <SelectItem value="debit">Debit Card</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -229,11 +261,11 @@ const BuyMeACoffeePage: React.FC = () => {
                   size="lg"
                 >
                   <CreditCard className="h-5 w-5 mr-2" />
-                  Pay Internationally
+                  Pay with Card (Dummy)
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center">
-                  Secure payments via PayPal, Stripe, and crypto
+                  Secure payments via credit/debit cards (Dummy implementation for demonstration)
                 </p>
               </CardContent>
             </Card>

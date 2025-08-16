@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface GraphNode {
@@ -357,6 +357,35 @@ const DFSVisualizer: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Learn More Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Learn More</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            <a
+              href="https://www.w3schools.com/data/graph_dfs.asp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              <ExternalLink className="h-5 w-5 mr-2" />
+              W3Schools DFS Tutorial
+            </a>
+            <a
+              href="https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 hover:bg-green-100 transition-colors"
+            >
+              <ExternalLink className="h-5 w-5 mr-2" />
+              GeeksforGeeks DFS Explanation
+            </a>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Gauge, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
 
 interface GraphNode {
   id: string;
@@ -41,6 +42,7 @@ const DijkstraVisualizer: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [dijkstraSteps, setDijkstraSteps] = useState<DijkstraStep[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
+  const [animationSpeed, setAnimationSpeed] = useState([2]); // Default: 2 seconds
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const addNode = () => {
@@ -98,24 +100,79 @@ const DijkstraVisualizer: React.FC = () => {
   };
 
   const generateExample = () => {
-    const exampleNodes: GraphNode[] = [
-      { id: '1', value: 'A', x: 150, y: 100, distance: Infinity, status: 'default' },
-      { id: '2', value: 'B', x: 350, y: 100, distance: Infinity, status: 'default' },
-      { id: '3', value: 'C', x: 100, y: 200, distance: Infinity, status: 'default' },
-      { id: '4', value: 'D', x: 250, y: 200, distance: Infinity, status: 'default' },
-      { id: '5', value: 'E', x: 400, y: 200, distance: Infinity, status: 'default' }
-    ];
+    // Generate random number of nodes (4-8)
+    const numNodes = Math.floor(Math.random() * 5) + 4;
+    const nodeLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     
-    const exampleEdges: GraphEdge[] = [
-      { source: 'A', target: 'B', weight: 4, status: 'default' },
-      { source: 'A', target: 'C', weight: 2, status: 'default' },
-      { source: 'B', target: 'D', weight: 3, status: 'default' },
-      { source: 'C', target: 'D', weight: 1, status: 'default' },
-      { source: 'D', target: 'E', weight: 5, status: 'default' }
-    ];
+    const exampleNodes: GraphNode[] = [];
+    const exampleEdges: GraphEdge[] = [];
+    
+    // Generate random node positions
+    for (let i = 0; i < numNodes; i++) {
+      const angle = (i * 2 * Math.PI) / numNodes;
+      const radius = 120 + Math.random() * 40; // Random radius between 120-160
+      const centerX = 250 + (Math.random() - 0.5) * 100; // Random center variation
+      const centerY = 150 + (Math.random() - 0.5) * 100;
+      
+      exampleNodes.push({
+        id: (i + 1).toString(),
+        value: nodeLabels[i],
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+        distance: Infinity,
+        status: 'default'
+      });
+    }
+    
+    // Generate random edges (ensure connectivity)
+    const connected = new Set<string>();
+    connected.add(exampleNodes[0].value); // Start with first node
+    
+    // First, ensure all nodes are connected
+    for (let i = 1; i < exampleNodes.length; i++) {
+      const source = exampleNodes[Math.floor(Math.random() * i)].value;
+      const target = exampleNodes[i].value;
+      const weight = Math.floor(Math.random() * 10) + 1; // Random weight 1-10
+      
+      exampleEdges.push({
+        source,
+        target,
+        weight,
+        status: 'default'
+      });
+      connected.add(target);
+    }
+    
+    // Add some additional random edges for complexity
+    const additionalEdges = Math.floor(Math.random() * (numNodes - 1)) + 1;
+    for (let i = 0; i < additionalEdges; i++) {
+      const source = exampleNodes[Math.floor(Math.random() * numNodes)].value;
+      const target = exampleNodes[Math.floor(Math.random() * numNodes)].value;
+      
+      if (source !== target) {
+        const edgeExists = exampleEdges.some(edge => 
+          (edge.source === source && edge.target === target) ||
+          (edge.source === target && edge.target === source)
+        );
+        
+        if (!edgeExists) {
+          const weight = Math.floor(Math.random() * 10) + 1;
+          exampleEdges.push({
+            source,
+            target,
+            weight,
+            status: 'default'
+          });
+        }
+      }
+    }
     
     setNodes(exampleNodes);
     setEdges(exampleEdges);
+    setDijkstraSteps([]);
+    setCurrentStep(0);
+    setCurrentDescription('');
+    setIsAnimating(false);
   };
 
   const eraseGraph = () => {
@@ -254,7 +311,7 @@ const DijkstraVisualizer: React.FC = () => {
           } else {
             setIsAnimating(false);
           }
-        }, 2000);
+        }, animationSpeed[0] * 1000);
       }
     }
 
@@ -285,7 +342,7 @@ const DijkstraVisualizer: React.FC = () => {
           <div className="flex gap-4 items-center justify-center flex-wrap">
             <Button onClick={generateExample} variant="outline" size="sm">
               <Shuffle className="h-4 w-4 mr-2" />
-              Generate Example
+              Generate Random Example
             </Button>
             <Button onClick={eraseGraph} variant="outline" size="sm">
               <RotateCcw className="h-4 w-4 mr-2" />
@@ -350,6 +407,32 @@ const DijkstraVisualizer: React.FC = () => {
             </div>
           </div>
 
+          {/* Speed Controller */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider
+                value={animationSpeed}
+                onValueChange={setAnimationSpeed}
+                max={5}
+                min={0.5}
+                step={0.1}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground min-w-[60px]">
+                {animationSpeed[0]}s
+              </span>
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Fast</span>
+              <span>Medium</span>
+              <span>Slow</span>
+            </div>
+          </div>
+
           {/* Animation Controls */}
           {dijkstraSteps.length > 0 && (
             <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
@@ -404,6 +487,87 @@ const DijkstraVisualizer: React.FC = () => {
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
+
+          {/* Real-world Applications */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Real-world Applications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="text-sm space-y-1">
+                <li>• GPS navigation systems</li>
+                <li>• Network routing protocols</li>
+                <li>• Social media friend suggestions</li>
+                <li>• Game AI pathfinding</li>
+                <li>• Logistics and delivery optimization</li>
+                <li>• Flight route planning</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Complexity & Properties */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Complexity & Properties</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="font-medium">Time Complexity:</div>
+                    <div className="font-mono">O(V² + E)</div>
+                    <div className="text-xs text-muted-foreground">V = vertices, E = edges</div>
+                  </div>
+                  <div>
+                    <div className="font-medium">Space Complexity:</div>
+                    <div className="font-mono">O(V)</div>
+                    <div className="text-xs text-muted-foreground">For distance array</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="font-medium">Properties:</div>
+                  <ul className="text-xs space-y-1 text-muted-foreground">
+                    <li>• Works with weighted graphs</li>
+                    <li>• Finds shortest path from single source</li>
+                    <li>• Cannot handle negative weights</li>
+                    <li>• Greedy algorithm approach</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Learn More */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Learn More</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Explore comprehensive resources to deepen your understanding of Dijkstra's algorithm and graph theory.
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="https://www.w3schools.com/dsa/dsa_theory_graphs.php" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      W3Schools - Graph Theory
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      GeeksforGeeks - Dijkstra's Algorithm
+                    </a>
+                  </Button>
+                </div>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p><strong>W3Schools:</strong> Interactive tutorials with examples and exercises</p>
+                  <p><strong>GeeksforGeeks:</strong> In-depth articles with implementation examples</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Graph Visualization */}
           <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-center justify-center overflow-auto">

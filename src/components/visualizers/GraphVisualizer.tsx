@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Slider } from '../ui/slider';
 
@@ -653,6 +653,81 @@ const GraphVisualizer: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Educational Content */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Real-world Applications */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Real-world Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm space-y-1">
+              <li>• Social network connections</li>
+              <li>• GPS navigation systems</li>
+              <li>• Computer network topology</li>
+              <li>• Game level design</li>
+              <li>• Dependency management</li>
+              <li>• Circuit design</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Complexity & Properties */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Complexity & Properties</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="font-medium">Time Complexity:</div>
+                  <div className="font-mono">O(V + E)</div>
+                  <div className="text-xs text-muted-foreground">V = vertices, E = edges</div>
+                </div>
+                <div>
+                  <div className="font-medium">Space Complexity:</div>
+                  <div className="font-mono">O(V)</div>
+                  <div className="text-xs text-muted-foreground">For visited array</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-medium">Properties:</div>
+                <ul className="text-xs space-y-1 text-muted-foreground">
+                  <li>• Can represent complex relationships</li>
+                  <li>• Directed or undirected</li>
+                  <li>• Weighted or unweighted</li>
+                  <li>• Cyclic or acyclic</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Learn More */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Learn More</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm space-y-2">
+              <li>
+                <ExternalLink className="h-4 w-4 inline-block mr-1" />
+                <a href="https://www.w3schools.com/data/data_graphs.asp" target="_blank" rel="noopener noreferrer" className="underline">
+                  W3Schools Graphs
+                </a>
+              </li>
+              <li>
+                <ExternalLink className="h-4 w-4 inline-block mr-1" />
+                <a href="https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/" target="_blank" rel="noopener noreferrer" className="underline">
+                  GeeksforGeeks Graph Algorithms
+                </a>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

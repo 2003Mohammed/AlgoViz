@@ -348,9 +348,9 @@ const BubbleSortVisualizer: React.FC = () => {
             </ul>
             <div className="mt-4 flex gap-2">
               <Button variant="outline" size="sm" asChild>
-                <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.w3schools.com/js/js_arrays_sort.asp" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  MDN
+                  W3Schools
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>

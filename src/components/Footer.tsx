@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Github, Mail, Heart } from 'lucide-react';
+import { Github, Mail, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
   return (
@@ -9,10 +10,10 @@ export const Footer: React.FC = () => {
       {/* Background Pattern */}
       <div className="absolute inset-0 cyber-grid opacity-20"></div>
       
-      <div className="container py-12 relative z-10">
+      <div className="container py-8 relative z-10">
         <div className="text-center">
           {/* Social Links */}
-          <div className="flex justify-center space-x-6 mb-8">
+          <div className="flex justify-center space-x-6 mb-6">
             <motion.a 
               href="https://github.com/2003Mohammed" 
               target="_blank"
@@ -33,6 +34,18 @@ export const Footer: React.FC = () => {
             >
               <Mail className="h-6 w-6" />
             </motion.a>
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link 
+                to="/buy-me-a-coffee"
+                className="text-muted-foreground hover:text-yellow-500 transition-colors p-3 rounded-full hover:bg-yellow-500/10 inline-block"
+                aria-label="Buy Me a Coffee"
+              >
+                <Coffee className="h-6 w-6" />
+              </Link>
+            </motion.div>
           </div>
 
           {/* Main Footer Text */}
@@ -66,33 +79,6 @@ export const Footer: React.FC = () => {
                 AlgoViz™
               </motion.span>
             </div>
-          </motion.div>
-
-          {/* Copyright */}
-          <motion.div
-            className="text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <p>© 2025 DSA Visualizer. Open source & free forever.</p>
-          </motion.div>
-
-          {/* Status Indicator */}
-          <motion.div 
-            className="flex items-center justify-center mt-4 space-x-2"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <motion.div 
-              className="w-2 h-2 bg-green-500 rounded-full"
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="text-sm text-muted-foreground">All systems operational</span>
           </motion.div>
         </div>
       </div>

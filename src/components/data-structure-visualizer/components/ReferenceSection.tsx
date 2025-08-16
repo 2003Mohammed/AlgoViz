@@ -16,14 +16,37 @@ export const ReferenceSection: React.FC<ReferenceSectionProps> = ({ dataStructur
     // Priority-based reference links
     const links = [];
     
-    // Check for MDN availability first
-    const mdnTopics = ['array', 'object', 'set', 'map'];
-    if (mdnTopics.some(topic => structureName.includes(topic))) {
-      links.push({
-        title: 'MDN Web Docs',
-        url: `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/${structureName.includes('array') ? 'Array' : structureName.includes('object') ? 'Object' : structureName}`,
-        description: 'Official JavaScript documentation and examples'
-      });
+    // W3Schools (replacing MDN)
+    const w3schoolsTopics = ['array', 'object', 'set', 'map', 'linked-list', 'stack', 'queue', 'tree', 'graph'];
+    if (w3schoolsTopics.some(topic => structureName.includes(topic))) {
+      let w3schoolsUrl = '';
+      if (structureName.includes('array')) {
+        w3schoolsUrl = 'https://www.w3schools.com/js/js_arrays.asp';
+      } else if (structureName.includes('object')) {
+        w3schoolsUrl = 'https://www.w3schools.com/js/js_objects.asp';
+      } else if (structureName.includes('set')) {
+        w3schoolsUrl = 'https://www.w3schools.com/js/js_sets.asp';
+      } else if (structureName.includes('map')) {
+        w3schoolsUrl = 'https://www.w3schools.com/js/js_maps.asp';
+      } else if (structureName.includes('linked-list')) {
+        w3schoolsUrl = 'https://www.w3schools.com/dsa/dsa_theory_linkedlist.php';
+      } else if (structureName.includes('stack')) {
+        w3schoolsUrl = 'https://www.w3schools.com/dsa/dsa_theory_stack.php';
+      } else if (structureName.includes('queue')) {
+        w3schoolsUrl = 'https://www.w3schools.com/dsa/dsa_theory_queue.php';
+      } else if (structureName.includes('tree')) {
+        w3schoolsUrl = 'https://www.w3schools.com/dsa/dsa_theory_tree.php';
+      } else if (structureName.includes('graph')) {
+        w3schoolsUrl = 'https://www.w3schools.com/dsa/dsa_theory_graph.php';
+      }
+      
+      if (w3schoolsUrl) {
+        links.push({
+          title: 'W3Schools',
+          url: w3schoolsUrl,
+          description: 'Interactive learning and examples'
+        });
+      }
     }
     
     // GeeksforGeeks (always available)
@@ -32,15 +55,6 @@ export const ReferenceSection: React.FC<ReferenceSectionProps> = ({ dataStructur
       url: `https://www.geeksforgeeks.org/${structureName}/`,
       description: 'Detailed tutorials and practice problems'
     });
-    
-    // W3Schools as fallback
-    if (links.length < 2) {
-      links.push({
-        title: 'W3Schools',
-        url: `https://www.w3schools.com/js/js_object_${structureName.includes('array') ? 'array' : 'definition'}.asp`,
-        description: 'Interactive learning and examples'
-      });
-    }
     
     // Add algorithm-specific references
     if (structureName.includes('graph')) {
