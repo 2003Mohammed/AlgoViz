@@ -42,8 +42,8 @@ export const ReferenceSection: React.FC<ReferenceSectionProps> = ({ dataStructur
       
       if (w3schoolsUrl) {
         links.push({
-          title: 'W3Schools',
-          url: w3schoolsUrl,
+          title: 'W3Schools - DSA',
+          url: 'https://www.w3schools.com/dsa/index.php',
           description: 'Interactive learning and examples'
         });
       }

@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ExternalLink } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
 
 interface ArrayItem {
   value: number;
@@ -35,6 +36,7 @@ const LinearSearchVisualizer: React.FC = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   const [searchResult, setSearchResult] = useState<'found' | 'not-found' | null>(null);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [animationSpeed, setAnimationSpeed] = useState([1.5]);
 
   const generateLinearSearchSteps = (arr: ArrayItem[], target: number): SearchStep[] => {
     const steps: SearchStep[] = [];
@@ -167,7 +169,7 @@ const LinearSearchVisualizer: React.FC = () => {
           if (nextStep.found !== undefined) {
             setSearchResult(nextStep.found ? 'found' : 'not-found');
           }
-        }, 1500);
+        }, animationSpeed[0] * 1000);
       } else {
         setIsAnimating(false);
       }
@@ -247,6 +249,18 @@ const LinearSearchVisualizer: React.FC = () => {
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
+          </div>
+
+          {/* Speed Control */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider value={animationSpeed} onValueChange={setAnimationSpeed} min={0.5} max={3} step={0.1} className="flex-1" />
+              <span className="text-sm text-muted-foreground min-w-[60px]">{animationSpeed[0]}s</span>
+            </div>
           </div>
 
           {/* Color Legend */}

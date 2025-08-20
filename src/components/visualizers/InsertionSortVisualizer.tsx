@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Slider } from '../ui/slider';
 
 interface ArrayItem {
   value: number;
@@ -28,6 +29,7 @@ const InsertionSortVisualizer: React.FC = () => {
   const [comparisons, setComparisons] = useState(0);
   const [movements, setMovements] = useState(0);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [animationSpeed, setAnimationSpeed] = useState([1.2]);
 
   const resetError = () => setError('');
 
@@ -218,7 +220,7 @@ const InsertionSortVisualizer: React.FC = () => {
           const nextStep = currentStep + 1;
           setCurrentStep(nextStep);
           setArray(animationSteps[nextStep]);
-        }, 1000);
+        }, animationSpeed[0] * 1000);
       } else {
         setIsAnimating(false);
       }
@@ -309,6 +311,18 @@ const InsertionSortVisualizer: React.FC = () => {
               </span>
             </div>
           )}
+
+          {/* Speed Control */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider value={animationSpeed} onValueChange={setAnimationSpeed} min={0.5} max={3} step={0.1} className="flex-1" />
+              <span className="text-sm text-muted-foreground min-w-[60px]">{animationSpeed[0]}s</span>
+            </div>
+          </div>
 
           {/* Error Display */}
           {error && (

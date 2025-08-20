@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, Minus, ExternalLink } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, Minus, ExternalLink, Gauge } from 'lucide-react';
+import { Slider } from '../ui/slider';
 import { motion } from 'framer-motion';
 
 interface TreeNode {
@@ -32,6 +33,7 @@ const TreeVisualizer: React.FC = () => {
   const [traversalSteps, setTraversalSteps] = useState<TraversalStep[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [animationSpeed, setAnimationSpeed] = useState([1.2]);
 
   const calculatePositions = (node: TreeNode | null, x = 300, y = 60, level = 0, minX = 50, maxX = 550): void => {
     if (!node) return;
@@ -251,8 +253,8 @@ const TreeVisualizer: React.FC = () => {
         description: `Visiting node ${node.value} (${type.charAt(0).toUpperCase() + type.slice(1)})`
       });
       
-      // 🔥 STRICT: 600ms delay per node as specified
-      await new Promise(resolve => setTimeout(resolve, 600));
+      // Delay per node based on speed control
+      await new Promise(resolve => setTimeout(resolve, animationSpeed[0] * 1000));
     };
     
     // 🔥 STRICT: Execute traversal with proper order
@@ -522,7 +524,7 @@ const TreeVisualizer: React.FC = () => {
           } else {
             setIsAnimating(false);
           }
-        }, 1200);
+        }, animationSpeed[0] * 1000);
       }
     }
 
@@ -706,6 +708,18 @@ const TreeVisualizer: React.FC = () => {
             </Button>
           </div>
 
+          {/* Speed Controller */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider value={animationSpeed} onValueChange={setAnimationSpeed} min={0.5} max={3} step={0.1} className="flex-1" />
+              <span className="text-sm text-muted-foreground min-w-[60px]">{animationSpeed[0]}s</span>
+            </div>
+          </div>
+
           {/* 🔥 STRICT: Traversal Result Display */}
           {isTraversalComplete && traversalResult.length > 0 && (
             <motion.div
@@ -851,13 +865,13 @@ const TreeVisualizer: React.FC = () => {
             <ul className="text-sm space-y-1">
               <li>
                 <a 
-                  href="https://www.w3schools.com/data_structures/data_structures_binary_tree.asp" 
+                  href="https://www.w3schools.com/dsa/index.php" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center gap-1 text-blue-500 hover:underline"
                 >
                   <ExternalLink className="h-4 w-4" />
-                  W3Schools Binary Tree
+                  W3Schools - DSA
                 </a>
               </li>
               <li>

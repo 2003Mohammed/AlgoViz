@@ -39,15 +39,15 @@ export const LearnMoreLink: React.FC<LearnMoreLinkProps> = ({
       // Algorithm links
       switch (searchTerm) {
         case 'bubble-sort':
-          return 'https://www.w3schools.com/dsa/dsa_algo_bubblesort.asp';
+          return 'https://www.w3schools.com/algorithms/bubble_sort.asp';
         case 'quick-sort':
-          return 'https://www.w3schools.com/dsa/dsa_algo_quicksort.asp';
+          return 'https://www.w3schools.com/algorithms/quick_sort.asp';
         case 'merge-sort':
-          return 'https://www.w3schools.com/dsa/dsa_algo_mergesort.asp';
+          return 'https://www.w3schools.com/algorithms/merge_sort.asp';
         case 'binary-search':
-          return 'https://www.w3schools.com/dsa/dsa_algo_binarysearch.asp';
+          return 'https://www.w3schools.com/algorithms/algorithm_binary_search.asp';
         case 'linear-search':
-          return 'https://www.w3schools.com/dsa/dsa_algo_linearsearch.asp';
+          return 'https://www.w3schools.com/algorithms/algorithm_search.asp';
         case 'depth-first-search':
         case 'dfs':
           return 'https://www.javatpoint.com/depth-first-search-algorithm';

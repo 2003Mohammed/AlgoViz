@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
 
 interface ArrayItem {
   value: number;
@@ -30,7 +31,7 @@ const BubbleSortVisualizer: React.FC = () => {
   const [animationSteps, setAnimationSteps] = useState<AnimationStep[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
   const [customInput, setCustomInput] = useState('');
-  const [speed, setSpeed] = useState(1);
+  const [animationSpeed, setAnimationSpeed] = useState([1]);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const generateBubbleSortSteps = (arr: ArrayItem[]): AnimationStep[] => {
@@ -176,7 +177,7 @@ const BubbleSortVisualizer: React.FC = () => {
           const nextStep = animationSteps[currentStep + 1];
           setArray(nextStep.array);
           setCurrentDescription(nextStep.description);
-        }, 1000 / speed);
+        }, animationSpeed[0] * 1000);
       } else {
         setIsAnimating(false);
       }
@@ -187,7 +188,7 @@ const BubbleSortVisualizer: React.FC = () => {
         clearTimeout(animationRef.current);
       }
     };
-  }, [isAnimating, currentStep, animationSteps, speed]);
+  }, [isAnimating, currentStep, animationSteps, animationSpeed]);
 
   const getBarColor = (status: ArrayItem['status']) => {
     switch (status) {
@@ -291,18 +292,15 @@ const BubbleSortVisualizer: React.FC = () => {
           </div>
 
           {/* Speed Control */}
-          <div className="flex items-center gap-2 justify-center">
-            <span className="text-sm text-muted-foreground">Speed:</span>
-            <input
-              type="range"
-              min="0.25"
-              max="3"
-              step="0.25"
-              value={speed}
-              onChange={(e) => setSpeed(parseFloat(e.target.value))}
-              className="w-32"
-            />
-            <span className="text-sm font-mono">{speed}x</span>
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Gauge className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Animation Speed</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Slider value={animationSpeed} onValueChange={setAnimationSpeed} min={0.25} max={3} step={0.25} className="flex-1" />
+              <span className="text-sm text-muted-foreground min-w-[60px]">{animationSpeed[0]}s</span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -348,7 +346,7 @@ const BubbleSortVisualizer: React.FC = () => {
             </ul>
             <div className="mt-4 flex gap-2">
               <Button variant="outline" size="sm" asChild>
-                <a href="https://www.w3schools.com/js/js_arrays_sort.asp" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.w3schools.com/dsa/index.php" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />
                   W3Schools
                 </a>

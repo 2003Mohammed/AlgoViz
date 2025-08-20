@@ -366,13 +366,13 @@ const DFSVisualizer: React.FC = () => {
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 items-start">
             <a
-              href="https://www.w3schools.com/data/graph_dfs.asp"
+              href="https://www.w3schools.com/dsa/index.php"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors"
             >
               <ExternalLink className="h-5 w-5 mr-2" />
-              W3Schools DFS Tutorial
+              W3Schools - DSA
             </a>
             <a
               href="https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/"

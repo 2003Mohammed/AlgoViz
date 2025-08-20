@@ -362,7 +362,13 @@ export const EnhancedSortingVisualizer: React.FC<SortingVisualizerProps> = ({ al
     const algorithmName = algorithm.charAt(0).toUpperCase() + algorithm.slice(1);
     return {
       geeksforgeeks: `https://www.geeksforgeeks.org/${algorithm}-sort/`,
-      w3schools: `https://www.w3schools.com/dsa/dsa_algo_${algorithm}sort.asp`
+      w3schools: `https://www.w3schools.com/algorithms/${
+        algorithm === 'bubble' ? 'bubble_sort' :
+        algorithm === 'selection' ? 'selection_sort' :
+        algorithm === 'insertion' ? 'insertion_sort' :
+        algorithm === 'merge' ? 'merge_sort' :
+        'quick_sort'
+      }.asp`
     };
   };
 

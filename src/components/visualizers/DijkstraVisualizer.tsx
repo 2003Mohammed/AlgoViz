@@ -549,9 +549,9 @@ const DijkstraVisualizer: React.FC = () => {
                 </p>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" asChild>
-                    <a href="https://www.w3schools.com/dsa/dsa_theory_graphs.php" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.w3schools.com/dsa/index.php" target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      W3Schools - Graph Theory
+                      W3Schools - DSA
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>

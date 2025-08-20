@@ -45,46 +45,28 @@ const LinkedListVisualizer: React.FC = () => {
       [100, 200, 300, 400]
     ];
     const randomExample = examples[Math.floor(Math.random() * examples.length)];
-    
-    const newNodes: ListNode[] = [];
-    let newHead: string | null = null;
-    let newTail: string | null = null;
 
-    randomExample.forEach((value, index) => {
-      const nodeId = `node-${Date.now()}-${index}`;
-      const node: ListNode = {
-        id: nodeId,
-        value,
-        status: 'default'
-      };
+    const timestamp = Date.now();
+    const newNodes: ListNode[] = randomExample.map((value, index) => ({
+      id: `node-${timestamp}-${index}`,
+      value,
+      status: 'default',
+      next: null,
+      prev: null
+    }));
 
-      if (index === 0) {
-        newHead = nodeId;
-      }
-      if (index === randomExample.length - 1) {
-        newTail = nodeId;
-      }
-
-      // Set next pointer
-      if (index < randomExample.length - 1) {
-        node.next = `node-${Date.now()}-${index + 1}`;
-      } else if (listType === 'circular') {
-        node.next = newHead;
-      }
-
-      // Set prev pointer for doubly linked list
+    // Wire next pointers for all types
+    for (let i = 0; i < newNodes.length; i++) {
+      const isLast = i === newNodes.length - 1;
+      newNodes[i].next = isLast ? (listType === 'circular' ? newNodes[0].id : null) : newNodes[i + 1].id;
       if (listType === 'doubly') {
-        if (index > 0) {
-          node.prev = `node-${Date.now()}-${index - 1}`;
-        }
+        newNodes[i].prev = i === 0 ? null : newNodes[i - 1].id;
       }
-
-      newNodes.push(node);
-    });
+    }
 
     setNodes(newNodes);
-    setHead(newHead);
-    setTail(newTail);
+    setHead(newNodes[0]?.id ?? null);
+    setTail(newNodes[newNodes.length - 1]?.id ?? null);
     setLastOperation(`Generated example ${listType} linked list`);
     resetError();
   };
@@ -132,6 +114,9 @@ const LinkedListVisualizer: React.FC = () => {
       setNodes(prev => prev.map(node => 
         node.id === tail ? { ...node, next: newNodeId } : node
       ));
+    }
+
+    if (listType === 'doubly' && tail) {
       newNode.prev = tail;
     }
 
@@ -173,13 +158,8 @@ const LinkedListVisualizer: React.FC = () => {
       status: 'inserting'
     };
 
-    if (listType === 'doubly') {
-      newNode.prev = tail;
-    }
-
-    if (listType === 'circular') {
-      newNode.next = head;
-    }
+    if (listType === 'doubly') newNode.prev = tail;
+    if (listType === 'circular') newNode.next = head;
 
     if (tail) {
       setNodes(prev => prev.map(node => 
@@ -227,7 +207,7 @@ const LinkedListVisualizer: React.FC = () => {
     animationRef.current = setTimeout(() => {
       setNodes(prev => prev.filter(node => node.id !== head));
       
-      if (headNode.next && headNode.next !== head) {
+      if (headNode.next && (listType !== 'circular' || headNode.next !== head)) {
         setHead(headNode.next);
         if (listType === 'doubly') {
           setNodes(prev => prev.map(node => 
@@ -515,6 +495,8 @@ const LinkedListVisualizer: React.FC = () => {
                       
                       {/* Next pointer */}
                       {node.next && renderPointer(node, node.next, true)}
+                      {/* Prev pointer for doubly lists */}
+                      {listType === 'doubly' && node.prev && renderPointer(node, node.prev, false)}
                       
                       {/* Show circular connection */}
                       {listType === 'circular' && index === nodes.length - 1 && (

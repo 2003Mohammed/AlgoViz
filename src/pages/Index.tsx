@@ -66,8 +66,8 @@ const Index = () => {
       gradient: "from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))]"
     },
     {
-      title: "Tree Traversal", 
-      description: "Watch DFS and BFS algorithms navigate through binary trees step-by-step",
+      title: "Binary Trees & BST",
+      description: "Build and explore Binary Trees and Binary Search Trees: insert, delete, and traverse (inorder/preorder/postorder)",
       gradient: "from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
     },
     {
