@@ -557,7 +557,15 @@ const LinkedListVisualizer: React.FC = () => {
                 </ul>
               </div>
               <div className="flex gap-2 items-center">
-                <LearnMoreLink algorithmName="Linked List" isDataStructure />
+              <a 
+                  href="https://www.w3schools.com/dsa/dsa_theory_linkedlists.php" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  W3Schools Linked List
+                </a>
                 <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/linked-list-data-structure/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />

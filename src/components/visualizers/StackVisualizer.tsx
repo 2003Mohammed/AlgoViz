@@ -350,7 +350,15 @@ const StackVisualizer: React.FC = () => {
                 </ul>
               </div>
               <div className="flex gap-2 items-center">
-                <LearnMoreLink algorithmName="Stack" isDataStructure />
+              <a 
+                  href="https://www.w3schools.com/dsa/dsa_data_stacks.php" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  W3Schools Stack
+                </a>
                 <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/stack-data-structure/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />

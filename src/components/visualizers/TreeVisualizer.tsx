@@ -865,9 +865,16 @@ const TreeVisualizer: React.FC = () => {
           <CardContent>
             <ul className="text-sm space-y-1">
               <li>
-                {/* Centralized W3Schools mapping */}
-                <LearnMoreLink algorithmName="Binary Tree" isDataStructure />
-              </li>
+                <a 
+                  href="https://www.w3schools.com/dsa/dsa_data_binarytrees.php" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  W3Schools BST
+                </a>
+                </li>
               <li>
                 <a 
                   href="https://www.geeksforgeeks.org/binary-search-tree-data-structure/" 

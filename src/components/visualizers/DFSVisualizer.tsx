@@ -365,15 +365,15 @@ const DFSVisualizer: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 items-start">
-            <a
-              href="https://www.w3schools.com/dsa/index.php"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors"
-            >
-              <ExternalLink className="h-5 w-5 mr-2" />
-              W3Schools - DSA
-            </a>
+          <a 
+                  href="https://www.tutorialspoint.com/data_structures_algorithms/depth_first_traversal.htm" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  DFS
+                </a>
             <a
               href="https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/"
               target="_blank"

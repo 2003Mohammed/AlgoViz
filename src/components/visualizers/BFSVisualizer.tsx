@@ -361,10 +361,15 @@ const BFSVisualizer: React.FC = () => {
         <CardContent>
           <ul className="text-sm space-y-2">
             <li>
-              <ExternalLink className="h-4 w-4 inline-block mr-1" />
-              <a href="https://www.w3schools.com/dsa/index.php" target="_blank" rel="noopener noreferrer" className="underline">
-                W3Schools - DSA
-              </a>
+            <a 
+                  href="https://www.tutorialspoint.com/data_structures_algorithms/breadth_first_traversal.htm" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                   BFS
+                </a>
             </li>
             <li>
               <ExternalLink className="h-4 w-4 inline-block mr-1" />

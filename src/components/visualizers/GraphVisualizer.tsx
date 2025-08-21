@@ -714,7 +714,15 @@ const GraphVisualizer: React.FC = () => {
           <CardContent>
             <ul className="text-sm space-y-2">
               <li>
-                <LearnMoreLink algorithmName="Graph" isDataStructure />
+              <a 
+                  href="https://www.w3schools.com/dsa/dsa_theory_graphs.php" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  W3Schools Graph
+                </a>
               </li>
               <li>
                 <ExternalLink className="h-4 w-4 inline-block mr-1" />
