@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Slider } from '../ui/slider';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -387,10 +388,7 @@ const LinearSearchVisualizer: React.FC = () => {
         <CardContent>
           <ul className="text-sm space-y-2">
             <li>
-              <a href="https://www.w3schools.com/algorithms/algorithm_search.asp" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-                W3Schools - Linear Search
-                <ExternalLink className="h-4 w-4" />
-              </a>
+              <LearnMoreLink algorithmName="Linear Search" />
             </li>
             <li>
               <a href="https://www.geeksforgeeks.org/linear-search/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">

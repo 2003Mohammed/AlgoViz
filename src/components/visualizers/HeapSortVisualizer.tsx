@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -435,15 +436,7 @@ const HeapSortVisualizer: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 items-start">
-            <a
-              href="https://www.w3schools.com/algorithms/heap_sort.asp"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-blue-600 hover:underline"
-            >
-              <ExternalLink className="h-4 w-4" />
-              W3Schools
-            </a>
+            <LearnMoreLink algorithmName="Heap Sort" />
             <a
               href="https://www.geeksforgeeks.org/heap-sort/"
               target="_blank"

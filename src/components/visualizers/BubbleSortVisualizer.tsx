@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Slider } from '../ui/slider';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -344,13 +345,8 @@ const BubbleSortVisualizer: React.FC = () => {
               <li>• Nearly sorted data (best case O(n))</li>
               <li>• Embedded systems with memory constraints</li>
             </ul>
-            <div className="mt-4 flex gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <a href="https://www.w3schools.com/dsa/index.php" target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  W3Schools
-                </a>
-              </Button>
+            <div className="mt-4 flex gap-2 items-center">
+              <LearnMoreLink algorithmName="Bubble Sort" />
               <Button variant="outline" size="sm" asChild>
                 <a href="https://www.geeksforgeeks.org/bubble-sort/" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />

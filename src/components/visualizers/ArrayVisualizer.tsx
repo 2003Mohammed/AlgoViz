@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Slider } from '../ui/slider';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus, Search, ExternalLink, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -663,13 +664,8 @@ const ArrayVisualizer: React.FC = () => {
               <p className="text-sm text-muted-foreground">
                 Explore comprehensive resources to deepen your understanding of arrays and data structures.
               </p>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <a href="https://www.w3schools.com/js/js_arrays.asp" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    W3Schools - JavaScript Arrays
-                  </a>
-                </Button>
+              <div className="flex gap-2 items-center">
+                <LearnMoreLink algorithmName="Array" isDataStructure />
                 <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/array-data-structure/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />

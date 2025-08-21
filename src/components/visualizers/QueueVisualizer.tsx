@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Slider } from '../ui/slider';
 import { Plus, Minus, Eye, RotateCcw, ExternalLink, AlertTriangle, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface QueueItem {
   id: string;
@@ -345,13 +346,8 @@ const QueueVisualizer: React.FC = () => {
                   <li>• Buffer for data streams</li>
                 </ul>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <a href="https://www.w3schools.com/dsa/dsa_theory_queue.php" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    W3Schools
-                  </a>
-                </Button>
+              <div className="flex gap-2 items-center">
+                <LearnMoreLink algorithmName="Queue" isDataStructure />
                 <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/queue-data-structure/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />

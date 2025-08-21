@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Slider } from '../ui/slider';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -410,10 +411,7 @@ const QuickSortVisualizer: React.FC = () => {
         <CardContent>
           <ul className="text-sm space-y-2">
             <li>
-              <ExternalLink className="h-4 w-4 inline-block mr-1" />
-              <a href="https://www.w3schools.com/algorithms/quick_sort.asp" target="_blank" rel="noopener noreferrer" className="underline">
-                W3Schools Quick Sort Tutorial
-              </a>
+              <LearnMoreLink algorithmName="Quick Sort" />
             </li>
             <li>
               <ExternalLink className="h-4 w-4 inline-block mr-1" />

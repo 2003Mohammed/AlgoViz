@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Gauge, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { LearnMoreLink } from '../LearnMoreLink';
 import { Slider } from '../ui/slider';
 
 interface GraphNode {
@@ -488,88 +489,7 @@ const DijkstraVisualizer: React.FC = () => {
             </div>
           )}
 
-          {/* Real-world Applications */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Real-world Applications</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm space-y-1">
-                <li>• GPS navigation systems</li>
-                <li>• Network routing protocols</li>
-                <li>• Social media friend suggestions</li>
-                <li>• Game AI pathfinding</li>
-                <li>• Logistics and delivery optimization</li>
-                <li>• Flight route planning</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Complexity & Properties */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Complexity & Properties</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="font-medium">Time Complexity:</div>
-                    <div className="font-mono">O(V² + E)</div>
-                    <div className="text-xs text-muted-foreground">V = vertices, E = edges</div>
-                  </div>
-                  <div>
-                    <div className="font-medium">Space Complexity:</div>
-                    <div className="font-mono">O(V)</div>
-                    <div className="text-xs text-muted-foreground">For distance array</div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="font-medium">Properties:</div>
-                  <ul className="text-xs space-y-1 text-muted-foreground">
-                    <li>• Works with weighted graphs</li>
-                    <li>• Finds shortest path from single source</li>
-                    <li>• Cannot handle negative weights</li>
-                    <li>• Greedy algorithm approach</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Learn More */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Learn More</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Explore comprehensive resources to deepen your understanding of Dijkstra's algorithm and graph theory.
-                </p>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://www.w3schools.com/dsa/index.php" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      W3Schools - DSA
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      GeeksforGeeks - Dijkstra's Algorithm
-                    </a>
-                  </Button>
-                </div>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p><strong>W3Schools:</strong> Interactive tutorials with examples and exercises</p>
-                  <p><strong>GeeksforGeeks:</strong> In-depth articles with implementation examples</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Graph Visualization */}
+          {/* Graph Visualization (Working) */}
           <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-center justify-center overflow-auto">
             {nodes.length > 0 ? (
               <svg width="500" height="300" className="overflow-visible">
@@ -640,6 +560,65 @@ const DijkstraVisualizer: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Complexity & Properties */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Complexity & Properties</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="font-medium">Time Complexity:</div>
+                    <div className="font-mono">O(V² + E)</div>
+                    <div className="text-xs text-muted-foreground">V = vertices, E = edges</div>
+                  </div>
+                  <div>
+                    <div className="font-medium">Space Complexity:</div>
+                    <div className="font-mono">O(V)</div>
+                    <div className="text-xs text-muted-foreground">For distance array</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="font-medium">Properties:</div>
+                  <ul className="text-xs space-y-1 text-muted-foreground">
+                    <li>• Works with weighted graphs</li>
+                    <li>• Finds shortest path from single source</li>
+                    <li>• Cannot handle negative weights</li>
+                    <li>• Greedy algorithm approach</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Learn More */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Learn More</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Explore comprehensive resources to deepen your understanding of Dijkstra's algorithm and graph theory.
+                </p>
+                <div className="flex gap-2 items-center">
+                  <LearnMoreLink algorithmName="Dijkstra Algorithm" />
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      GeeksforGeeks - Dijkstra's Algorithm
+                    </a>
+                  </Button>
+                </div>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p><strong>W3Schools:</strong> Interactive tutorials with examples and exercises</p>
+                  <p><strong>GeeksforGeeks:</strong> In-depth articles with implementation examples</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
     </div>

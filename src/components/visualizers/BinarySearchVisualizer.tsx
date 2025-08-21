@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, Search, ArrowUp, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Slider } from '../ui/slider';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -442,11 +443,9 @@ const BinarySearchVisualizer: React.FC = () => {
           <p className="text-sm text-muted-foreground">
             For a more detailed explanation and examples, check out these resources:
           </p>
-          <ul className="text-sm space-y-1">
+          <ul className="text-sm space-y-2">
             <li>
-              <a href="https://www.w3schools.com/algorithms/algorithm_binary_search.asp" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                W3Schools - Binary Search Algorithm
-              </a>
+              <LearnMoreLink algorithmName="Binary Search" />
             </li>
             <li>
               <a href="https://www.geeksforgeeks.org/binary-search/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
+import { LearnMoreLink } from '../LearnMoreLink';
 import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Minus, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -713,10 +714,7 @@ const GraphVisualizer: React.FC = () => {
           <CardContent>
             <ul className="text-sm space-y-2">
               <li>
-                <ExternalLink className="h-4 w-4 inline-block mr-1" />
-                <a href="https://www.w3schools.com/data/data_graphs.asp" target="_blank" rel="noopener noreferrer" className="underline">
-                  W3Schools Graphs
-                </a>
+                <LearnMoreLink algorithmName="Graph" isDataStructure />
               </li>
               <li>
                 <ExternalLink className="h-4 w-4 inline-block mr-1" />

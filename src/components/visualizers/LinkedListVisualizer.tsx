@@ -7,6 +7,7 @@ import { Slider } from '../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Plus, Minus, Search, RotateCcw, ExternalLink, AlertTriangle, Shuffle, Eye, ArrowRight, ArrowLeft, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ListNode {
   id: string;
@@ -555,13 +556,8 @@ const LinkedListVisualizer: React.FC = () => {
                   <li>• Memory management in operating systems</li>
                 </ul>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <a href="https://www.w3schools.com/dsa/dsa_theory_linkedlist.php" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    W3Schools
-                  </a>
-                </Button>
+              <div className="flex gap-2 items-center">
+                <LearnMoreLink algorithmName="Linked List" isDataStructure />
                 <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/linked-list-data-structure/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />

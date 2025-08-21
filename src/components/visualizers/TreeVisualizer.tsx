@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { LearnMoreLink } from '../LearnMoreLink';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -864,15 +865,8 @@ const TreeVisualizer: React.FC = () => {
           <CardContent>
             <ul className="text-sm space-y-1">
               <li>
-                <a 
-                  href="https://www.w3schools.com/dsa/index.php" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex items-center gap-1 text-blue-500 hover:underline"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  W3Schools - DSA
-                </a>
+                {/* Centralized W3Schools mapping */}
+                <LearnMoreLink algorithmName="Binary Tree" isDataStructure />
               </li>
               <li>
                 <a 

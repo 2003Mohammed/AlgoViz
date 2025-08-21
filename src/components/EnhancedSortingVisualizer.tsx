@@ -359,16 +359,18 @@ export const EnhancedSortingVisualizer: React.FC<SortingVisualizerProps> = ({ al
   };
 
   const getLearnMoreLinks = () => {
-    const algorithmName = algorithm.charAt(0).toUpperCase() + algorithm.slice(1);
+    const { getLearnMoreUrl } = require('./LearnMoreLink');
+    const nameMap: Record<string, string> = {
+      bubble: 'Bubble Sort',
+      selection: 'Selection Sort',
+      insertion: 'Insertion Sort',
+      merge: 'Merge Sort',
+      quick: 'Quick Sort'
+    };
+    const algorithmDisplay = nameMap[algorithm] || algorithm;
     return {
       geeksforgeeks: `https://www.geeksforgeeks.org/${algorithm}-sort/`,
-      w3schools: `https://www.w3schools.com/algorithms/${
-        algorithm === 'bubble' ? 'bubble_sort' :
-        algorithm === 'selection' ? 'selection_sort' :
-        algorithm === 'insertion' ? 'insertion_sort' :
-        algorithm === 'merge' ? 'merge_sort' :
-        'quick_sort'
-      }.asp`
+      w3schools: getLearnMoreUrl(algorithmDisplay, false)
     };
   };
 

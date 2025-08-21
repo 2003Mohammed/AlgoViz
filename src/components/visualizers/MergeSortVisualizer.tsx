@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink, Gauge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '../ui/slider';
+import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
   value: number;
@@ -528,12 +529,7 @@ const MergeSortVisualizer: React.FC = () => {
                 <li>• Database systems and search engines</li>
               </ul>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <a href="https://www.w3schools.com/algorithms/merge_sort.asp" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    W3Schools
-                  </a>
-                </Button>
+                <LearnMoreLink algorithmName="Merge Sort" />
                 <Button variant="outline" size="sm" asChild>
                   <a href="https://www.geeksforgeeks.org/merge-sort/" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
