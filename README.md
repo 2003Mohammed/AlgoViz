@@ -87,7 +87,7 @@ AlgoViz is hosted on Vercel for a smooth, zero-config deployment experience.
 
 🙌 Contributing
 
-We welcome contributions! 🎉
+We welcome contributions!
 
 Fork this repo
 
