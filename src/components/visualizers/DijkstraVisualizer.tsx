@@ -7,6 +7,7 @@ import { Play, Pause, SkipForward, RotateCcw, Shuffle, Plus, Gauge, ExternalLink
 import { motion } from 'framer-motion';
 import { LearnMoreLink } from '../LearnMoreLink';
 import { Slider } from '../ui/slider';
+import { useTutorContext } from '../../context/TutorContext';
 
 interface GraphNode {
   id: string;
@@ -31,7 +32,16 @@ interface DijkstraStep {
   currentNode?: string;
 }
 
+interface GraphExample {
+  key: 'small' | 'medium' | 'large';
+  label: string;
+  startNode: string;
+  nodes: Array<Omit<GraphNode, 'id' | 'distance' | 'status'>>;
+  edges: Array<Omit<GraphEdge, 'status'>>;
+}
+
 const DijkstraVisualizer: React.FC = () => {
+  const { updateVisualizationState } = useTutorContext();
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
   const [newNodeValue, setNewNodeValue] = useState('');
@@ -44,7 +54,123 @@ const DijkstraVisualizer: React.FC = () => {
   const [dijkstraSteps, setDijkstraSteps] = useState<DijkstraStep[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
   const [animationSpeed, setAnimationSpeed] = useState([2]); // Default: 2 seconds
+  const [selectedExample, setSelectedExample] = useState<GraphExample['key']>('small');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const examples: GraphExample[] = [
+    {
+      key: 'small',
+      label: 'Small',
+      startNode: 'A',
+      nodes: [
+        { value: 'A', x: 120, y: 120 },
+        { value: 'B', x: 240, y: 60 },
+        { value: 'C', x: 240, y: 180 },
+        { value: 'D', x: 360, y: 120 },
+        { value: 'E', x: 480, y: 60 },
+        { value: 'F', x: 480, y: 180 }
+      ],
+      edges: [
+        { source: 'A', target: 'B', weight: 4 },
+        { source: 'A', target: 'C', weight: 2 },
+        { source: 'B', target: 'D', weight: 6 },
+        { source: 'C', target: 'D', weight: 3 },
+        { source: 'B', target: 'E', weight: 5 },
+        { source: 'C', target: 'F', weight: 4 },
+        { source: 'D', target: 'E', weight: 2 },
+        { source: 'D', target: 'F', weight: 5 }
+      ]
+    },
+    {
+      key: 'medium',
+      label: 'Medium',
+      startNode: 'A',
+      nodes: [
+        { value: 'A', x: 100, y: 120 },
+        { value: 'B', x: 220, y: 40 },
+        { value: 'C', x: 220, y: 200 },
+        { value: 'D', x: 360, y: 120 },
+        { value: 'E', x: 480, y: 40 },
+        { value: 'F', x: 480, y: 200 },
+        { value: 'G', x: 620, y: 120 },
+        { value: 'H', x: 740, y: 120 }
+      ],
+      edges: [
+        { source: 'A', target: 'B', weight: 3 },
+        { source: 'A', target: 'C', weight: 2 },
+        { source: 'B', target: 'D', weight: 4 },
+        { source: 'C', target: 'D', weight: 3 },
+        { source: 'D', target: 'E', weight: 5 },
+        { source: 'D', target: 'F', weight: 4 },
+        { source: 'E', target: 'G', weight: 3 },
+        { source: 'F', target: 'G', weight: 2 },
+        { source: 'G', target: 'H', weight: 3 },
+        { source: 'C', target: 'F', weight: 5 }
+      ]
+    },
+    {
+      key: 'large',
+      label: 'Large',
+      startNode: 'A',
+      nodes: [
+        { value: 'A', x: 80, y: 120 },
+        { value: 'B', x: 200, y: 40 },
+        { value: 'C', x: 200, y: 200 },
+        { value: 'D', x: 320, y: 120 },
+        { value: 'E', x: 440, y: 40 },
+        { value: 'F', x: 440, y: 200 },
+        { value: 'G', x: 560, y: 120 },
+        { value: 'H', x: 680, y: 40 },
+        { value: 'I', x: 680, y: 200 },
+        { value: 'J', x: 800, y: 120 }
+      ],
+      edges: [
+        { source: 'A', target: 'B', weight: 4 },
+        { source: 'A', target: 'C', weight: 3 },
+        { source: 'B', target: 'D', weight: 5 },
+        { source: 'C', target: 'D', weight: 2 },
+        { source: 'D', target: 'E', weight: 4 },
+        { source: 'D', target: 'F', weight: 4 },
+        { source: 'E', target: 'G', weight: 3 },
+        { source: 'F', target: 'G', weight: 2 },
+        { source: 'G', target: 'H', weight: 5 },
+        { source: 'G', target: 'I', weight: 4 },
+        { source: 'H', target: 'J', weight: 3 },
+        { source: 'I', target: 'J', weight: 2 },
+        { source: 'C', target: 'F', weight: 6 }
+      ]
+    }
+  ];
+
+  const applyExample = (example: GraphExample) => {
+    const exampleNodes: GraphNode[] = example.nodes.map((node, index) => ({
+      id: `${example.key}-${index}`,
+      value: node.value,
+      x: node.x,
+      y: node.y,
+      distance: Infinity,
+      status: 'default'
+    }));
+    const exampleEdges: GraphEdge[] = example.edges.map((edge) => ({
+      ...edge,
+      status: 'default'
+    }));
+    setNodes(exampleNodes);
+    setEdges(exampleEdges);
+    setDijkstraSteps([]);
+    setCurrentStep(0);
+    setCurrentDescription('');
+    setIsAnimating(false);
+    setStartNode(example.startNode);
+    updateVisualizationState({
+      algorithmId: 'dijkstra',
+      algorithmName: "Dijkstra's Algorithm",
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Loaded a new Dijkstra example.',
+      distances: {}
+    });
+  };
 
   const addNode = () => {
     if (!newNodeValue.trim()) return;
@@ -174,6 +300,14 @@ const DijkstraVisualizer: React.FC = () => {
     setCurrentStep(0);
     setCurrentDescription('');
     setIsAnimating(false);
+    updateVisualizationState({
+      algorithmId: 'dijkstra',
+      algorithmName: "Dijkstra's Algorithm",
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Random Dijkstra example generated.',
+      distances: {}
+    });
   };
 
   const eraseGraph = () => {
@@ -183,6 +317,14 @@ const DijkstraVisualizer: React.FC = () => {
     setCurrentStep(0);
     setCurrentDescription('');
     setIsAnimating(false);
+    updateVisualizationState({
+      algorithmId: 'dijkstra',
+      algorithmName: "Dijkstra's Algorithm",
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Graph cleared.',
+      distances: {}
+    });
   };
 
   const performDijkstra = () => {
@@ -277,6 +419,18 @@ const DijkstraVisualizer: React.FC = () => {
     setDijkstraSteps(steps);
     setCurrentStep(0);
     setIsAnimating(true);
+    updateVisualizationState({
+      algorithmId: 'dijkstra',
+      algorithmName: "Dijkstra's Algorithm",
+      stepIndex: 0,
+      totalSteps: steps.length,
+      stepDescription: steps[0]?.description,
+      currentNode: steps[0]?.currentNode,
+      distances: steps[0]?.nodes.reduce<Record<string, number>>((acc, node) => {
+        acc[node.value] = node.distance;
+        return acc;
+      }, {})
+    });
   };
 
   const stepForward = () => {
@@ -296,24 +450,44 @@ const DijkstraVisualizer: React.FC = () => {
     // Reset all statuses
     setNodes(nodes.map(node => ({ ...node, status: 'default', distance: Infinity })));
     setEdges(edges.map(edge => ({ ...edge, status: 'default' })));
+    updateVisualizationState({
+      algorithmId: 'dijkstra',
+      algorithmName: "Dijkstra's Algorithm",
+      stepIndex: 0,
+      totalSteps: dijkstraSteps.length,
+      stepDescription: 'Animation reset to the beginning.',
+      distances: {}
+    });
   };
 
   useEffect(() => {
+    if (dijkstraSteps.length > 0 && currentStep < dijkstraSteps.length) {
+      const step = dijkstraSteps[currentStep];
+      setCurrentDescription(step.description);
+      setNodes(step.nodes);
+      setEdges(step.edges);
+      updateVisualizationState({
+        algorithmId: 'dijkstra',
+        algorithmName: "Dijkstra's Algorithm",
+        stepIndex: currentStep,
+        totalSteps: dijkstraSteps.length,
+        stepDescription: step.description,
+        currentNode: step.currentNode,
+        distances: step.nodes.reduce<Record<string, number>>((acc, node) => {
+          acc[node.value] = node.distance;
+          return acc;
+        }, {})
+      });
+    }
+
     if (isAnimating && dijkstraSteps.length > 0) {
-      if (currentStep < dijkstraSteps.length) {
-        const step = dijkstraSteps[currentStep];
-        setCurrentDescription(step.description);
-        setNodes(step.nodes);
-        setEdges(step.edges);
-        
-        animationRef.current = setTimeout(() => {
-          if (currentStep < dijkstraSteps.length - 1) {
-            setCurrentStep(currentStep + 1);
-          } else {
-            setIsAnimating(false);
-          }
-        }, animationSpeed[0] * 1000);
-      }
+      animationRef.current = setTimeout(() => {
+        if (currentStep < dijkstraSteps.length - 1) {
+          setCurrentStep(currentStep + 1);
+        } else {
+          setIsAnimating(false);
+        }
+      }, animationSpeed[0] * 1000);
     }
 
     return () => {
@@ -321,7 +495,7 @@ const DijkstraVisualizer: React.FC = () => {
         clearTimeout(animationRef.current);
       }
     };
-  }, [isAnimating, currentStep, dijkstraSteps]);
+  }, [isAnimating, currentStep, dijkstraSteps, animationSpeed, updateVisualizationState]);
 
   const getNodeColor = (status: string) => {
     switch (status) {
@@ -341,14 +515,41 @@ const DijkstraVisualizer: React.FC = () => {
         <CardContent className="space-y-6">
           {/* Controls */}
           <div className="flex gap-4 items-center justify-center flex-wrap">
-            <Button onClick={generateExample} variant="outline" size="sm">
+            <Button
+              onClick={() => {
+                const example = examples.find((item) => item.key === selectedExample) ?? examples[0];
+                applyExample(example);
+              }}
+              variant="outline"
+              size="sm"
+            >
               <Shuffle className="h-4 w-4 mr-2" />
-              Generate Random Example
+              Load Example
+            </Button>
+            <Button onClick={generateExample} variant="outline" size="sm">
+              Random Example
             </Button>
             <Button onClick={eraseGraph} variant="outline" size="sm">
               <RotateCcw className="h-4 w-4 mr-2" />
               Erase Graph
             </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-2 items-center justify-center">
+            <span className="text-xs text-muted-foreground">Presets:</span>
+            {examples.map((example) => (
+              <Button
+                key={example.key}
+                size="sm"
+                variant={selectedExample === example.key ? 'default' : 'outline'}
+                onClick={() => {
+                  setSelectedExample(example.key);
+                  applyExample(example);
+                }}
+              >
+                {example.label}
+              </Button>
+            ))}
           </div>
 
           {/* Node and Edge Creation */}

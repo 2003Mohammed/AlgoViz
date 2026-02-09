@@ -3,8 +3,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Play, Pause, SkipForward, RotateCcw, Plus, Shuffle, ExternalLink } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
+import { useTutorContext } from '../../context/TutorContext';
 
 interface GraphNode {
   id: string;
@@ -19,7 +21,16 @@ interface GraphEdge {
   status: 'default' | 'active' | 'visited';
 }
 
+interface GraphExample {
+  key: 'small' | 'medium' | 'large';
+  label: string;
+  startNode: string;
+  nodes: Array<Omit<GraphNode, 'status'>>;
+  edges: Array<Omit<GraphEdge, 'status'>>;
+}
+
 const BFSVisualizer: React.FC = () => {
+  const { updateVisualizationState } = useTutorContext();
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
   const [startNode, setStartNode] = useState('');
@@ -30,32 +41,176 @@ const BFSVisualizer: React.FC = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   const [queue, setQueue] = useState<string[]>([]);
   const [visited, setVisited] = useState<Set<string>>(new Set());
+  const [animationSpeed, setAnimationSpeed] = useState([1.5]);
+  const [selectedExample, setSelectedExample] = useState<GraphExample['key']>('small');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const generateExample = () => {
-    const exampleNodes: GraphNode[] = [
-      { id: 'A', x: 150, y: 100, status: 'default' },
-      { id: 'B', x: 300, y: 50, status: 'default' },
-      { id: 'C', x: 300, y: 150, status: 'default' },
-      { id: 'D', x: 450, y: 100, status: 'default' },
-      { id: 'E', x: 600, y: 50, status: 'default' },
-      { id: 'F', x: 600, y: 150, status: 'default' },
-    ];
-    
-    const exampleEdges: GraphEdge[] = [
-      { source: 'A', target: 'B', status: 'default' },
-      { source: 'A', target: 'C', status: 'default' },
-      { source: 'B', target: 'D', status: 'default' },
-      { source: 'C', target: 'D', status: 'default' },
-      { source: 'D', target: 'E', status: 'default' },
-      { source: 'D', target: 'F', status: 'default' },
-    ];
-    
-    setNodes(exampleNodes);
-    setEdges(exampleEdges);
-    setStartNode('A');
-    reset();
+  const examples: GraphExample[] = [
+    {
+      key: 'small',
+      label: 'Small',
+      startNode: 'A',
+      nodes: [
+        { id: 'A', x: 150, y: 100 },
+        { id: 'B', x: 300, y: 50 },
+        { id: 'C', x: 300, y: 150 },
+        { id: 'D', x: 450, y: 100 },
+        { id: 'E', x: 600, y: 50 },
+        { id: 'F', x: 600, y: 150 }
+      ],
+      edges: [
+        { source: 'A', target: 'B' },
+        { source: 'A', target: 'C' },
+        { source: 'B', target: 'D' },
+        { source: 'C', target: 'D' },
+        { source: 'D', target: 'E' },
+        { source: 'D', target: 'F' }
+      ]
+    },
+    {
+      key: 'medium',
+      label: 'Medium',
+      startNode: 'A',
+      nodes: [
+        { id: 'A', x: 130, y: 120 },
+        { id: 'B', x: 260, y: 40 },
+        { id: 'C', x: 260, y: 200 },
+        { id: 'D', x: 390, y: 120 },
+        { id: 'E', x: 520, y: 40 },
+        { id: 'F', x: 520, y: 200 },
+        { id: 'G', x: 650, y: 120 },
+        { id: 'H', x: 390, y: 220 }
+      ],
+      edges: [
+        { source: 'A', target: 'B' },
+        { source: 'A', target: 'C' },
+        { source: 'B', target: 'D' },
+        { source: 'C', target: 'D' },
+        { source: 'D', target: 'E' },
+        { source: 'D', target: 'F' },
+        { source: 'E', target: 'G' },
+        { source: 'F', target: 'G' },
+        { source: 'C', target: 'H' },
+        { source: 'H', target: 'F' }
+      ]
+    },
+    {
+      key: 'large',
+      label: 'Large',
+      startNode: 'A',
+      nodes: [
+        { id: 'A', x: 100, y: 120 },
+        { id: 'B', x: 220, y: 40 },
+        { id: 'C', x: 220, y: 200 },
+        { id: 'D', x: 340, y: 120 },
+        { id: 'E', x: 460, y: 40 },
+        { id: 'F', x: 460, y: 200 },
+        { id: 'G', x: 580, y: 120 },
+        { id: 'H', x: 700, y: 40 },
+        { id: 'I', x: 700, y: 200 },
+        { id: 'J', x: 340, y: 220 }
+      ],
+      edges: [
+        { source: 'A', target: 'B' },
+        { source: 'A', target: 'C' },
+        { source: 'B', target: 'D' },
+        { source: 'C', target: 'D' },
+        { source: 'D', target: 'E' },
+        { source: 'D', target: 'F' },
+        { source: 'E', target: 'G' },
+        { source: 'F', target: 'G' },
+        { source: 'G', target: 'H' },
+        { source: 'G', target: 'I' },
+        { source: 'C', target: 'J' },
+        { source: 'J', target: 'F' }
+      ]
+    }
+  ];
+
+  const applyExample = (example: GraphExample) => {
+    setNodes(example.nodes.map((node) => ({ ...node, status: 'default' })));
+    setEdges(example.edges.map((edge) => ({ ...edge, status: 'default' })));
+    setStartNode(example.startNode);
+    setAnimationSteps([]);
+    setCurrentStep(0);
+    setCurrentDescription('');
+    setQueue([]);
+    setVisited(new Set());
+    setIsAnimating(false);
+    setIsPaused(false);
+    updateVisualizationState({
+      algorithmId: 'bfs',
+      algorithmName: 'BFS',
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Loaded a new BFS example.',
+      queue: [],
+      visited: []
+    });
   };
+
+  const generateRandomExample = () => {
+    const nodeCount = selectedExample === 'large' ? 10 : selectedExample === 'medium' ? 8 : 6;
+    const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').slice(0, nodeCount);
+    const centerX = 360;
+    const centerY = 130;
+    const radius = selectedExample === 'large' ? 170 : selectedExample === 'medium' ? 150 : 120;
+    const randomNodes = labels.map((label, index) => {
+      const angle = (index / labels.length) * 2 * Math.PI;
+      return {
+        id: label,
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+        status: 'default' as const
+      };
+    });
+
+    const randomEdges: GraphEdge[] = [];
+    for (let i = 1; i < labels.length; i++) {
+      const source = labels[Math.floor(Math.random() * i)];
+      const target = labels[i];
+      randomEdges.push({ source, target, status: 'default' });
+    }
+
+    const extraEdges = Math.max(2, Math.floor(nodeCount / 2));
+    for (let i = 0; i < extraEdges; i++) {
+      const source = labels[Math.floor(Math.random() * labels.length)];
+      const target = labels[Math.floor(Math.random() * labels.length)];
+      if (source === target) continue;
+      const exists = randomEdges.some(
+        (edge) =>
+          (edge.source === source && edge.target === target) ||
+          (edge.source === target && edge.target === source)
+      );
+      if (!exists) {
+        randomEdges.push({ source, target, status: 'default' });
+      }
+    }
+
+    setNodes(randomNodes);
+    setEdges(randomEdges);
+    setStartNode(labels[0]);
+    setAnimationSteps([]);
+    setCurrentStep(0);
+    setCurrentDescription('Random example generated.');
+    setQueue([]);
+    setVisited(new Set());
+    setIsAnimating(false);
+    setIsPaused(false);
+    updateVisualizationState({
+      algorithmId: 'bfs',
+      algorithmName: 'BFS',
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Random BFS example generated.',
+      queue: [],
+      visited: []
+    });
+  };
+
+  useEffect(() => {
+    applyExample(examples[0]);
+  }, []);
 
   const reset = () => {
     setNodes(prev => prev.map(node => ({ ...node, status: 'default' })));
@@ -67,6 +222,15 @@ const BFSVisualizer: React.FC = () => {
     setVisited(new Set());
     setIsAnimating(false);
     setIsPaused(false);
+    updateVisualizationState({
+      algorithmId: 'bfs',
+      algorithmName: 'BFS',
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'BFS state reset.',
+      queue: [],
+      visited: []
+    });
   };
 
   const generateBFSSteps = () => {
@@ -128,6 +292,15 @@ const BFSVisualizer: React.FC = () => {
     setCurrentStep(0);
     setIsAnimating(true);
     setIsPaused(false);
+    updateVisualizationState({
+      algorithmId: 'bfs',
+      algorithmName: 'BFS',
+      stepIndex: 0,
+      totalSteps: steps.length,
+      stepDescription: steps[0]?.description,
+      queue: steps[0]?.queue ?? [],
+      visited: steps[0]?.visited ?? []
+    });
   };
 
   const togglePlayPause = () => {
@@ -150,7 +323,7 @@ const BFSVisualizer: React.FC = () => {
       if (currentStep < animationSteps.length - 1) {
         animationRef.current = setTimeout(() => {
           setCurrentStep(currentStep + 1);
-        }, 1500);
+        }, animationSpeed[0] * 1000);
       } else {
         setIsAnimating(false);
       }
@@ -162,7 +335,7 @@ const BFSVisualizer: React.FC = () => {
         animationRef.current = null;
       }
     };
-  }, [isAnimating, isPaused, currentStep, animationSteps]);
+  }, [isAnimating, isPaused, currentStep, animationSteps, animationSpeed]);
 
   useEffect(() => {
     if (animationSteps.length > 0 && currentStep < animationSteps.length) {
@@ -177,6 +350,16 @@ const BFSVisualizer: React.FC = () => {
                 step.current === node.id ? 'visiting' :
                 step.queue.includes(node.id) ? 'queued' : 'default'
       })));
+      updateVisualizationState({
+        algorithmId: 'bfs',
+        algorithmName: 'BFS',
+        stepIndex: currentStep,
+        totalSteps: animationSteps.length,
+        stepDescription: step.description,
+        currentNode: step.current,
+        queue: step.queue,
+        visited: step.visited
+      });
     }
   }, [currentStep, animationSteps]);
 
@@ -188,10 +371,20 @@ const BFSVisualizer: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Controls */}
-          <div className="flex gap-4 items-center justify-center">
-            <Button onClick={generateExample} variant="outline" size="sm">
+          <div className="flex flex-wrap gap-4 items-center justify-center">
+            <Button
+              onClick={() => {
+                const example = examples.find((item) => item.key === selectedExample) ?? examples[0];
+                applyExample(example);
+              }}
+              variant="outline"
+              size="sm"
+            >
               <Shuffle className="h-4 w-4 mr-2" />
-              Generate Example
+              Load Example
+            </Button>
+            <Button onClick={generateRandomExample} variant="outline" size="sm">
+              Random Example
             </Button>
             <Button onClick={togglePlayPause} size="sm">
               {isAnimating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
@@ -205,6 +398,43 @@ const BFSVisualizer: React.FC = () => {
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-2 items-center justify-center">
+            <span className="text-xs text-muted-foreground">Presets:</span>
+            {examples.map((example) => (
+              <Button
+                key={example.key}
+                size="sm"
+                variant={selectedExample === example.key ? 'default' : 'outline'}
+                onClick={() => {
+                  setSelectedExample(example.key);
+                  applyExample(example);
+                }}
+              >
+                {example.label}
+              </Button>
+            ))}
+          </div>
+
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Animation Speed</span>
+              <span className="text-xs text-muted-foreground">{animationSpeed[0].toFixed(1)}s</span>
+            </div>
+            <Slider
+              value={animationSpeed}
+              onValueChange={setAnimationSpeed}
+              max={4}
+              min={0.5}
+              step={0.1}
+              className="flex-1"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Fast</span>
+              <span>Medium</span>
+              <span>Slow</span>
+            </div>
           </div>
 
           {/* Start Node Input */}

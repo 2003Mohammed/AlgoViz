@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Bot, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { useLocation } from 'react-router-dom';
+import { useTutorContext } from '../context/TutorContext';
 
 interface TutorMessage {
   role: 'user' | 'assistant';
@@ -29,30 +30,35 @@ const quickPrompts = [
   }
 ];
 
-const responseMap: Array<{ match: RegExp; reply: string }> = [
-  {
-    match: /a\*|astar|a-star/i,
-    reply:
-      'A* combines the best of Dijkstra (always expanding the cheapest known path) with a heuristic that estimates the remaining distance. It picks the node with the lowest f = g + h, where g is the path cost so far and h is the estimated cost to the goal. This usually finds the shortest path faster than Dijkstra because it focuses the search toward the target.'
-  },
+const responseMap: Array<{ match: RegExp; replies: string[] }> = [
   {
     match: /performance|optimi|speed/i,
-    reply:
-      'Quick wins: 1) code-split visualizers so only the active module loads, 2) memoize heavy calculations and node rendering, and 3) move expensive pathfinding into Web Workers so the UI stays smooth.'
+    replies: [
+      'Quick wins: 1) code-split visualizers so only the active module loads, 2) memoize heavy calculations and node rendering, and 3) move heavy pathfinding into Web Workers to keep the UI smooth.',
+      'Performance checklist: debounce slider changes, memoize edge lookups, and batch state updates so the DOM redraw happens once per step.',
+      'Try: throttle animations at high speeds, precompute neighbor lists, and keep layout data immutable between steps.'
+    ]
   },
   {
     match: /practice|plan/i,
-    reply:
-      '3-day graph plan: Day 1: BFS/DFS + traversals with small graphs. Day 2: Dijkstra + A* with weighted examples. Day 3: MST algorithms (Prim/Kruskal) and compare complexity tradeoffs. End each day with 2 custom inputs.'
+    replies: [
+      '3-day graph plan: Day 1: BFS/DFS + traversals with small graphs. Day 2: Dijkstra + A* with weighted examples. Day 3: MST algorithms (Prim/Kruskal) and compare complexity tradeoffs.',
+      'Study flow: Day 1 focus on BFS/DFS traversal order, Day 2 shortest paths (Dijkstra/A*), Day 3 apply to real maps and compare heuristics.',
+      'Plan idea: small graphs first, then medium/large with weights, finishing with a compare-and-contrast of heuristics vs. pure shortest path.'
+    ]
   },
   {
     match: /quiz|question/i,
-    reply:
-      'Quiz: When will A* behave exactly like Dijkstra? (Answer: when the heuristic h = 0 for all nodes, so f = g.)'
+    replies: [
+      'Quiz: When will A* behave exactly like Dijkstra? (Answer: when the heuristic h = 0 for all nodes, so f = g.)',
+      'Quiz: In Dijkstra, why do finalized nodes never get revisited? (Answer: their shortest distance is already minimal.)',
+      'Quiz: BFS uses which data structure to ensure level-order traversal? (Answer: a queue.)'
+    ]
   }
 ];
 
 export const TutorAssistant: React.FC = () => {
+  const { visualizationState } = useTutorContext();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<TutorMessage[]>([
@@ -63,30 +69,114 @@ export const TutorAssistant: React.FC = () => {
     }
   ]);
   const location = useLocation();
+  const replyIndex = useRef(0);
 
   const contextLabel = useMemo(() => {
+    const algorithmLabel = visualizationState.algorithmName ? ` → ${visualizationState.algorithmName}` : '';
     if (location.pathname.startsWith('/algorithms/graph/astar')) {
-      return 'Context: Graph Algorithms → A* Search';
+      return `Context: Graph Algorithms → A* Search${algorithmLabel && visualizationState.algorithmName !== 'A* Search' ? algorithmLabel : ''}`;
     }
     if (location.pathname.startsWith('/algorithms/graph')) {
-      return 'Context: Graph Algorithms';
+      return `Context: Graph Algorithms${algorithmLabel}`;
     }
     if (location.pathname.startsWith('/algorithms')) {
-      return 'Context: Algorithms';
+      return `Context: Algorithms${algorithmLabel}`;
     }
     if (location.pathname.startsWith('/data-structures')) {
       return 'Context: Data Structures';
     }
     return 'Context: Home';
-  }, [location.pathname]);
+  }, [location.pathname, visualizationState.algorithmName]);
 
-  const generateResponse = (prompt: string) => {
-    const match = responseMap.find((entry) => entry.match.test(prompt));
-    if (match) {
-      return match.reply;
+  const activeAlgorithm = useMemo(() => {
+    if (visualizationState.algorithmId) {
+      return visualizationState.algorithmId;
+    }
+    if (location.pathname.includes('/algorithms/graph/astar')) return 'astar';
+    if (location.pathname.includes('/algorithms/graph/bfs')) return 'bfs';
+    if (location.pathname.includes('/algorithms/graph/dfs')) return 'dfs';
+    if (location.pathname.includes('/algorithms/graph/dijkstra')) return 'dijkstra';
+    return null;
+  }, [location.pathname, visualizationState.algorithmId]);
+
+  const getContextSummary = () => {
+    if (!visualizationState.totalSteps) {
+      return 'No step data yet. Load an example or press Play to generate steps.';
     }
 
-    return 'I can help with algorithm explanations, quick quizzes, and optimization tips. Try a prompt like “Explain A* search” or “Give me a DSA practice plan.”';
+    const stepLabel = `Step ${visualizationState.stepIndex + 1} of ${visualizationState.totalSteps}`;
+    const parts = [stepLabel, visualizationState.stepDescription].filter(Boolean);
+
+    if (visualizationState.queue?.length) {
+      parts.push(`Queue: [${visualizationState.queue.join(', ')}]`);
+    }
+    if (visualizationState.stack?.length) {
+      parts.push(`Stack: [${visualizationState.stack.join(', ')}]`);
+    }
+    if (visualizationState.openSet?.length || visualizationState.closedSet?.length) {
+      parts.push(`Open: ${visualizationState.openSet?.join(', ') || 'empty'}`);
+      parts.push(`Closed: ${visualizationState.closedSet?.join(', ') || 'empty'}`);
+    }
+    if (visualizationState.path?.length) {
+      parts.push(`Path: ${visualizationState.path.join(' → ')}`);
+    }
+
+    return parts.join(' • ');
+  };
+
+  const getWhyExplanation = () => {
+    switch (activeAlgorithm) {
+      case 'bfs':
+        return 'BFS expands nodes in queue order, so the current node is the earliest discovered node whose neighbors are still pending.';
+      case 'dfs':
+        return 'DFS dives along the stack, so the current node is the most recently discovered node whose neighbors haven’t been fully explored.';
+      case 'dijkstra':
+        return 'Dijkstra always picks the unvisited node with the smallest known distance, guaranteeing it is safe to finalize.';
+      case 'astar':
+        return 'A* picks the node with the lowest f = g + h score, balancing the known cost so far with the estimated distance to the goal.';
+      default:
+        return 'Each algorithm selects the next node using its own rule (queue, stack, or priority by distance/heuristic).';
+    }
+  };
+
+  const generateResponse = (prompt: string) => {
+    const normalized = prompt.toLowerCase();
+    const match = responseMap.find((entry) => entry.match.test(prompt));
+    if (match) {
+      const reply = match.replies[replyIndex.current % match.replies.length];
+      replyIndex.current += 1;
+      return reply;
+    }
+
+    if (normalized.includes('why') || normalized.includes('reason') || normalized.includes('explain')) {
+      return `${getContextSummary()} ${getWhyExplanation()}`;
+    }
+
+    if (normalized.includes('current') || normalized.includes('status') || normalized.includes('state')) {
+      return getContextSummary();
+    }
+
+    if (normalized.includes('a*') || normalized.includes('astar') || normalized.includes('a-star')) {
+      return 'A* combines Dijkstra’s guaranteed shortest path with a heuristic that guides the search toward the goal. It scores nodes by f = g + h to prioritize promising paths.';
+    }
+    if (normalized.includes('dijkstra')) {
+      return 'Dijkstra expands nodes in order of smallest known distance, finalizing the shortest path to each node as it goes.';
+    }
+    if (normalized.includes('bfs')) {
+      return 'BFS explores level by level using a queue, guaranteeing the shortest path in unweighted graphs.';
+    }
+    if (normalized.includes('dfs')) {
+      return 'DFS explores depth-first using a stack (or recursion), which is great for reachability and component discovery.';
+    }
+
+    const fallbackReplies = [
+      'Ask about the current step, or try “Why did it pick this node?” for a context-aware explanation.',
+      'I can explain the current visualization state. Ask “What is happening right now?”',
+      'Try a targeted question like “Why is this node expanded?” or “What does the queue look like?”'
+    ];
+    const reply = fallbackReplies[replyIndex.current % fallbackReplies.length];
+    replyIndex.current += 1;
+    return reply;
   };
 
   const handleSend = (prompt: string) => {
