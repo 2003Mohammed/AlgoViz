@@ -2,6 +2,7 @@
 import React from 'react';
 import { Navigation } from './Navigation';
 import { Footer } from './Footer';
+import { TutorAssistant } from './TutorAssistant';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
       <Footer />
+      <TutorAssistant />
     </div>
   );
 };

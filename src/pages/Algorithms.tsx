@@ -23,7 +23,8 @@ const algorithms = [
   // Graph Algorithms
   { id: 'bfs-algo', name: 'BFS Algorithm', description: 'Breadth-first traversal algorithm', category: 'graph', path: '/algorithms/graph/bfs' },
   { id: 'dfs-algo', name: 'DFS Algorithm', description: 'Depth-first traversal algorithm', category: 'graph', path: '/algorithms/graph/dfs' },
-  { id: 'dijkstra', name: 'Dijkstra Algorithm', description: 'Shortest path algorithm', category: 'graph', path: '/algorithms/graph/dijkstra' }
+  { id: 'dijkstra', name: 'Dijkstra Algorithm', description: 'Shortest path algorithm', category: 'graph', path: '/algorithms/graph/dijkstra' },
+  { id: 'astar', name: 'A* Search', description: 'Heuristic pathfinding algorithm', category: 'graph', path: '/algorithms/graph/astar' }
 ];
 
 const Algorithms: React.FC = () => {
