@@ -4,6 +4,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { ExternalLink, Pause, Play, RotateCcw, Shuffle, SkipForward } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Slider } from '../ui/slider';
+import { useTutorContext } from '../../context/TutorContext';
 
 interface GraphNode {
   id: string;
@@ -28,7 +30,17 @@ interface AStarStep {
   description: string;
 }
 
+interface GraphExample {
+  key: 'small' | 'medium' | 'large';
+  label: string;
+  startNode: string;
+  targetNode: string;
+  nodes: Array<Omit<GraphNode, 'status'>>;
+  edges: Array<Omit<GraphEdge, 'status'>>;
+}
+
 const AStarVisualizer: React.FC = () => {
+  const { updateVisualizationState } = useTutorContext();
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [edges, setEdges] = useState<GraphEdge[]>([]);
   const [startNode, setStartNode] = useState('A');
@@ -38,40 +50,186 @@ const AStarVisualizer: React.FC = () => {
   const [steps, setSteps] = useState<AStarStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [currentDescription, setCurrentDescription] = useState('');
+  const [animationSpeed, setAnimationSpeed] = useState([1.5]);
+  const [selectedExample, setSelectedExample] = useState<GraphExample['key']>('small');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const defaultGraph = () => {
-    const exampleNodes: GraphNode[] = [
-      { id: 'A', x: 120, y: 120, status: 'default' },
-      { id: 'B', x: 260, y: 60, status: 'default' },
-      { id: 'C', x: 260, y: 180, status: 'default' },
-      { id: 'D', x: 420, y: 120, status: 'default' },
-      { id: 'E', x: 560, y: 60, status: 'default' },
-      { id: 'F', x: 560, y: 180, status: 'default' }
-    ];
+  const examples: GraphExample[] = [
+    {
+      key: 'small',
+      label: 'Small',
+      startNode: 'A',
+      targetNode: 'F',
+      nodes: [
+        { id: 'A', x: 120, y: 120 },
+        { id: 'B', x: 260, y: 60 },
+        { id: 'C', x: 260, y: 180 },
+        { id: 'D', x: 420, y: 120 },
+        { id: 'E', x: 560, y: 60 },
+        { id: 'F', x: 560, y: 180 }
+      ],
+      edges: [
+        { source: 'A', target: 'B', weight: 4 },
+        { source: 'A', target: 'C', weight: 3 },
+        { source: 'B', target: 'D', weight: 6 },
+        { source: 'C', target: 'D', weight: 2 },
+        { source: 'B', target: 'E', weight: 5 },
+        { source: 'C', target: 'F', weight: 6 },
+        { source: 'D', target: 'E', weight: 2 },
+        { source: 'D', target: 'F', weight: 4 }
+      ]
+    },
+    {
+      key: 'medium',
+      label: 'Medium',
+      startNode: 'A',
+      targetNode: 'H',
+      nodes: [
+        { id: 'A', x: 100, y: 120 },
+        { id: 'B', x: 220, y: 40 },
+        { id: 'C', x: 220, y: 200 },
+        { id: 'D', x: 360, y: 120 },
+        { id: 'E', x: 480, y: 40 },
+        { id: 'F', x: 480, y: 200 },
+        { id: 'G', x: 620, y: 120 },
+        { id: 'H', x: 720, y: 120 }
+      ],
+      edges: [
+        { source: 'A', target: 'B', weight: 3 },
+        { source: 'A', target: 'C', weight: 2 },
+        { source: 'B', target: 'D', weight: 4 },
+        { source: 'C', target: 'D', weight: 3 },
+        { source: 'D', target: 'E', weight: 5 },
+        { source: 'D', target: 'F', weight: 4 },
+        { source: 'E', target: 'G', weight: 3 },
+        { source: 'F', target: 'G', weight: 2 },
+        { source: 'G', target: 'H', weight: 3 },
+        { source: 'C', target: 'F', weight: 6 }
+      ]
+    },
+    {
+      key: 'large',
+      label: 'Large',
+      startNode: 'A',
+      targetNode: 'J',
+      nodes: [
+        { id: 'A', x: 80, y: 120 },
+        { id: 'B', x: 200, y: 40 },
+        { id: 'C', x: 200, y: 200 },
+        { id: 'D', x: 320, y: 120 },
+        { id: 'E', x: 440, y: 40 },
+        { id: 'F', x: 440, y: 200 },
+        { id: 'G', x: 560, y: 120 },
+        { id: 'H', x: 680, y: 40 },
+        { id: 'I', x: 680, y: 200 },
+        { id: 'J', x: 780, y: 120 }
+      ],
+      edges: [
+        { source: 'A', target: 'B', weight: 4 },
+        { source: 'A', target: 'C', weight: 3 },
+        { source: 'B', target: 'D', weight: 5 },
+        { source: 'C', target: 'D', weight: 2 },
+        { source: 'D', target: 'E', weight: 4 },
+        { source: 'D', target: 'F', weight: 4 },
+        { source: 'E', target: 'G', weight: 3 },
+        { source: 'F', target: 'G', weight: 2 },
+        { source: 'G', target: 'H', weight: 5 },
+        { source: 'G', target: 'I', weight: 4 },
+        { source: 'H', target: 'J', weight: 3 },
+        { source: 'I', target: 'J', weight: 2 },
+        { source: 'C', target: 'F', weight: 6 }
+      ]
+    }
+  ];
 
-    const exampleEdges: GraphEdge[] = [
-      { source: 'A', target: 'B', weight: 4, status: 'default' },
-      { source: 'A', target: 'C', weight: 3, status: 'default' },
-      { source: 'B', target: 'D', weight: 6, status: 'default' },
-      { source: 'C', target: 'D', weight: 2, status: 'default' },
-      { source: 'B', target: 'E', weight: 5, status: 'default' },
-      { source: 'C', target: 'F', weight: 6, status: 'default' },
-      { source: 'D', target: 'E', weight: 2, status: 'default' },
-      { source: 'D', target: 'F', weight: 4, status: 'default' }
-    ];
-
-    setNodes(exampleNodes);
-    setEdges(exampleEdges);
+  const applyExample = (example: GraphExample) => {
+    setNodes(example.nodes.map((node) => ({ ...node, status: 'default' })));
+    setEdges(example.edges.map((edge) => ({ ...edge, status: 'default' })));
     setSteps([]);
     setCurrentStep(0);
     setCurrentDescription('');
     setIsAnimating(false);
     setIsPaused(false);
+    setStartNode(example.startNode);
+    setTargetNode(example.targetNode);
+    updateVisualizationState({
+      algorithmId: 'astar',
+      algorithmName: 'A* Search',
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Loaded a new A* example.',
+      openSet: [],
+      closedSet: [],
+      path: []
+    });
+  };
+
+  const generateRandomExample = () => {
+    const nodeCount = selectedExample === 'large' ? 10 : selectedExample === 'medium' ? 8 : 6;
+    const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').slice(0, nodeCount);
+    const centerX = 360;
+    const centerY = 130;
+    const radius = selectedExample === 'large' ? 200 : selectedExample === 'medium' ? 170 : 140;
+    const randomNodes = labels.map((label, index) => {
+      const angle = (index / labels.length) * 2 * Math.PI;
+      return {
+        id: label,
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+        status: 'default' as const
+      };
+    });
+
+    const randomEdges: GraphEdge[] = [];
+    for (let i = 1; i < labels.length; i++) {
+      const source = labels[Math.floor(Math.random() * i)];
+      const target = labels[i];
+      randomEdges.push({ source, target, weight: Math.floor(Math.random() * 8) + 2, status: 'default' });
+    }
+
+    const extraEdges = Math.max(2, Math.floor(nodeCount / 2));
+    for (let i = 0; i < extraEdges; i++) {
+      const source = labels[Math.floor(Math.random() * labels.length)];
+      const target = labels[Math.floor(Math.random() * labels.length)];
+      if (source === target) continue;
+      const exists = randomEdges.some(
+        (edge) =>
+          (edge.source === source && edge.target === target) ||
+          (edge.source === target && edge.target === source)
+      );
+      if (!exists) {
+        randomEdges.push({
+          source,
+          target,
+          weight: Math.floor(Math.random() * 8) + 2,
+          status: 'default'
+        });
+      }
+    }
+
+    setNodes(randomNodes);
+    setEdges(randomEdges);
+    setSteps([]);
+    setCurrentStep(0);
+    setCurrentDescription('Random example generated.');
+    setIsAnimating(false);
+    setIsPaused(false);
+    setStartNode(labels[0]);
+    setTargetNode(labels[labels.length - 1]);
+    updateVisualizationState({
+      algorithmId: 'astar',
+      algorithmName: 'A* Search',
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'Random A* example generated.',
+      openSet: [],
+      closedSet: [],
+      path: []
+    });
   };
 
   useEffect(() => {
-    defaultGraph();
+    applyExample(examples[0]);
   }, []);
 
   const reset = () => {
@@ -82,6 +240,16 @@ const AStarVisualizer: React.FC = () => {
     setCurrentDescription('');
     setIsAnimating(false);
     setIsPaused(false);
+    updateVisualizationState({
+      algorithmId: 'astar',
+      algorithmName: 'A* Search',
+      stepIndex: 0,
+      totalSteps: 0,
+      stepDescription: 'A* state reset.',
+      openSet: [],
+      closedSet: [],
+      path: []
+    });
   };
 
   const heuristic = (nodeId: string, targetId: string) => {
@@ -219,6 +387,17 @@ const AStarVisualizer: React.FC = () => {
     setCurrentStep(0);
     setIsAnimating(true);
     setIsPaused(false);
+    updateVisualizationState({
+      algorithmId: 'astar',
+      algorithmName: 'A* Search',
+      stepIndex: 0,
+      totalSteps: nextSteps.length,
+      stepDescription: nextSteps[0]?.description,
+      openSet: nextSteps[0]?.openSet ?? [],
+      closedSet: nextSteps[0]?.closedSet ?? [],
+      path: nextSteps[0]?.path ?? [],
+      currentNode: nextSteps[0]?.current
+    });
   };
 
   const togglePlayPause = () => {
@@ -241,7 +420,7 @@ const AStarVisualizer: React.FC = () => {
       if (currentStep < steps.length - 1) {
         animationRef.current = setTimeout(() => {
           setCurrentStep((prev) => prev + 1);
-        }, 1500);
+        }, animationSpeed[0] * 1000);
       } else {
         setIsAnimating(false);
       }
@@ -253,7 +432,7 @@ const AStarVisualizer: React.FC = () => {
         animationRef.current = null;
       }
     };
-  }, [isAnimating, isPaused, currentStep, steps]);
+  }, [isAnimating, isPaused, currentStep, steps, animationSpeed]);
 
   useEffect(() => {
     if (steps.length === 0) return;
@@ -288,6 +467,17 @@ const AStarVisualizer: React.FC = () => {
         return { ...edge, status: isPathEdge ? 'path' : 'default' };
       })
     );
+    updateVisualizationState({
+      algorithmId: 'astar',
+      algorithmName: 'A* Search',
+      stepIndex: currentStep,
+      totalSteps: steps.length,
+      stepDescription: step.description,
+      openSet: step.openSet,
+      closedSet: step.closedSet,
+      path: step.path,
+      currentNode: step.current
+    });
   }, [currentStep, steps]);
 
   return (
@@ -299,9 +489,19 @@ const AStarVisualizer: React.FC = () => {
         <CardContent className="space-y-6">
           {/* Controls */}
           <div className="flex flex-wrap gap-3 items-center justify-center">
-            <Button onClick={defaultGraph} variant="outline" size="sm">
+            <Button
+              onClick={() => {
+                const example = examples.find((item) => item.key === selectedExample) ?? examples[0];
+                applyExample(example);
+              }}
+              variant="outline"
+              size="sm"
+            >
               <Shuffle className="h-4 w-4 mr-2" />
               Load Example
+            </Button>
+            <Button onClick={generateRandomExample} variant="outline" size="sm">
+              Random Example
             </Button>
             <Button onClick={togglePlayPause} size="sm">
               {isAnimating ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
@@ -315,6 +515,43 @@ const AStarVisualizer: React.FC = () => {
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
+          </div>
+
+          <div className="flex flex-wrap gap-2 items-center justify-center">
+            <span className="text-xs text-muted-foreground">Presets:</span>
+            {examples.map((example) => (
+              <Button
+                key={example.key}
+                size="sm"
+                variant={selectedExample === example.key ? 'default' : 'outline'}
+                onClick={() => {
+                  setSelectedExample(example.key);
+                  applyExample(example);
+                }}
+              >
+                {example.label}
+              </Button>
+            ))}
+          </div>
+
+          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Animation Speed</span>
+              <span className="text-xs text-muted-foreground">{animationSpeed[0].toFixed(1)}s</span>
+            </div>
+            <Slider
+              value={animationSpeed}
+              onValueChange={setAnimationSpeed}
+              max={4}
+              min={0.5}
+              step={0.1}
+              className="flex-1"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Fast</span>
+              <span>Medium</span>
+              <span>Slow</span>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-3 justify-center">
