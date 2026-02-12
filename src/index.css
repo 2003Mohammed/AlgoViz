@@ -288,14 +288,14 @@
   width: 14px;
   border-radius: 4px;
   background: hsl(var(--foreground) / 0.32);
-  animation: assistant-sort-loop 2.4s ease-in-out infinite;
+  animation: assistant-sort-loop 3s ease-in-out infinite;
 }
 
 @keyframes assistant-sort-loop {
   0%,
   100% { transform: translateX(0); opacity: 0.75; }
-  35% { transform: translateX(2px); opacity: 1; }
-  70% { transform: translateX(-2px); opacity: 0.85; }
+  35% { transform: translateX(1.5px); opacity: 0.95; }
+  70% { transform: translateX(-1.5px); opacity: 0.82; }
 }
 
 .assistant-demo-tree-wrap {
@@ -312,13 +312,13 @@
   height: 16px;
   border-radius: 9999px;
   background: hsl(var(--foreground) / 0.3);
-  animation: assistant-tree-traversal 3.2s linear infinite;
+  animation: assistant-tree-traversal 3.8s ease-in-out infinite;
 }
 
 @keyframes assistant-tree-traversal {
   0%,
   100% { background: hsl(var(--foreground) / 0.3); transform: scale(1); }
-  20% { background: hsl(var(--zady-accent)); transform: scale(1.12); }
+  20% { background: hsl(var(--zady-accent) / 0.9); transform: scale(1.08); }
   40% { background: hsl(var(--foreground) / 0.3); transform: scale(1); }
 }
 
@@ -334,7 +334,7 @@
   height: 12px;
   border-radius: 9999px;
   background: hsl(var(--foreground) / 0.35);
-  animation: assistant-graph-node 2.8s ease-in-out infinite;
+  animation: assistant-graph-node 3.4s ease-in-out infinite;
 }
 
 .assistant-demo-graph-node:nth-child(1) { left: 8px; top: 40px; }
@@ -351,19 +351,19 @@
   height: 2px;
   background: linear-gradient(90deg, transparent, hsl(var(--zady-accent)), transparent);
   background-size: 200% 100%;
-  animation: assistant-graph-path 3s linear infinite;
+  animation: assistant-graph-path 3.8s ease-in-out infinite;
 }
 
 @keyframes assistant-graph-path {
   0% { background-position: 200% 0; opacity: 0.55; }
-  50% { opacity: 0.95; }
+  50% { opacity: 0.85; }
   100% { background-position: -200% 0; opacity: 0.55; }
 }
 
 @keyframes assistant-graph-node {
   0%,
   100% { transform: scale(1); background: hsl(var(--foreground) / 0.35); }
-  50% { transform: scale(1.1); background: hsl(var(--zady-accent)); }
+  50% { transform: scale(1.06); background: hsl(var(--zady-accent) / 0.92); }
 }
 
 .footer-github-link,

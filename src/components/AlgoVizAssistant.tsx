@@ -276,10 +276,14 @@ export const AlgoVizAssistant: React.FC = () => {
       )}
 
       {!isOpen && (
-        <Button className="rounded-full shadow-lg gap-2 px-4" onClick={() => setIsOpen(true)}>
-          <MessageCircle className="h-4 w-4" />
-          Assistant
-          <Sparkles className="h-4 w-4" />
+        <Button
+          className="rounded-full shadow-lg h-12 w-12 p-0 relative"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open AlgoViz Assistant"
+          title="AlgoViz Assistant"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <Sparkles className="h-3 w-3 absolute -top-1 -right-1" />
         </Button>
       )}
     </div>
