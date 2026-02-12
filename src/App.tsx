@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
 import { TutorProvider } from './context/TutorContext';
-import { TutorAssistant } from './components/TutorAssistant';
+import { AlgoVizAssistant } from './components/AlgoVizAssistant';
 
 // Lazy-loaded main pages
 const Index = lazy(() => import('./pages/Index'));
@@ -85,7 +85,7 @@ function App() {
               </Routes>
             </Suspense>
           </div>
-          <TutorAssistant />
+          <AlgoVizAssistant />
           <Toaster />
         </Router>
       </TutorProvider>

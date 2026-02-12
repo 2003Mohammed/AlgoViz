@@ -15,5 +15,6 @@
     "allowJs": true,
     "noUnusedLocals": false,
     "strictNullChecks": false
-  }
+  },
+  "exclude": ["**/*.test.ts", "**/__tests__/**"]
 }
