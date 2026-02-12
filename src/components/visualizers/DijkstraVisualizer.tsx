@@ -514,7 +514,8 @@ const DijkstraVisualizer: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Controls */}
-          <div className="flex gap-4 items-center justify-center flex-wrap">
+          <div className="sticky top-0 z-20 space-y-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border rounded-lg p-3">
+            <div className="flex gap-4 items-center justify-center flex-wrap">
             <Button
               onClick={() => {
                 const example = examples.find((item) => item.key === selectedExample) ?? examples[0];
@@ -533,9 +534,9 @@ const DijkstraVisualizer: React.FC = () => {
               <RotateCcw className="h-4 w-4 mr-2" />
               Erase Graph
             </Button>
-          </div>
+            </div>
 
-          <div className="flex flex-wrap gap-2 items-center justify-center">
+            <div className="flex flex-wrap gap-2 items-center justify-center">
             <span className="text-xs text-muted-foreground">Presets:</span>
             {examples.map((example) => (
               <Button
@@ -552,8 +553,8 @@ const DijkstraVisualizer: React.FC = () => {
             ))}
           </div>
 
-          {/* Node and Edge Creation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Node and Edge Creation */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <h4 className="font-medium">Add Node</h4>
               <div className="flex gap-2">
@@ -592,11 +593,11 @@ const DijkstraVisualizer: React.FC = () => {
                 <Button onClick={addEdge} size="sm">Add</Button>
               </div>
             </div>
-          </div>
+            </div>
 
-          {/* Algorithm Controls */}
-          <div className="space-y-4">
-            <div className="flex gap-2 items-center justify-center">
+            {/* Algorithm Controls */}
+            <div className="space-y-4">
+              <div className="flex gap-2 items-center justify-center">
               <Input
                 placeholder="Start node"
                 value={startNode}
@@ -607,10 +608,10 @@ const DijkstraVisualizer: React.FC = () => {
                 Start Dijkstra
               </Button>
             </div>
-          </div>
+            </div>
 
-          {/* Speed Controller */}
-          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            {/* Speed Controller */}
+            <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
             <div className="flex items-center gap-2">
               <Gauge className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Animation Speed</span>
@@ -633,11 +634,11 @@ const DijkstraVisualizer: React.FC = () => {
               <span>Medium</span>
               <span>Slow</span>
             </div>
-          </div>
+            </div>
 
-          {/* Animation Controls */}
-          {dijkstraSteps.length > 0 && (
-            <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
+            {/* Animation Controls */}
+            {dijkstraSteps.length > 0 && (
+              <div className="flex gap-2 justify-center items-center p-4 bg-muted/20 rounded-lg">
               <Button 
                 onClick={() => setIsAnimating(!isAnimating)} 
                 size="sm"
@@ -657,11 +658,11 @@ const DijkstraVisualizer: React.FC = () => {
               <span className="text-sm text-muted-foreground">
                 Step {currentStep + 1} of {dijkstraSteps.length}
               </span>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Color Legend */}
-          <div className="bg-muted/20 p-3 rounded-lg">
+            {/* Color Legend */}
+            <div className="bg-muted/20 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
@@ -681,17 +682,19 @@ const DijkstraVisualizer: React.FC = () => {
                 <span>🟢 Finalized Path</span>
               </div>
             </div>
-          </div>
+            </div>
 
-          {/* Step Description */}
+            {/* Step Description */}
           {currentDescription && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
+          </div>
 
           {/* Graph Visualization (Working) */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-center justify-center overflow-auto">
+          <div className="max-w-full overflow-x-auto rounded-lg">
+            <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] min-w-[720px] flex items-center justify-center">
             {nodes.length > 0 ? (
               <svg width="500" height="300" className="overflow-visible">
                 {/* Render edges */}
@@ -760,6 +763,7 @@ const DijkstraVisualizer: React.FC = () => {
                 <p className="text-sm">Generate an example or add nodes to start</p>
               </div>
             )}
+            </div>
           </div>
 
           {/* Complexity & Properties */}

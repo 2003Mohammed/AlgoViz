@@ -376,7 +376,8 @@ const DFSVisualizer: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Controls */}
-          <div className="flex flex-wrap gap-4 items-center justify-center">
+          <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border rounded-lg p-3">
+            <div className="flex flex-wrap gap-4 items-center justify-center">
             <Button
               onClick={() => {
                 const example = examples.find((item) => item.key === selectedExample) ?? examples[0];
@@ -403,9 +404,9 @@ const DFSVisualizer: React.FC = () => {
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
             </Button>
-          </div>
+            </div>
 
-          <div className="flex flex-wrap gap-2 items-center justify-center">
+            <div className="flex flex-wrap gap-2 items-center justify-center">
             <span className="text-xs text-muted-foreground">Presets:</span>
             {examples.map((example) => (
               <Button
@@ -422,7 +423,7 @@ const DFSVisualizer: React.FC = () => {
             ))}
           </div>
 
-          <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
+            <div className="space-y-3 p-4 bg-muted/20 rounded-lg">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Animation Speed</span>
               <span className="text-xs text-muted-foreground">{animationSpeed[0].toFixed(1)}s</span>
@@ -442,8 +443,8 @@ const DFSVisualizer: React.FC = () => {
             </div>
           </div>
 
-          {/* Start Node Input */}
-          <div className="flex gap-2 items-center justify-center">
+            {/* Start Node Input */}
+            <div className="flex gap-2 items-center justify-center">
             <Input
               placeholder="Start Node (e.g., A)"
               value={startNode}
@@ -452,8 +453,8 @@ const DFSVisualizer: React.FC = () => {
             />
           </div>
 
-          {/* Color Legend */}
-          <div className="bg-muted/20 p-3 rounded-lg">
+            {/* Color Legend */}
+            <div className="bg-muted/20 p-3 rounded-lg">
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
@@ -475,14 +476,14 @@ const DFSVisualizer: React.FC = () => {
             </div>
           </div>
 
-          {/* Step Description */}
+            {/* Step Description */}
           {currentDescription && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
 
-          {/* Stack Display */}
+            {/* Stack Display */}
           <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
             <strong className="text-purple-700">Stack:</strong>
             <span className="ml-2 text-purple-600">
@@ -490,8 +491,11 @@ const DFSVisualizer: React.FC = () => {
             </span>
           </div>
 
+          </div>
+
           {/* Graph Visualization */}
-          <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] flex items-center justify-center">
+          <div className="max-w-full overflow-x-auto rounded-lg">
+            <div className="bg-muted/20 p-6 rounded-lg min-h-[300px] min-w-[720px] flex items-center justify-center">
             {nodes.length === 0 ? (
               <div className="text-center text-muted-foreground">
                 <p className="text-lg font-medium">No Graph</p>
@@ -549,6 +553,7 @@ const DFSVisualizer: React.FC = () => {
                 })}
               </svg>
             )}
+            </div>
           </div>
         </CardContent>
       </Card>
