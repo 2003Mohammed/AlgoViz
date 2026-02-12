@@ -283,3 +283,85 @@
   @apply border-border transform translate-y-[-2px];
   box-shadow: 0 8px 32px hsl(var(--zady-blue) / 0.1);
 }
+
+.assistant-demo-sort-bar {
+  width: 14px;
+  border-radius: 4px;
+  background: hsl(var(--foreground) / 0.32);
+  animation: assistant-sort-loop 2.4s ease-in-out infinite;
+}
+
+@keyframes assistant-sort-loop {
+  0%,
+  100% { transform: translateX(0); opacity: 0.75; }
+  35% { transform: translateX(2px); opacity: 1; }
+  70% { transform: translateX(-2px); opacity: 0.85; }
+}
+
+.assistant-demo-tree-wrap {
+  width: 210px;
+  height: 90px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.assistant-demo-tree-node {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: hsl(var(--foreground) / 0.3);
+  animation: assistant-tree-traversal 3.2s linear infinite;
+}
+
+@keyframes assistant-tree-traversal {
+  0%,
+  100% { background: hsl(var(--foreground) / 0.3); transform: scale(1); }
+  20% { background: hsl(var(--zady-accent)); transform: scale(1.12); }
+  40% { background: hsl(var(--foreground) / 0.3); transform: scale(1); }
+}
+
+.assistant-demo-graph-wrap {
+  width: 190px;
+  height: 90px;
+  position: relative;
+}
+
+.assistant-demo-graph-node {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: hsl(var(--foreground) / 0.35);
+  animation: assistant-graph-node 2.8s ease-in-out infinite;
+}
+
+.assistant-demo-graph-node:nth-child(1) { left: 8px; top: 40px; }
+.assistant-demo-graph-node:nth-child(2) { left: 50px; top: 12px; }
+.assistant-demo-graph-node:nth-child(3) { left: 90px; top: 40px; }
+.assistant-demo-graph-node:nth-child(4) { left: 132px; top: 16px; }
+.assistant-demo-graph-node:nth-child(5) { left: 170px; top: 40px; }
+
+.assistant-demo-graph-path {
+  position: absolute;
+  left: 10px;
+  top: 46px;
+  width: 170px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--zady-accent)), transparent);
+  background-size: 200% 100%;
+  animation: assistant-graph-path 3s linear infinite;
+}
+
+@keyframes assistant-graph-path {
+  0% { background-position: 200% 0; opacity: 0.55; }
+  50% { opacity: 0.95; }
+  100% { background-position: -200% 0; opacity: 0.55; }
+}
+
+@keyframes assistant-graph-node {
+  0%,
+  100% { transform: scale(1); background: hsl(var(--foreground) / 0.35); }
+  50% { transform: scale(1.1); background: hsl(var(--zady-accent)); }
+}

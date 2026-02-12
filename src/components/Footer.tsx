@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-background/95 backdrop-blur-xl border-t border-border/50 relative overflow-hidden">
       {/* Background Pattern */}
@@ -68,7 +70,7 @@ export const Footer: React.FC = () => {
                 Mohammed A
               </motion.span>
               <span>|</span>
-              <span>© 2025</span>
+              <span>© {currentYear}</span>
               <motion.span 
                 className="font-semibold text-primary"
                 whileHover={{ 

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Database, Zap, ArrowRight, Play, Target, Eye, Cpu, Code2, BookOpen } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { AssistantInfo } from '../components/AssistantInfo';
 
 const Index = () => {
   const containerVariants = {
@@ -61,21 +62,24 @@ const Index = () => {
 
   const demoHighlights = [
     {
+      type: 'sorting',
       title: "Array Sorting",
       description: "Visualize bubble sort, quick sort, and merge sort with color-coded comparisons",
       gradient: "from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))]"
     },
     {
+      type: 'trees',
       title: "Binary Trees & BST",
       description: "Build and explore Binary Trees and Binary Search Trees: insert, delete, and traverse (inorder/preorder/postorder)",
       gradient: "from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
     },
     {
+      type: 'graph',
       title: "Graph Pathfinding",
       description: "See algorithms find paths with animated node exploration",
       gradient: "from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))]"
     }
-  ];
+  ] as const;
 
   return (
     <Layout>
@@ -142,6 +146,8 @@ const Index = () => {
             </motion.div>
           </div>
         </motion.section>
+
+        <AssistantInfo />
 
         {/* Features Section */}
         <motion.section 
@@ -244,29 +250,41 @@ const Index = () => {
                   className="relative group"
                 >
                   <Card className="zady-card overflow-hidden">
-                    <div className={`h-32 bg-gradient-to-r ${demo.gradient} relative`}>
+                    <div className={`h-32 bg-gradient-to-r ${demo.gradient} relative overflow-hidden`}>
                       <div className="absolute inset-0 bg-black/20"></div>
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <div className="flex space-x-1">
-                          {[...Array(8)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className="h-8 bg-white/30 rounded"
-                              style={{ 
-                                width: `${Math.random() * 40 + 20}px`,
-                              }}
-                              animate={{
-                                height: [32, Math.random() * 40 + 20, 32]
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: i * 0.2
-                              }}
+
+                      {demo.type === 'sorting' && (
+                        <div className="absolute inset-x-4 bottom-4 flex items-end gap-1 h-16">
+                          {[18, 34, 24, 40, 28, 46, 30, 36].map((height, i) => (
+                            <div
+                              key={`sort-${i}`}
+                              className="assistant-demo-sort-bar"
+                              style={{ height: `${height}px`, animationDelay: `${i * 0.15}s` }}
                             />
                           ))}
                         </div>
-                      </div>
+                      )}
+
+                      {demo.type === 'trees' && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="assistant-demo-tree-wrap">
+                            {[0, 1, 2, 3, 4, 5, 6].map((node, i) => (
+                              <span key={`tree-${node}`} className="assistant-demo-tree-node" style={{ animationDelay: `${i * 0.25}s` }} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {demo.type === 'graph' && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="assistant-demo-graph-wrap">
+                            {[0, 1, 2, 3, 4].map((node, i) => (
+                              <span key={`graph-${node}`} className="assistant-demo-graph-node" style={{ animationDelay: `${i * 0.2}s` }} />
+                            ))}
+                            <span className="assistant-demo-graph-path" />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <CardHeader>
                       <CardTitle className="text-lg">{demo.title}</CardTitle>

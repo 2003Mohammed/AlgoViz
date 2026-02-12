@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Database, Zap, Target, Eye, Play, RotateCcw, ArrowRight, Mail, Github, HelpCircle, BookOpen, Code, Activity } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { AssistantInfo } from '../components/AssistantInfo';
 
 const Guide = () => {
   const navigate = useNavigate();
@@ -290,6 +291,8 @@ const Guide = () => {
             </div>
           </div>
         </motion.section>
+
+        <AssistantInfo />
 
         {/* Contact Section */}
         <motion.section 

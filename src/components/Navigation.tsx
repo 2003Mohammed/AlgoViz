@@ -12,9 +12,8 @@ export const Navigation = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Data Structures', path: '/data-structures' },
-    { name: 'Algorithms', path: '/algorithms' },
-    { name: 'Guide', path: '/guide' },
+    { name: 'DSA', path: '/algorithms' },
+    { name: 'Guide', path: '/guide' }
   ];
 
   const isActive = (path: string) => {
@@ -29,6 +28,17 @@ export const Navigation = () => {
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handleAssistantNavigation = () => {
+    const assistantPanel = document.getElementById('algoviz-assistant');
+
+    if (assistantPanel) {
+      assistantPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    window.dispatchEvent(new Event('algoviz-assistant-toggle'));
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -79,6 +89,16 @@ export const Navigation = () => {
               </motion.div>
             </Link>
           ))}
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="theme-transition hover:bg-accent/80"
+              onClick={handleAssistantNavigation}
+            >
+              AlgoViz Assistant
+            </Button>
+          </motion.div>
         </div>
 
         {/* Theme Switcher & Mobile Menu */}
@@ -135,6 +155,17 @@ export const Navigation = () => {
                   </motion.div>
                 </Link>
               ))}
+
+              <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start theme-transition"
+                  onClick={handleAssistantNavigation}
+                >
+                  AlgoViz Assistant
+                </Button>
+              </motion.div>
             </div>
           </motion.div>
         )}
