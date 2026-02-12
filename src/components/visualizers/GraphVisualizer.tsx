@@ -389,11 +389,11 @@ const GraphVisualizer: React.FC = () => {
 
   const getNodeColor = (status: string) => {
     switch (status) {
-      case 'visiting': return 'fill-yellow-500';
-      case 'visited': return 'fill-green-500';
-      case 'current': return 'fill-blue-500';
-      case 'path': return 'fill-purple-500';
-      default: return 'fill-blue-500';
+      case 'visiting': return 'fill-viz-node-active';
+      case 'visited': return 'fill-viz-node-visited';
+      case 'current': return 'fill-viz-node-default';
+      case 'path': return 'fill-viz-node-queued';
+      default: return 'fill-viz-node-default';
     }
   };
 
@@ -573,19 +573,19 @@ const GraphVisualizer: React.FC = () => {
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-default rounded-full"></div>
                 <span>🔵 Default/Unvisited</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-active rounded-full"></div>
                 <span>🟡 Currently Visiting</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-visited rounded-full"></div>
                 <span>🟢 Visited</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-queued rounded-full"></div>
                 <span>🟣 Path</span>
               </div>
             </div>
@@ -593,7 +593,7 @@ const GraphVisualizer: React.FC = () => {
 
           {/* Step Description */}
           {currentDescription && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+            <div className="p-3 bg-viz-panel border border-border rounded-lg text-foreground text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
@@ -638,7 +638,7 @@ const GraphVisualizer: React.FC = () => {
                       x={node.x}
                       y={node.y + 5}
                       textAnchor="middle"
-                      className="text-sm font-bold fill-white"
+                      className="text-sm font-bold fill-primary-foreground"
                     >
                       {node.value}
                     </text>

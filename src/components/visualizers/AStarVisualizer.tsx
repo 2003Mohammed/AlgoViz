@@ -579,19 +579,19 @@ const AStarVisualizer: React.FC = () => {
                 <span>Unvisited</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-default rounded-full"></div>
                 <span>Open Set</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-active rounded-full"></div>
                 <span>Current</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-queued rounded-full"></div>
                 <span>Closed Set</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-visited rounded-full"></div>
                 <span>Final Path</span>
               </div>
             </div>
@@ -599,7 +599,7 @@ const AStarVisualizer: React.FC = () => {
 
             {/* Step Description */}
           {currentDescription && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+            <div className="p-3 bg-viz-panel border border-border rounded-lg text-foreground text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
@@ -627,7 +627,7 @@ const AStarVisualizer: React.FC = () => {
                         y1={sourceNode.y}
                         x2={targetNode.x}
                         y2={targetNode.y}
-                        stroke={edge.status === 'path' ? '#10b981' : '#6b7280'}
+                        stroke={edge.status === 'path' ? 'hsl(var(--viz-edge-active))' : 'hsl(var(--viz-edge-default))'}
                         strokeWidth={edge.status === 'path' ? 3 : 2}
                       />
                       <text
@@ -645,14 +645,14 @@ const AStarVisualizer: React.FC = () => {
                 {nodes.map((node) => {
                   const nodeColor =
                     node.status === 'path'
-                      ? '#10b981'
+                      ? 'hsl(var(--viz-node-visited))'
                       : node.status === 'current'
-                        ? '#f59e0b'
+                        ? 'hsl(var(--viz-node-active))'
                         : node.status === 'open'
-                          ? '#60a5fa'
+                          ? 'hsl(var(--viz-node-default))'
                           : node.status === 'closed'
-                            ? '#8b5cf6'
-                            : '#6b7280';
+                            ? 'hsl(var(--viz-node-queued))'
+                            : 'hsl(var(--viz-node-default))';
 
                   const cost = steps[currentStep]?.costs[node.id];
 
@@ -663,7 +663,7 @@ const AStarVisualizer: React.FC = () => {
                         cy={node.y}
                         r="22"
                         fill={nodeColor}
-                        stroke="#fff"
+                        stroke="hsl(var(--background))"
                         strokeWidth="2"
                         animate={{ scale: node.status === 'current' ? 1.15 : 1 }}
                         transition={{ duration: 0.3 }}
@@ -672,7 +672,7 @@ const AStarVisualizer: React.FC = () => {
                         x={node.x}
                         y={node.y + 5}
                         textAnchor="middle"
-                        className="text-white text-sm font-bold"
+                        className="fill-primary-foreground text-sm font-bold"
                       >
                         {node.id}
                       </text>
@@ -681,7 +681,7 @@ const AStarVisualizer: React.FC = () => {
                           x={node.x}
                           y={node.y + 24}
                           textAnchor="middle"
-                          className="text-[10px] fill-white"
+                          className="text-[10px] fill-primary-foreground"
                         >
                           f:{cost.f === Number.POSITIVE_INFINITY ? '∞' : cost.f.toFixed(1)}
                         </text>

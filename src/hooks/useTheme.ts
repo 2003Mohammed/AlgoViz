@@ -1,58 +1,62 @@
+import { useEffect, useMemo, useState } from 'react';
 
-import { useState, useEffect } from 'react';
+type ThemeMode = 'light' | 'dark' | 'system';
+type ResolvedTheme = 'light' | 'dark';
 
-type Theme = 'dark' | 'light';
+const THEME_STORAGE_KEY = 'theme-mode';
+
+const getSystemTheme = (): ResolvedTheme =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem('theme');
-    return (stored as Theme) || 'dark';
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null;
+    return stored && ['light', 'dark', 'system'].includes(stored) ? stored : 'system';
   });
+  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(getSystemTheme);
+
+  const resolvedTheme = useMemo<ResolvedTheme>(
+    () => (themeMode === 'system' ? systemTheme : themeMode),
+    [themeMode, systemTheme]
+  );
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-  };
-
-  const setThemeMode = (mode: Theme) => {
-    setTheme(mode);
+    setThemeMode((prev) => {
+      if (prev === 'system') {
+        return resolvedTheme === 'dark' ? 'light' : 'dark';
+      }
+      return prev === 'dark' ? 'light' : 'dark';
+    });
   };
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => setSystemTheme(getSystemTheme());
+    mediaQuery.addEventListener('change', onChange);
+    return () => mediaQuery.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
-    
-    // Remove both classes first
+
     root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-    
-    // Store preference
-    localStorage.setItem('theme', theme);
-    
-    // Update meta theme-color for mobile browsers
+    root.classList.add(resolvedTheme);
+    root.dataset.theme = resolvedTheme;
+
+    localStorage.setItem(THEME_STORAGE_KEY, themeMode);
+
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+      metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#0c1222' : '#f6f8fc');
     }
+  }, [themeMode, resolvedTheme]);
 
-    // Apply theme styling
-    document.body.className = `${theme} theme-transition`;
-    
-    if (theme === 'dark') {
-      document.body.style.setProperty('--theme-bg', '#0f172a');
-      document.body.style.setProperty('--theme-text', '#f8fafc');
-      document.body.style.setProperty('--theme-primary', '#60a5fa');
-    } else {
-      document.body.style.setProperty('--theme-bg', '#ffffff');
-      document.body.style.setProperty('--theme-text', '#1e1e1e');
-      document.body.style.setProperty('--theme-primary', '#6200ee');
-    }
-  }, [theme]);
-
-  return { 
-    theme, 
-    toggleTheme,
+  return {
+    theme: resolvedTheme,
+    themeMode,
     setThemeMode,
-    isDark: theme === 'dark',
-    isLight: theme === 'light'
+    toggleTheme,
+    isDark: resolvedTheme === 'dark',
+    isLight: resolvedTheme === 'light'
   };
 }

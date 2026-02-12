@@ -457,15 +457,15 @@ const BFSVisualizer: React.FC = () => {
                 <span>Unvisited</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-queued rounded-full"></div>
                 <span>In Queue</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-active rounded-full"></div>
                 <span>Visiting</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-visited rounded-full"></div>
                 <span>Visited</span>
               </div>
             </div>
@@ -473,15 +473,15 @@ const BFSVisualizer: React.FC = () => {
 
             {/* Step Description */}
           {currentDescription && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+            <div className="p-3 bg-viz-panel border border-border rounded-lg text-foreground text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
 
             {/* Queue Display */}
-          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <strong className="text-yellow-700">Queue:</strong>
-            <span className="ml-2 text-yellow-600">
+          <div className="p-3 bg-viz-panel border border-border rounded-lg">
+            <strong className="text-foreground">Queue:</strong>
+            <span className="ml-2 text-muted-foreground">
               {queue.length > 0 ? `[${queue.join(', ')}]` : 'Empty'}
             </span>
           </div>
@@ -511,7 +511,7 @@ const BFSVisualizer: React.FC = () => {
                       y1={sourceNode.y}
                       x2={targetNode.x}
                       y2={targetNode.y}
-                      stroke={edge.status === 'visited' ? '#10b981' : '#6b7280'}
+                      stroke={edge.status === 'visited' ? 'hsl(var(--viz-edge-visited))' : 'hsl(var(--viz-edge-default))'}
                       strokeWidth="2"
                     />
                   );
@@ -519,9 +519,13 @@ const BFSVisualizer: React.FC = () => {
                 
                 {/* Render nodes */}
                 {nodes.map((node) => {
-                  const nodeColor = node.status === 'visited' ? '#10b981' :
-                                   node.status === 'visiting' ? '#3b82f6' :
-                                   node.status === 'queued' ? '#f59e0b' : '#6b7280';
+                  const nodeColor = node.status === 'visited'
+                    ? 'hsl(var(--viz-node-visited))'
+                    : node.status === 'visiting'
+                    ? 'hsl(var(--viz-node-active))'
+                    : node.status === 'queued'
+                    ? 'hsl(var(--viz-node-queued))'
+                    : 'hsl(var(--viz-node-default))';
                   
                   return (
                     <g key={node.id}>
@@ -530,7 +534,7 @@ const BFSVisualizer: React.FC = () => {
                         cy={node.y}
                         r="20"
                         fill={nodeColor}
-                        stroke="#fff"
+                        stroke="hsl(var(--background))"
                         strokeWidth="2"
                         animate={{ scale: node.status === 'visiting' ? 1.2 : 1 }}
                         transition={{ duration: 0.3 }}
@@ -539,7 +543,7 @@ const BFSVisualizer: React.FC = () => {
                         x={node.x}
                         y={node.y + 5}
                         textAnchor="middle"
-                        className="text-white text-sm font-bold"
+                        className="fill-primary-foreground text-sm font-bold"
                       >
                         {node.id}
                       </text>

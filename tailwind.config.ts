@@ -84,6 +84,28 @@ export default {
 					pink: 'rgba(236, 72, 153, 0.5)',
 				},
 				// Cyber theme colors for the CSS classes
+
+				viz: {
+					bg: 'hsl(var(--viz-bg))',
+					panel: 'hsl(var(--viz-panel))',
+					node: {
+						default: 'hsl(var(--viz-node-default))',
+						active: 'hsl(var(--viz-node-active))',
+						visited: 'hsl(var(--viz-node-visited))',
+						queued: 'hsl(var(--viz-node-queued))'
+					},
+					edge: {
+						default: 'hsl(var(--viz-edge-default))',
+						active: 'hsl(var(--viz-edge-active))',
+						visited: 'hsl(var(--viz-edge-visited))'
+					},
+					bar: {
+						default: 'hsl(var(--viz-bar-default))',
+						compare: 'hsl(var(--viz-bar-compare))',
+						swap: 'hsl(var(--viz-bar-swap))',
+						sorted: 'hsl(var(--viz-bar-sorted))'
+					}
+				},
 				cyber: {
 					primary: '#00f3ff',
 					secondary: '#ff00a0',
