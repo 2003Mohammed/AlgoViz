@@ -4,42 +4,16 @@ import { queryLlmGateway } from './llmGateway';
 import { composeDeterministicResponse } from './responseComposer';
 import type { AssistantRequest } from './types';
 
-const genericQuestionHints = [
-  /\bit\b/,
-  /\bthis\b/,
-  /\bits\b/,
-  /\bcomplexit(?:y|ies)\b/,
-  /how\s+does\s+it\s+work/
-];
-
-const shouldScopeToActiveAlgorithm = (question: string, activeAlgorithm?: string | null) => {
-  if (!activeAlgorithm) return false;
-  const lowered = question.toLowerCase();
-  return genericQuestionHints.some((pattern) => pattern.test(lowered));
-};
-
-const scopeQuestionToAlgorithm = (question: string, activeAlgorithm?: string | null) => {
-  if (!shouldScopeToActiveAlgorithm(question, activeAlgorithm)) {
-    return question;
-  }
-
-  return `${activeAlgorithm} ${question}`;
-};
-
 export const routeAssistantResponse = async (request: AssistantRequest): Promise<string> => {
-  const scopedQuestion = scopeQuestionToAlgorithm(request.question, request.activeAlgorithm);
-  const intent = classifyIntent(scopedQuestion);
-  const context = buildAssistantContext({
-    ...request,
-    question: scopedQuestion
-  });
+  const intent = classifyIntent(request.question);
+  const context = buildAssistantContext(request);
 
   const wantsModelReasoning = intent.intents.some((item) =>
     item.intent === 'edge-case-analysis' || item.intent === 'comparison'
-  ) && scopedQuestion.toLowerCase().includes('deep');
+  ) && request.question.toLowerCase().includes('deep');
 
   const deterministicFallback = () => composeDeterministicResponse(
-    scopedQuestion,
+    request.question,
     intent,
     context,
     request.previousQuestion
@@ -48,7 +22,7 @@ export const routeAssistantResponse = async (request: AssistantRequest): Promise
   if (wantsModelReasoning) {
     try {
       const llmResponse = await queryLlmGateway({
-        question: scopedQuestion,
+        question: request.question,
         context,
         intent
       });

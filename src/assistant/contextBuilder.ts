@@ -10,24 +10,10 @@ const routeTopicFallback = (pathname: string): string => {
   return 'AlgoViz';
 };
 
-const genericContextHints = [
-  /\bits?\b/,
-  /\bthis\b/,
-  /\bits\b/,
-  /\bcomplexit(?:y|ies)\b/,
-  /how\s+does\s+it\s+work/
-];
-
-const hasGenericQuestionHints = (question: string): boolean => {
-  const lowered = question.toLowerCase();
-  return genericContextHints.some((pattern) => pattern.test(lowered));
-};
-
 const inferTopicId = (request: AssistantRequest): string | null => {
   const { visualizationState, pathname, activeAlgorithm, activeDataStructure } = request;
-
-  if (activeAlgorithm) return activeAlgorithm;
   if (visualizationState.algorithmId) return visualizationState.algorithmId;
+  if (activeAlgorithm) return activeAlgorithm;
   if (activeDataStructure) return activeDataStructure;
 
   if (pathname.includes('binary-search')) return 'binarySearch';
@@ -51,11 +37,7 @@ const inferTopicId = (request: AssistantRequest): string | null => {
 
 export const buildAssistantContext = (request: AssistantRequest): AssistantContext => {
   const topicId = inferTopicId(request);
-  const activeAlgorithm = request.activeAlgorithm || request.visualizationState.algorithmName || null;
-  const shouldScopeToAlgorithm = Boolean(activeAlgorithm) && hasGenericQuestionHints(request.question);
-  const alreadyScoped = Boolean(activeAlgorithm) && request.question.toLowerCase().includes(String(activeAlgorithm).toLowerCase());
-  const scopedQuestion = shouldScopeToAlgorithm && !alreadyScoped ? `${activeAlgorithm}: ${request.question}` : request.question;
-  const entry = findKnowledgeEntry(scopedQuestion, topicId);
+  const entry = findKnowledgeEntry(request.question, topicId);
   const { visualizationState } = request;
 
   const stateDetails: string[] = [];
@@ -70,11 +52,13 @@ export const buildAssistantContext = (request: AssistantRequest): AssistantConte
     ? `Step ${visualizationState.stepIndex + 1} of ${visualizationState.totalSteps}`
     : 'No active visualization steps yet';
 
+  const activeRoute = request.currentRoute || request.pathname;
+
   return {
-    routeContext: routeTopicFallback(request.currentRoute || request.pathname),
+    routeContext: routeTopicFallback(activeRoute),
     algorithmId: visualizationState.algorithmId,
     topicId: entry?.id || topicId,
-    topicName: entry?.name || activeAlgorithm || request.activeDataStructure || visualizationState.algorithmName || routeTopicFallback(request.currentRoute || request.pathname),
+    topicName: entry?.name || visualizationState.algorithmName || request.activeAlgorithm || request.activeDataStructure || routeTopicFallback(activeRoute),
     summary,
     stateDetails,
     hasVisualizationData: hasSteps,
