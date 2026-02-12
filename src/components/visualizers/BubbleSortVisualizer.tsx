@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Play, Pause, SkipForward, RotateCcw, Shuffle, ExternalLink, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Slider } from '../ui/slider';
+import { SORTING_SCENARIOS, getScenarioById } from '../../utils/exampleScenarios';
 import { LearnMoreLink } from '../LearnMoreLink';
 
 interface ArrayItem {
@@ -34,6 +35,7 @@ const BubbleSortVisualizer: React.FC = () => {
   const [customInput, setCustomInput] = useState('');
   const [animationSpeed, setAnimationSpeed] = useState([1]);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [scenarioId, setScenarioId] = useState(SORTING_SCENARIOS[0].id);
 
   const generateBubbleSortSteps = (arr: ArrayItem[]): AnimationStep[] => {
     const steps: AnimationStep[] = [];
@@ -147,11 +149,13 @@ const BubbleSortVisualizer: React.FC = () => {
     }
   };
 
-  const generateRandomArray = () => {
-    const newArray = Array.from({ length: 6 }, () => ({
-      value: Math.floor(Math.random() * 90) + 10,
+  const applyScenario = (id: string) => {
+    const scenario = getScenarioById(SORTING_SCENARIOS, id);
+    const newArray = scenario.generate().map((value) => ({
+      value,
       status: 'default' as const
     }));
+    setScenarioId(scenario.id);
     setArray(newArray);
     resetAnimation();
   };
@@ -169,6 +173,10 @@ const BubbleSortVisualizer: React.FC = () => {
       console.error('Invalid input');
     }
   };
+
+  useEffect(() => {
+    applyScenario(SORTING_SCENARIOS[0].id);
+  }, []);
 
   useEffect(() => {
     if (isAnimating && animationSteps.length > 0) {
@@ -193,10 +201,10 @@ const BubbleSortVisualizer: React.FC = () => {
 
   const getBarColor = (status: ArrayItem['status']) => {
     switch (status) {
-      case 'comparing': return 'bg-yellow-500';
-      case 'swapping': return 'bg-red-500';
-      case 'sorted': return 'bg-green-500';
-      default: return 'bg-blue-500';
+      case 'comparing': return 'bg-viz-bar-compare';
+      case 'swapping': return 'bg-viz-bar-swap';
+      case 'sorted': return 'bg-viz-bar-sorted';
+      default: return 'bg-viz-bar-default';
     }
   };
 
@@ -223,10 +231,22 @@ const BubbleSortVisualizer: React.FC = () => {
 
           {/* Controls */}
           <div className="flex flex-wrap gap-2 justify-center">
-            <Button onClick={generateRandomArray} variant="outline" size="sm">
-              <Shuffle className="h-4 w-4 mr-2" />
-              Random Array
-            </Button>
+            <div className="flex items-center gap-2">
+              <select
+                aria-label="Sorting scenario"
+                value={scenarioId}
+                onChange={(e) => applyScenario(e.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                {SORTING_SCENARIOS.map((scenario) => (
+                  <option key={scenario.id} value={scenario.id}>{scenario.label}</option>
+                ))}
+              </select>
+              <Button onClick={() => applyScenario(scenarioId)} variant="outline" size="sm">
+                <Shuffle className="h-4 w-4 mr-2" />
+                Load Scenario
+              </Button>
+            </div>
             <Button 
               onClick={isAnimating ? pauseAnimation : startAnimation} 
               size="sm"
@@ -250,19 +270,19 @@ const BubbleSortVisualizer: React.FC = () => {
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500"></div>
+                <div className="w-3 h-3 bg-viz-bar-default"></div>
                 <span>🔵 Unsorted</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-500"></div>
+                <div className="w-3 h-3 bg-viz-bar-compare"></div>
                 <span>🟡 Comparing</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500"></div>
+                <div className="w-3 h-3 bg-viz-bar-swap"></div>
                 <span>🔴 Swapping</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500"></div>
+                <div className="w-3 h-3 bg-viz-bar-sorted"></div>
                 <span>🟢 Sorted</span>
               </div>
             </div>
@@ -270,7 +290,7 @@ const BubbleSortVisualizer: React.FC = () => {
 
           {/* Step Description */}
           {currentDescription && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+            <div className="p-3 bg-viz-panel border border-border rounded-lg text-foreground text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}

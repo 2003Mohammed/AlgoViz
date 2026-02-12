@@ -32,6 +32,20 @@
     --zady-cream: 45 20% 90%;
     --zady-dark: 220 20% 6%;
     --zady-accent: 45 90% 70%;
+
+    --viz-bg: 220 24% 10%;
+    --viz-panel: 220 22% 14%;
+    --viz-node-default: 225 70% 56%;
+    --viz-node-active: 38 95% 58%;
+    --viz-node-visited: 160 74% 42%;
+    --viz-node-queued: 275 80% 65%;
+    --viz-edge-default: 220 14% 36%;
+    --viz-edge-active: 43 96% 57%;
+    --viz-edge-visited: 193 87% 56%;
+    --viz-bar-default: 221 83% 56%;
+    --viz-bar-compare: 44 94% 56%;
+    --viz-bar-swap: 350 89% 60%;
+    --viz-bar-sorted: 156 72% 45%;
   }
 
   .light {
@@ -54,6 +68,20 @@
     --border: 45 12% 78%;
     --input: 45 12% 78%;
     --ring: 225 100% 50%;
+
+    --viz-bg: 210 30% 95%;
+    --viz-panel: 0 0% 100%;
+    --viz-node-default: 220 78% 48%;
+    --viz-node-active: 24 95% 50%;
+    --viz-node-visited: 164 70% 35%;
+    --viz-node-queued: 271 71% 48%;
+    --viz-edge-default: 215 18% 52%;
+    --viz-edge-active: 24 95% 46%;
+    --viz-edge-visited: 196 89% 40%;
+    --viz-bar-default: 221 83% 52%;
+    --viz-bar-compare: 35 95% 48%;
+    --viz-bar-swap: 353 78% 47%;
+    --viz-bar-sorted: 155 64% 37%;
   }
 
   * {
@@ -68,6 +96,17 @@
 }
 
 @layer components {
+  .viz-surface {
+    @apply bg-viz-bg border border-border/70;
+  }
+
+  .viz-panel {
+    @apply bg-viz-panel border border-border/70 rounded-lg;
+  }
+
+  .tutor-panel {
+    @apply bg-card/95 text-card-foreground border border-border shadow-xl;
+  }
   .glass-card {
     @apply bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg shadow-lg;
   }

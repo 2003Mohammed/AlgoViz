@@ -499,10 +499,10 @@ const DijkstraVisualizer: React.FC = () => {
 
   const getNodeColor = (status: string) => {
     switch (status) {
-      case 'current': return 'fill-yellow-500';
-      case 'visiting': return 'fill-orange-500';
-      case 'finalized': return 'fill-green-500';
-      default: return 'fill-blue-500';
+      case 'current': return 'fill-viz-node-active';
+      case 'visiting': return 'fill-viz-node-queued';
+      case 'finalized': return 'fill-viz-node-visited';
+      default: return 'fill-viz-node-default';
     }
   };
 
@@ -666,19 +666,19 @@ const DijkstraVisualizer: React.FC = () => {
             <h4 className="text-sm font-medium mb-2">Color Legend:</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-default rounded-full"></div>
                 <span>🔵 Unvisited</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-active rounded-full"></div>
                 <span>🟡 Current Node</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-queued rounded-full"></div>
                 <span>🟠 Distance Updated</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-viz-node-visited rounded-full"></div>
                 <span>🟢 Finalized Path</span>
               </div>
             </div>
@@ -686,7 +686,7 @@ const DijkstraVisualizer: React.FC = () => {
 
             {/* Step Description */}
           {currentDescription && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+            <div className="p-3 bg-viz-panel border border-border rounded-lg text-foreground text-sm">
               <strong>Step:</strong> {currentDescription}
             </div>
           )}
@@ -742,7 +742,7 @@ const DijkstraVisualizer: React.FC = () => {
                       x={node.x}
                       y={node.y - 5}
                       textAnchor="middle"
-                      className="text-sm font-bold fill-white"
+                      className="text-sm font-bold fill-primary-foreground"
                     >
                       {node.value}
                     </text>
@@ -750,7 +750,7 @@ const DijkstraVisualizer: React.FC = () => {
                       x={node.x}
                       y={node.y + 8}
                       textAnchor="middle"
-                      className="text-xs fill-white"
+                      className="text-xs fill-primary-foreground"
                     >
                       {node.distance === Infinity ? '∞' : node.distance}
                     </text>

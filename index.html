@@ -9,6 +9,27 @@
   <meta name="description" content="AlgoViz is an interactive platform to learn and visualize Data Structures & Algorithms like BFS, DFS, Trees, Sorting, and Dijkstra — with step-by-step animations." />
   <meta name="keywords" content="data structures, algorithms, visualizer, sorting, searching, trees, graphs, BFS, DFS, Dijkstra, computer science" />
   <meta name="author" content="Mohammed | AlgoViz" />
+  <meta name="theme-color" content="#0c1222" />
+    <script>
+      (function () {
+        try {
+          var storedMode = localStorage.getItem('theme-mode');
+          var mode = storedMode === 'light' || storedMode === 'dark' || storedMode === 'system' ? storedMode : 'system';
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolved = mode === 'system' ? (prefersDark ? 'dark' : 'light') : mode;
+          var root = document.documentElement;
+          root.classList.remove('light', 'dark');
+          root.classList.add(resolved);
+          root.dataset.theme = resolved;
+          var metaThemeColor = document.querySelector('meta[name="theme-color"]');
+          if (metaThemeColor) {
+            metaThemeColor.setAttribute('content', resolved === 'dark' ? '#0c1222' : '#f6f8fc');
+          }
+        } catch (error) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
 
   <!-- Canonical -->
   <link rel="canonical" href="https://algoviz-seven.vercel.app/" />
