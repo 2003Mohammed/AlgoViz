@@ -99,9 +99,14 @@ export const Navigation = () => {
           </motion.div>
 
           <Link to="/buy-me-a-coffee" aria-label="Buy Me a Coffee" title="Buy Me a Coffee">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button variant="ghost" size="icon" className="theme-transition hover:bg-yellow-500/10 hover:text-yellow-500">
-                <Coffee className="h-4 w-4" />
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }} className="navbar-coffee-wrap">
+              <Button variant="ghost" size="icon" className="theme-transition hover:bg-yellow-500/10 hover:text-yellow-500 navbar-coffee-button">
+                <span className="navbar-coffee-steam" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <Coffee className="h-4 w-4 navbar-coffee-icon" />
               </Button>
             </motion.div>
           </Link>
