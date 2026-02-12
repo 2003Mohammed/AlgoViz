@@ -11,8 +11,10 @@ const routeTopicFallback = (pathname: string): string => {
 };
 
 const inferTopicId = (request: AssistantRequest): string | null => {
-  const { visualizationState, pathname } = request;
+  const { visualizationState, pathname, activeAlgorithm, activeDataStructure } = request;
   if (visualizationState.algorithmId) return visualizationState.algorithmId;
+  if (activeAlgorithm) return activeAlgorithm;
+  if (activeDataStructure) return activeDataStructure;
 
   if (pathname.includes('binary-search')) return 'binarySearch';
   if (pathname.includes('linear-search')) return 'linearSearch';
@@ -50,11 +52,13 @@ export const buildAssistantContext = (request: AssistantRequest): AssistantConte
     ? `Step ${visualizationState.stepIndex + 1} of ${visualizationState.totalSteps}`
     : 'No active visualization steps yet';
 
+  const activeRoute = request.currentRoute || request.pathname;
+
   return {
-    routeContext: routeTopicFallback(request.pathname),
+    routeContext: routeTopicFallback(activeRoute),
     algorithmId: visualizationState.algorithmId,
     topicId: entry?.id || topicId,
-    topicName: entry?.name || visualizationState.algorithmName || routeTopicFallback(request.pathname),
+    topicName: entry?.name || visualizationState.algorithmName || request.activeAlgorithm || request.activeDataStructure || routeTopicFallback(activeRoute),
     summary,
     stateDetails,
     hasVisualizationData: hasSteps,

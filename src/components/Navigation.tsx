@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from './ThemeSwitcher';
-import { Menu, X, Activity, ArrowLeft } from 'lucide-react';
+import { Menu, X, Activity, ArrowLeft, Bot, Coffee } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Navigation = () => {
@@ -14,7 +14,7 @@ export const Navigation = () => {
     { name: 'Home', path: '/' },
     { name: 'Data Structures', path: '/data-structures' },
     { name: 'Algorithms', path: '/algorithms' },
-    { name: 'Guide', path: '/guide' },
+    { name: 'Guide', path: '/guide' }
   ];
 
   const isActive = (path: string) => {
@@ -22,19 +22,29 @@ export const Navigation = () => {
     return location.pathname.startsWith(path);
   };
 
-  const isSubPage = location.pathname !== '/' && 
-    !location.pathname.endsWith('/data-structures') && 
-    !location.pathname.endsWith('/algorithms') && 
+  const isSubPage = location.pathname !== '/' &&
+    !location.pathname.endsWith('/data-structures') &&
+    !location.pathname.endsWith('/algorithms') &&
     !location.pathname.endsWith('/guide');
 
   const handleBack = () => {
     navigate(-1);
   };
 
+  const handleAssistantNavigation = () => {
+    const assistantPanel = document.getElementById('algoviz-assistant');
+
+    if (assistantPanel) {
+      assistantPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    window.dispatchEvent(new Event('algoviz-assistant-toggle'));
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-xl theme-transition">
       <div className="container flex h-16 items-center justify-between">
-        {/* Back Button for Subpages */}
         {isSubPage && (
           <Button
             variant="ghost"
@@ -47,7 +57,6 @@ export const Navigation = () => {
           </Button>
         )}
 
-        {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <motion.div
             className="flex items-center space-x-2"
@@ -61,16 +70,12 @@ export const Navigation = () => {
           </motion.div>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-1">
           {navItems.map((item) => (
             <Link key={item.path} to={item.path}>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
-                  variant={isActive(item.path) ? "default" : "ghost"}
+                  variant={isActive(item.path) ? 'default' : 'ghost'}
                   size="sm"
                   className="theme-transition hover:bg-accent/80"
                 >
@@ -79,13 +84,32 @@ export const Navigation = () => {
               </motion.div>
             </Link>
           ))}
+
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="theme-transition hover:bg-accent/80"
+              onClick={handleAssistantNavigation}
+              aria-label="Open AlgoViz Assistant"
+              title="AlgoViz Assistant"
+            >
+              <Bot className="h-4 w-4" />
+            </Button>
+          </motion.div>
+
+          <Link to="/buy-me-a-coffee" aria-label="Buy Me a Coffee" title="Buy Me a Coffee">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button variant="ghost" size="icon" className="theme-transition hover:bg-yellow-500/10 hover:text-yellow-500">
+                <Coffee className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          </Link>
         </div>
 
-        {/* Theme Switcher & Mobile Menu */}
         <div className="flex items-center space-x-2">
           <ThemeSwitcher />
 
-          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="sm"
@@ -108,7 +132,6 @@ export const Navigation = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -121,12 +144,9 @@ export const Navigation = () => {
             <div className="container py-4 space-y-2">
               {navItems.map((item) => (
                 <Link key={item.path} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
-                  <motion.div
-                    whileHover={{ x: 4 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
+                  <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
                     <Button
-                      variant={isActive(item.path) ? "default" : "ghost"}
+                      variant={isActive(item.path) ? 'default' : 'ghost'}
                       size="sm"
                       className="w-full justify-start theme-transition"
                     >
@@ -135,6 +155,27 @@ export const Navigation = () => {
                   </motion.div>
                 </Link>
               ))}
+
+              <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start theme-transition"
+                  onClick={handleAssistantNavigation}
+                >
+                  <Bot className="h-4 w-4 mr-2" />
+                  Assistant
+                </Button>
+              </motion.div>
+
+              <Link to="/buy-me-a-coffee" onClick={() => setIsMobileMenuOpen(false)}>
+                <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start theme-transition hover:text-yellow-500">
+                    <Coffee className="h-4 w-4 mr-2" />
+                    Buy Me a Coffee
+                  </Button>
+                </motion.div>
+              </Link>
             </div>
           </motion.div>
         )}

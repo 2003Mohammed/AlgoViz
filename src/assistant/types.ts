@@ -68,6 +68,9 @@ export interface AssistantContext {
 export interface AssistantRequest {
   question: string;
   pathname: string;
+  currentRoute?: string;
+  activeAlgorithm?: string | null;
+  activeDataStructure?: string | null;
   visualizationState: TutorVisualizationState;
   previousQuestion?: string;
 }

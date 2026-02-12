@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Bot, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -31,6 +31,35 @@ const quickPrompts = [
   }
 ];
 
+const inferAssistantContext = (pathname: string) => {
+  if (pathname.includes('bubble-sort')) return { activeAlgorithm: 'bubbleSort', activeDataStructure: null };
+  if (pathname.includes('selection-sort')) return { activeAlgorithm: 'selectionSort', activeDataStructure: null };
+  if (pathname.includes('insertion-sort')) return { activeAlgorithm: 'insertionSort', activeDataStructure: null };
+  if (pathname.includes('merge-sort')) return { activeAlgorithm: 'mergeSort', activeDataStructure: null };
+  if (pathname.includes('quick-sort')) return { activeAlgorithm: 'quickSort', activeDataStructure: null };
+  if (pathname.includes('heap-sort')) return { activeAlgorithm: 'heapSort', activeDataStructure: null };
+  if (pathname.includes('binary-search')) return { activeAlgorithm: 'binarySearch', activeDataStructure: null };
+  if (pathname.includes('linear-search')) return { activeAlgorithm: 'linearSearch', activeDataStructure: null };
+  if (pathname.includes('/bfs')) return { activeAlgorithm: 'bfs', activeDataStructure: null };
+  if (pathname.includes('/dfs')) return { activeAlgorithm: 'dfs', activeDataStructure: null };
+  if (pathname.includes('/dijkstra')) return { activeAlgorithm: 'dijkstra', activeDataStructure: null };
+  if (pathname.includes('/astar')) return { activeAlgorithm: 'astar', activeDataStructure: null };
+
+  if (pathname.includes('/data-structures/array')) return { activeAlgorithm: null, activeDataStructure: 'array' };
+  if (pathname.includes('/data-structures/stack')) return { activeAlgorithm: null, activeDataStructure: 'stack' };
+  if (pathname.includes('/data-structures/queue')) return { activeAlgorithm: null, activeDataStructure: 'queue' };
+  if (pathname.includes('/data-structures/linked-list')) return { activeAlgorithm: null, activeDataStructure: 'linkedList' };
+  if (pathname.includes('/data-structures/tree')) return { activeAlgorithm: null, activeDataStructure: 'tree' };
+  if (pathname.includes('/data-structures/graph')) return { activeAlgorithm: null, activeDataStructure: 'graph' };
+
+  return { activeAlgorithm: null, activeDataStructure: null };
+};
+
+const PANEL_WIDTH = 360;
+const PANEL_HEIGHT = 520;
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
 export const AlgoVizAssistant: React.FC = () => {
   const { visualizationState } = useTutorContext();
   const location = useLocation();
@@ -43,7 +72,49 @@ export const AlgoVizAssistant: React.FC = () => {
         'Hi! I am the AlgoViz Assistant. Ask about definitions, current state, complexity, comparisons, implementation, or edge cases.'
     }
   ]);
+  const [position, setPosition] = useState(() => {
+    if (typeof window === 'undefined') {
+      return { x: 16, y: 16 };
+    }
+
+    return {
+      x: Math.max(16, window.innerWidth - PANEL_WIDTH - 16),
+      y: Math.max(16, window.innerHeight - PANEL_HEIGHT - 16)
+    };
+  });
+  const dragStateRef = useRef({ pointerId: -1, offsetX: 0, offsetY: 0 });
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const lastPromptRef = useRef<string>('');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setPosition((prev) => {
+        const maxX = Math.max(16, window.innerWidth - PANEL_WIDTH - 16);
+        const maxY = Math.max(16, window.innerHeight - PANEL_HEIGHT - 16);
+        return {
+          x: clamp(prev.x, 16, maxX),
+          y: clamp(prev.y, 16, maxY)
+        };
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleToggle = () => {
+      setIsOpen((prev) => !prev);
+    };
+
+    window.addEventListener('algoviz-assistant-toggle', handleToggle);
+    return () => window.removeEventListener('algoviz-assistant-toggle', handleToggle);
+  }, []);
+
+  const { activeAlgorithm, activeDataStructure } = useMemo(
+    () => inferAssistantContext(location.pathname),
+    [location.pathname]
+  );
 
   const contextLabel = useMemo(() => {
     const algorithmLabel = visualizationState.algorithmName ? ` • ${visualizationState.algorithmName}` : '';
@@ -64,6 +135,9 @@ export const AlgoVizAssistant: React.FC = () => {
     const assistantReply = await routeAssistantResponse({
       question: prompt,
       pathname: location.pathname,
+      currentRoute: location.pathname,
+      activeAlgorithm,
+      activeDataStructure,
       visualizationState,
       previousQuestion: lastPromptRef.current
     });
@@ -78,23 +152,69 @@ export const AlgoVizAssistant: React.FC = () => {
     setInput('');
   };
 
+  const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (event) => {
+    if ((event.target as HTMLElement).closest('[data-assistant-no-drag="true"]')) {
+      return;
+    }
+
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - position.x,
+      offsetY: event.clientY - position.y
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove: React.PointerEventHandler<HTMLDivElement> = (event) => {
+    if (dragStateRef.current.pointerId !== event.pointerId) return;
+
+    if (typeof window === 'undefined') return;
+
+    const maxX = Math.max(16, window.innerWidth - PANEL_WIDTH - 16);
+    const maxY = Math.max(16, window.innerHeight - PANEL_HEIGHT - 16);
+    const nextX = clamp(event.clientX - dragStateRef.current.offsetX, 16, maxX);
+    const nextY = clamp(event.clientY - dragStateRef.current.offsetY, 16, maxY);
+
+    setPosition({ x: nextX, y: nextY });
+  };
+
+  const handlePointerUp: React.PointerEventHandler<HTMLDivElement> = (event) => {
+    if (dragStateRef.current.pointerId !== event.pointerId) return;
+    dragStateRef.current.pointerId = -1;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div
+      id="algoviz-assistant"
+      ref={panelRef}
+      className="fixed z-50"
+      style={{ left: `${position.x}px`, top: `${position.y}px` }}
+    >
       {isOpen && (
         <Card className="w-[320px] sm:w-[360px] shadow-xl border-primary/30 bg-background/95 backdrop-blur">
-          <CardHeader className="pb-2">
+          <CardHeader
+            className="pb-2 cursor-grab active:cursor-grabbing"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          >
             <CardTitle className="flex items-center justify-between text-base">
               <span className="flex items-center gap-2">
                 <Bot className="h-4 w-4 text-primary" />
                 AlgoViz Assistant
               </span>
-              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} data-assistant-no-drag="true">
                 Close
               </Button>
             </CardTitle>
             <p className="text-xs text-muted-foreground">{contextLabel}</p>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3" data-assistant-no-drag="true">
             <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
               {messages.map((message, index) => (
                 <div
@@ -135,6 +255,12 @@ export const AlgoVizAssistant: React.FC = () => {
                 onChange={(event) => setInput(event.target.value)}
                 placeholder="Ask the assistant..."
                 className="text-xs"
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    void handleSend(input);
+                  }
+                }}
               />
               <Button
                 size="sm"
@@ -150,10 +276,14 @@ export const AlgoVizAssistant: React.FC = () => {
       )}
 
       {!isOpen && (
-        <Button className="rounded-full shadow-lg gap-2 px-4" onClick={() => setIsOpen(true)}>
-          <MessageCircle className="h-4 w-4" />
-          Assistant
-          <Sparkles className="h-4 w-4" />
+        <Button
+          className="rounded-full shadow-lg h-12 w-12 p-0 relative"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open AlgoViz Assistant"
+          title="AlgoViz Assistant"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <Sparkles className="h-3 w-3 absolute -top-1 -right-1" />
         </Button>
       )}
     </div>

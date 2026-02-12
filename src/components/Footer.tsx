@@ -1,10 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Github, Mail, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+  const [isCoffeeHovered, setIsCoffeeHovered] = useState(false);
+  const [isCoffeeTouched, setIsCoffeeTouched] = useState(false);
+  const shouldPauseCoffeeAnimation = isCoffeeHovered || isCoffeeTouched;
+
   return (
     <footer className="bg-background/95 backdrop-blur-xl border-t border-border/50 relative overflow-hidden">
       {/* Background Pattern */}
@@ -18,32 +23,42 @@ export const Footer: React.FC = () => {
               href="https://github.com/2003Mohammed" 
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors p-3 rounded-full hover:bg-primary/10"
-              whileHover={{ scale: 1.1, rotate: 5 }}
+              className="footer-github-link text-muted-foreground hover:text-primary transition-colors p-3 rounded-full hover:bg-primary/10"
+              whileHover={{ scale: 1.03, rotate: 2 }}
               whileTap={{ scale: 0.95 }}
               aria-label="GitHub"
             >
+              <span className="footer-star-badge" aria-hidden="true">⭐ Star Us</span>
               <Github className="h-6 w-6" />
             </motion.a>
             <motion.a 
               href="mailto:sammohammed2003@gmail.com" 
-              className="text-muted-foreground hover:text-primary transition-colors p-3 rounded-full hover:bg-primary/10"
-              whileHover={{ scale: 1.1, rotate: -5 }}
+              className="footer-message-link text-muted-foreground hover:text-primary transition-colors p-3 rounded-full hover:bg-primary/10"
+              whileHover={{ scale: 1.03, rotate: -2 }}
               whileTap={{ scale: 0.95 }}
               aria-label="Email"
             >
+              <span className="footer-message-label" aria-hidden="true">Let's Talk!</span>
               <Mail className="h-6 w-6" />
             </motion.a>
             <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileHover={{ scale: 1.03, rotate: 2 }}
               whileTap={{ scale: 0.95 }}
             >
               <Link 
                 to="/buy-me-a-coffee"
-                className="text-muted-foreground hover:text-yellow-500 transition-colors p-3 rounded-full hover:bg-yellow-500/10 inline-block"
+                className="footer-coffee-link text-muted-foreground hover:text-yellow-500 transition-all duration-300 p-3 rounded-full hover:bg-yellow-500/10 inline-flex items-center justify-center"
                 aria-label="Buy Me a Coffee"
+                onMouseEnter={() => setIsCoffeeHovered(true)}
+                onMouseLeave={() => setIsCoffeeHovered(false)}
+                onTouchStart={() => setIsCoffeeTouched(true)}
               >
-                <Coffee className="h-6 w-6" />
+                <span className={`footer-coffee-steam ${shouldPauseCoffeeAnimation ? 'paused' : ''}`} aria-hidden="true">
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                </span>
+                <Coffee className={`h-6 w-6 ${shouldPauseCoffeeAnimation ? 'footer-coffee-static' : 'footer-coffee-animated'}`} />
               </Link>
             </motion.div>
           </div>
@@ -62,18 +77,18 @@ export const Footer: React.FC = () => {
                 className="font-semibold text-primary"
                 whileHover={{ 
                   scale: 1.05,
-                  textShadow: "0 0 8px rgba(59, 130, 246, 0.5)"
+                  textShadow: '0 0 8px rgba(59, 130, 246, 0.5)'
                 }}
               >
                 Mohammed A
               </motion.span>
               <span>|</span>
-              <span>© 2025</span>
+              <span>© {currentYear}</span>
               <motion.span 
                 className="font-semibold text-primary"
                 whileHover={{ 
                   scale: 1.05,
-                  textShadow: "0 0 8px rgba(59, 130, 246, 0.5)"
+                  textShadow: '0 0 8px rgba(59, 130, 246, 0.5)'
                 }}
               >
                 AlgoViz™
