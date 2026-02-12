@@ -13,6 +13,7 @@ const BuyMeACoffeePage: React.FC = () => {
   const [upiId, setUpiId] = useState('mohammed192003@ibl');
   const [amount, setAmount] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
+  const [isCoffeePaused, setIsCoffeePaused] = useState(false);
 
   const handleUpiPayment = () => {
     // Simulate UPI payment redirect
@@ -71,16 +72,7 @@ const BuyMeACoffeePage: React.FC = () => {
             className="text-center space-y-4"
           >
             <div className="flex justify-center mb-4">
-              <motion.div
-                animate={{ 
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="text-6xl"
-              >
-                ☕
-              </motion.div>
+              <div className="text-6xl">☕</div>
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text">
@@ -105,28 +97,21 @@ const BuyMeACoffeePage: React.FC = () => {
             transition={{ delay: 0.3 }}
             className="flex justify-center"
           >
-            <div className="relative">
-              <motion.div
-                animate={{ 
-                  y: [0, -10, 0],
-                  rotate: [0, 5, 0]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="text-8xl"
-              >
-                ☕
-              </motion.div>
-              <motion.div
-                animate={{ 
-                  opacity: [0, 1, 0],
-                  y: [0, -20, -40]
-                }}
-                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-                className="absolute top-0 left-1/2 transform -translate-x-1/2 text-2xl"
-              >
-                💨
-              </motion.div>
-            </div>
+            <Link
+              to="/buy-me-a-coffee"
+              className={`support-coffee-cta ${isCoffeePaused ? 'support-coffee-paused' : ''}`}
+              aria-label="Buy Me a Coffee"
+              onMouseEnter={() => setIsCoffeePaused(true)}
+              onMouseLeave={() => setIsCoffeePaused(false)}
+              onTouchStart={() => setIsCoffeePaused(true)}
+            >
+              <span className="support-coffee-steam" aria-hidden="true">
+                <i></i>
+                <i></i>
+                <i></i>
+              </span>
+              <span className="support-coffee-cup" aria-hidden="true">☕</span>
+            </Link>
           </motion.div>
 
           {/* Payment Options */}

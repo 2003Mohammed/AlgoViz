@@ -316,8 +316,9 @@ const Guide = () => {
                   href="mailto:sammohammed2003@gmail.com"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg border border-white/30 text-white transition-all"
+                  className="guide-message-link flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg border border-white/30 text-white transition-all"
                 >
+                  <span className="guide-message-dots" aria-hidden="true"><i></i><i></i><i></i></span>
                   <Mail className="h-5 w-5" />
                   sammohammed2003@gmail.com
                 </motion.a>
@@ -328,8 +329,9 @@ const Guide = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg border border-white/30 text-white transition-all"
+                  className="guide-github-link flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg border border-white/30 text-white transition-all"
                 >
+                  <span className="guide-star-badge" aria-hidden="true">⭐ Star Us</span>
                   <Github className="h-5 w-5" />
                   GitHub Profile
                 </motion.a>
