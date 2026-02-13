@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { motion } from 'framer-motion';
@@ -7,25 +7,8 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { AssistantInfo } from '../components/AssistantInfo';
 
-const runawaySymbolPool = ['{}', '[]', '</>', 'Σ', 'λ', '↺'];
-
-const randomOffset = () => {
-  const x = Math.round((Math.random() - 0.5) * 180);
-  const y = Math.round((Math.random() - 0.5) * 120);
-  return { x, y };
-};
 
 const Index = () => {
-  const initialRunawaySymbols = useMemo(
-    () =>
-      runawaySymbolPool.map((symbol, index) => ({
-        id: `${symbol}-${index}`,
-        symbol,
-        offset: { x: 0, y: 0 }
-      })),
-    []
-  );
-  const [runawaySymbols, setRunawaySymbols] = useState(initialRunawaySymbols);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -100,11 +83,6 @@ const Index = () => {
     }
   ] as const;
 
-  const nudgeRunawaySymbol = (id: string) => {
-    setRunawaySymbols((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, offset: randomOffset() } : item))
-    );
-  };
 
   return (
     <Layout>
@@ -162,21 +140,6 @@ const Index = () => {
                 Watch code come to life with step-by-step animations that make complex concepts crystal clear.
               </motion.p>
 
-              <div className="runaway-symbol-zone" aria-hidden="true">
-                {runawaySymbols.map((item, index) => (
-                  <motion.span
-                    key={item.id}
-                    className="runaway-symbol"
-                    initial={false}
-                    animate={{ x: item.offset.x, y: item.offset.y }}
-                    transition={{ type: 'spring', stiffness: 180, damping: 13 }}
-                    style={{ animationDelay: `${index * 0.25}s` }}
-                    onMouseEnter={() => nudgeRunawaySymbol(item.id)}
-                  >
-                    {item.symbol}
-                  </motion.span>
-                ))}
-              </div>
 
               <motion.div
                 variants={itemVariants}
@@ -319,6 +282,7 @@ const Index = () => {
                               style={{ height: `${height}px`, animationDelay: `${i * 0.15}s` }}
                             />
                           ))}
+                          <span className="assistant-demo-sort-runner" />
                         </div>
                       )}
 
@@ -328,6 +292,7 @@ const Index = () => {
                             {[0, 1, 2, 3, 4, 5, 6].map((node, i) => (
                               <span key={`tree-${node}`} className="assistant-demo-tree-node" style={{ animationDelay: `${i * 0.25}s` }} />
                             ))}
+                            <span className="assistant-demo-tree-scan" />
                           </div>
                         </div>
                       )}
@@ -339,6 +304,8 @@ const Index = () => {
                               <span key={`graph-${node}`} className="assistant-demo-graph-node" style={{ animationDelay: `${i * 0.2}s` }} />
                             ))}
                             <span className="assistant-demo-graph-path" />
+                            <span className="assistant-demo-graph-packet" />
+                            <span className="assistant-demo-graph-packet assistant-demo-graph-packet-alt" />
                           </div>
                         </div>
                       )}
