@@ -1,114 +1,115 @@
-🚀 AlgoViz – Visualize Data Structures & Algorithms Like Never Before
+# 🚀 AlgoViz – Visualize Data Structures & Algorithms Like Never Before
 
+AlgoViz is an interactive platform for learning Data Structures and Algorithms through clear, animated, step-by-step visualizations.
 
-👋 Introduction
+## 🌐 Live Demo
+https://algoviz-lab.vercel.app
 
-Welcome to AlgoViz, your one-stop platform to see how data structures and algorithms actually work.
+## 📸 Preview
+![AlgoViz Demo](./public/preview.gif)
 
-We all know reading about arrays, linked lists, or Dijkstra’s algorithm in textbooks feels like deciphering ancient scripts. AlgoViz flips the script — instead of walls of text, you get animations, interactive controls, and step-by-step visualizations.
+> Note: `./public/preview.gif` is referenced intentionally for repository presentation, but binary assets are not included in this PR.
 
-Because let’s face it:
-👉 If you can see it, you can learn it.
+## 📚 Table of Contents
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [Architecture Overview](#-architecture-overview)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Project Structure](#-project-structure)
+- [Roadmap](#-roadmap)
+- [Asset Setup (Manual)](#-asset-setup-manual)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-✨ Features
+## 🔍 Overview
+AlgoViz focuses on making DSA fundamentals easier to understand through visual interaction instead of static theory alone.
 
-🎨 Beautiful Visualizations – Arrays, Linked Lists, Stacks, Queues, Trees, Graphs & more.
+## ✨ Key Features
+- Visualizers for core data structures and algorithms
+- Step controls for learning each operation incrementally
+- Route-level separation between Data Structures and Algorithms
+- Real-world context and complexity notes to reinforce understanding
+- Theme-aware UI with smooth, minimal motion
 
-⚡ Algorithm Animations – Sorting, Searching, Traversals, and Pathfinding algorithms brought to life.
+## 🧠 Architecture Overview
+- Modular visualization components by concept (data structure/algorithm)
+- Route-based page separation for learning paths
+- Assistant routing logic isolated from UI trigger components
+- Deterministic-first assistant decision flow
+- Animation layer powered by Framer Motion
 
-🌀 Random Example Generators – Generate fresh, real-world-like examples at the click of a button.
+## 🧑‍💻 Tech Stack
+- **Frontend:** React + TypeScript
+- **Styling:** Tailwind CSS
+- **Animations:** Framer Motion
+- **Build Tool:** Vite
+- **Deployment:** Vercel
 
-⏱️ Speed Control – Slow things down to learn, or speed it up to test your understanding.
-
-📚 Learning Links – Quick access to GeeksforGeeks & W3Schools for deep dives.
-
-🌍 Real-world Applications – Learn where and why these concepts actually matter.
-
-📊 Complexities & Properties – Time, space, and behavior neatly explained for each DS & Algorithm.
-
-
-🧑‍💻 Tech Stack
-
-•Frontend: React + TypeScript
-
-•Styling: TailwindCSS
-
-•Animations: Framer Motion
-
-•Deployment: Vercel
-
-
-🚦 Getting Started
-
-Clone and run locally:
-
-# Clone the repo
+## 🚦 Getting Started
+### 1) Clone
+```bash
 git clone https://github.com/2003Mohammed/AlgoViz.git
-
-# Navigate into the folder
 cd AlgoViz
+```
 
-# Install dependencies
+### 2) Install dependencies
+```bash
 npm install
+```
 
-# Start the development server
+### 3) Start development server
+```bash
 npm run dev
+```
 
+Open http://localhost:5173
 
-Your local server should now be running at http://localhost:5173/
- 🎉
+## 📁 Project Structure
+```text
+src/
+  components/
+  pages/
+  assistant/
+  hooks/
+  utils/
+public/
+```
 
-🌐 Deployment
+## 📌 Roadmap
+- [ ] Expand advanced graph/pathfinding visualizations
+- [ ] Add richer custom-input workflows across all modules
+- [ ] Add export/share support for learning sessions
+- [ ] Add deeper walkthrough guides for each topic
+- [ ] Improve mobile-first interaction polishing
 
-AlgoViz is hosted on Vercel for a smooth, zero-config deployment experience.
+## 🧩 Asset Setup (Manual)
+This PR references static assets without committing binaries.
 
+Place the following files in `/public` when uploading through GitHub web UI or another method:
+- `preview.gif`
+- `preview.png` (for social sharing image)
+- `favicon.ico`
+- `algoviz_favicon_16x16.png`
+- `algoviz_favicon_32x32.png`
+- `algoviz_favicon_48x48.png`
+- `algoviz_favicon_64x64.png`
+- `algoviz_favicon_128x128.png`
+- `algoviz_favicon_256x256.png`
+- `apple-touch-icon.png`
 
-🤔 Why AlgoViz?
+After upload, verify `index.html` references remain correct and all files are accessible under `https://algoviz-lab.vercel.app/<asset-name>`.
 
-•  Because DSA shouldn’t feel boring.
+## 🙌 Contributing
+Contributions are welcome.
 
-•  Because animations stick in memory longer than plain text.
+1. Fork the repository
+2. Create a branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -m "feat: your change"`
+4. Push branch: `git push origin feature-name`
+5. Open a Pull Request
 
-•  Because you deserve a free, open-source way to practice and learn.
+## 📜 License
+MIT License.
 
-📌 Roadmap
-
- •  Arrays, Linked Lists, Stacks, Queues
-
- •  Sorting Algorithms (Bubble, Selection, Insertion …)
-
- •  Trees & Graphs with BFS/DFS
-
- •  More advanced Graph algorithms (Kruskal, Prim, Floyd-Warshall)
-
- •  User-created custom inputs for all visualizations
-
- •  Export/share your visualization as GIFs
-
-🙌 Contributing
-
-We welcome contributions!
-
-Fork this repo
-
-Create a new branch: git checkout -b feature-name
-
-Commit your changes: git commit -m "Added a cool feature"
-
-Push to branch: git push origin feature-name
-
-Open a Pull Request
-
-🧃 Credits
-
-AlgoViz was brewed with ☕, sleepless nights, and lots of debugging patience.
-Built by Mohammed A.
-
-📜 License
-
-This project is MIT Licensed – free to use, modify, and learn from.
-
-💡 Fun Fact
-
-Did you know? Amazon deploys code every 11 seconds. Imagine how much faster you’d learn DSA if you practiced with AlgoViz daily. 😉
-
+Keep exploring, keep building, and keep mastering DSA fundamentals through visualization.

@@ -64,19 +64,19 @@ const Index = () => {
     {
       type: 'sorting',
       title: "Array Sorting",
-      description: "Visualize bubble sort, quick sort, and merge sort with color-coded comparisons",
+      description: "Compare sorting behavior with clear visual cues for swaps, partitions, and merges.",
       gradient: "from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))]"
     },
     {
       type: 'trees',
       title: "Binary Trees & BST",
-      description: "Build and explore Binary Trees and Binary Search Trees: insert, delete, and traverse (inorder/preorder/postorder)",
+      description: "Practice inserts, deletions, and traversals with structured tree-state transitions.",
       gradient: "from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))]"
     },
     {
       type: 'graph',
       title: "Graph Pathfinding",
-      description: "See algorithms find paths with animated node exploration",
+      description: "Follow pathfinding decisions with progressive node exploration and route confirmation.",
       gradient: "from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))]"
     }
   ] as const;
@@ -89,6 +89,8 @@ const Index = () => {
           <div className="absolute top-20 left-10 w-16 h-16 bg-gradient-to-r from-[hsl(var(--zady-pink))] to-[hsl(var(--zady-blue))] rounded-full opacity-20 animate-float-shapes"></div>
           <div className="absolute top-40 right-20 w-12 h-12 bg-gradient-to-r from-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))] rounded-lg opacity-30 animate-float-shapes" style={{ animationDelay: '2s' }}></div>
           <div className="absolute bottom-40 left-20 w-20 h-20 bg-gradient-to-r from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))] rounded-full opacity-15 animate-float-shapes" style={{ animationDelay: '4s' }}></div>
+          <div className="hero-ambient-glow hero-ambient-glow-left" />
+          <div className="hero-ambient-glow hero-ambient-glow-right" />
         </div>
 
         {/* Hero Section */}
@@ -110,6 +112,21 @@ const Index = () => {
                 >
                   Welcome to AlgoViz
                 </motion.h1>
+                <motion.div
+                  className="hero-orbit"
+                  aria-hidden="true"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
+                >
+                  <span className="hero-orbit-dot hero-orbit-dot-a" />
+                  <span className="hero-orbit-dot hero-orbit-dot-b" />
+                </motion.div>
+                <div className="hero-signal-bars" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
                 <motion.p 
                   className="text-xl md:text-2xl text-muted-foreground font-medium"
                   variants={itemVariants}
@@ -246,12 +263,17 @@ const Index = () => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  whileHover={{ scale: 1.02 }}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ delay: index * 0.12, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ y: -6 }}
                   className="relative group"
                 >
-                  <Card className="zady-card overflow-hidden">
-                    <div className={`h-32 bg-gradient-to-r ${demo.gradient} relative overflow-hidden`}>
+                  <Card className="relative zady-card overflow-hidden demo-highlight-card demo-highlight-card-premium">
+                    <div className={`h-32 bg-gradient-to-r ${demo.gradient} relative overflow-hidden demo-highlight-media`}>
                       <div className="absolute inset-0 bg-black/20"></div>
+                      <div className="demo-highlight-shine" aria-hidden="true" />
 
                       {demo.type === 'sorting' && (
                         <div className="absolute inset-x-4 bottom-4 flex items-end gap-1 h-16">
@@ -287,8 +309,8 @@ const Index = () => {
                       )}
                     </div>
                     <CardHeader>
-                      <CardTitle className="text-lg">{demo.title}</CardTitle>
-                      <CardDescription>{demo.description}</CardDescription>
+                      <CardTitle className="text-lg demo-highlight-title">{demo.title}</CardTitle>
+                      <CardDescription className="demo-highlight-description">{demo.description}</CardDescription>
                     </CardHeader>
                   </Card>
                 </motion.div>

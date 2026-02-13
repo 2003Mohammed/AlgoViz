@@ -1,21 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>AlgoViz - Interactive Data Structures & Algorithms Visualizer</title>
-  <meta name="description" content="AlgoViz is an interactive platform to learn and visualize Data Structures & Algorithms like BFS, DFS, Trees, Sorting, and Dijkstra — with step-by-step animations." />
-  <meta name="keywords" content="data structures, algorithms, visualizer, sorting, searching, trees, graphs, BFS, DFS, Dijkstra, computer science" />
-  <meta name="author" content="Mohammed | AlgoViz" />
-  <meta name="theme-color" content="#0c1222" />
+    <!-- Core SEO -->
+    <title>AlgoViz – Visualize Data Structures & Algorithms</title>
+    <meta
+      name="description"
+      content="Learn data structures and algorithms with interactive visualizations, step-by-step animations, and guided exploration in AlgoViz."
+    />
+    <meta
+      name="keywords"
+      content="AlgoViz, data structures, algorithms, visualizer, sorting, searching, trees, graphs, BFS, DFS, Dijkstra"
+    />
+    <meta name="author" content="Mohammed | AlgoViz" />
+    <meta name="theme-color" content="#0c1222" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://algoviz-lab.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AlgoViz" />
+    <meta property="og:title" content="AlgoViz – Visualize Data Structures & Algorithms" />
+    <meta
+      property="og:description"
+      content="Learn data structures and algorithms with interactive visualizations, step-by-step animations, and guided exploration in AlgoViz."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://algoviz-lab.vercel.app/" />
+    <meta property="og:image" content="https://algoviz-lab.vercel.app/preview.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AlgoViz – Visualize Data Structures & Algorithms" />
+    <meta
+      name="twitter:description"
+      content="Learn data structures and algorithms with interactive visualizations, step-by-step animations, and guided exploration in AlgoViz."
+    />
+    <meta name="twitter:url" content="https://algoviz-lab.vercel.app/" />
+    <meta name="twitter:image" content="https://algoviz-lab.vercel.app/preview.png" />
+
+    <!-- Icons & Manifest -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Theme Script -->
     <script>
       (function () {
         try {
           var storedMode = localStorage.getItem('theme-mode');
-          var mode = storedMode === 'light' || storedMode === 'dark' || storedMode === 'system' ? storedMode : 'system';
-          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var mode =
+            storedMode === 'light' ||
+            storedMode === 'dark' ||
+            storedMode === 'system'
+              ? storedMode
+              : 'system';
+          var prefersDark = window.matchMedia(
+            '(prefers-color-scheme: dark)'
+          ).matches;
           var resolved = mode === 'system' ? (prefersDark ? 'dark' : 'light') : mode;
           var root = document.documentElement;
           root.classList.remove('light', 'dark');
@@ -30,38 +81,6 @@
         }
       })();
     </script>
-
-  <!-- Canonical -->
-  <link rel="canonical" href="https://algoviz-seven.vercel.app/" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="AlgoViz - Interactive DSA Visualizer" />
-  <meta property="og:description" content="Visualize BFS, DFS, Trees, Sorting, and Dijkstra with interactive animations and real-world examples." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://algoviz-seven.vercel.app/" />
-  <meta property="og:image" content="https://algoviz-seven.vercel.app/preview.png" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="AlgoViz - Interactive DSA Visualizer" />
-  <meta name="twitter:description" content="Learn Data Structures & Algorithms with animations: BFS, DFS, Trees, Sorting, and Dijkstra." />
-  <meta name="twitter:image" content="https://algoviz-seven.vercel.app/preview.png" />
-    
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="16x16" href="/algoviz_favicon_16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/algoviz_favicon_32x32.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/algoviz_favicon_48x48.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="/algoviz_favicon_64x64.png">
-    <link rel="icon" type="image/png" sizes="128x128" href="/algoviz_favicon_128x128.png">
-    <link rel="icon" type="image/png" sizes="256x256" href="/algoviz_favicon_256x256.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    
-    <!-- Modern AI-themed fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </head>
 
   <body>
