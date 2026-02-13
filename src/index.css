@@ -365,6 +365,45 @@
   box-shadow: 0 0 14px hsl(var(--zady-blue) / 0.8);
 }
 
+.runaway-symbol-zone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 52px;
+  margin: 0.35rem auto 0;
+  position: relative;
+  z-index: 2;
+}
+
+.runaway-symbol {
+  border: 1px solid hsl(var(--border) / 0.72);
+  background: linear-gradient(140deg, hsl(var(--card) / 0.96), hsl(var(--muted) / 0.65));
+  color: hsl(var(--foreground) / 0.88);
+  border-radius: 9999px;
+  padding: 0.22rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 10px 26px hsl(var(--background) / 0.24);
+  transition: border-color 220ms ease, box-shadow 220ms ease, color 220ms ease;
+  animation: runaway-symbol-float 3.4s ease-in-out infinite;
+}
+
+.runaway-symbol:hover,
+.runaway-symbol:focus-visible {
+  outline: none;
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--zady-blue) / 0.55);
+  box-shadow: 0 12px 30px hsl(var(--zady-blue) / 0.2);
+}
+
+@keyframes runaway-symbol-float {
+  0%,
+  100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
 @keyframes hero-ambient-drift {
   0%,
   100% { transform: translate3d(0, 0, 0) scale(1); }
@@ -430,6 +469,10 @@
   animation: assistant-sort-loop 2.8s cubic-bezier(0.33, 1, 0.68, 1) infinite;
 }
 
+.demo-highlight-card:hover .assistant-demo-sort-bar {
+  animation-duration: 1.9s;
+}
+
 @keyframes assistant-sort-loop {
   0%,
   100% { transform: translateY(0) scaleY(1); opacity: 0.74; }
@@ -455,11 +498,28 @@
   animation: assistant-tree-traversal 3.4s ease-in-out infinite;
 }
 
+.assistant-demo-tree-node::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 1px solid hsl(var(--foreground) / 0.2);
+  opacity: 0;
+  animation: assistant-tree-ring 3.4s ease-in-out infinite;
+}
+
 @keyframes assistant-tree-traversal {
   0%,
   100% { transform: scale(1); filter: brightness(1); }
   25% { transform: scale(1.12); filter: brightness(1.18); }
   45% { transform: scale(1.02); filter: brightness(1.02); }
+}
+
+@keyframes assistant-tree-ring {
+  0%,
+  100% { transform: scale(0.75); opacity: 0; }
+  38% { transform: scale(1.35); opacity: 0.32; }
+  70% { opacity: 0; }
 }
 
 .assistant-demo-graph-wrap {
@@ -495,6 +555,15 @@
   animation: assistant-graph-path 3.8s ease-in-out infinite;
 }
 
+.assistant-demo-graph-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 16px 12px;
+  border-radius: 9999px;
+  border: 1px dashed hsl(var(--foreground) / 0.2);
+  opacity: 0.45;
+}
+
 @keyframes assistant-graph-path {
   0% { background-position: 200% 0; opacity: 0.55; }
   50% { opacity: 0.85; }
@@ -509,6 +578,50 @@
 
 .navbar-coffee-wrap {
   position: relative;
+}
+
+.assistant-nav-wrap {
+  position: relative;
+}
+
+.assistant-nav-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.assistant-nav-icon {
+  position: relative;
+  z-index: 2;
+  transition: transform 280ms ease;
+}
+
+.assistant-nav-pulse {
+  position: absolute;
+  inset: 7px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, hsl(var(--zady-blue) / 0.25), transparent 70%);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 240ms ease, transform 300ms ease;
+}
+
+.assistant-nav-wrap:hover .assistant-nav-pulse,
+.assistant-nav-wrap:focus-within .assistant-nav-pulse {
+  opacity: 1;
+  transform: scale(1.16);
+}
+
+.assistant-nav-wrap:hover .assistant-nav-icon,
+.assistant-nav-wrap:focus-within .assistant-nav-icon {
+  animation: assistant-nav-wave 0.9s ease;
+}
+
+@keyframes assistant-nav-wave {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(8deg) scale(1.1); }
+  50% { transform: rotate(-7deg) scale(1.04); }
+  75% { transform: rotate(4deg) scale(1.08); }
+  100% { transform: rotate(0deg) scale(1); }
 }
 
 .navbar-coffee-button {
@@ -587,6 +700,8 @@
   .assistant-demo-tree-node,
   .assistant-demo-graph-node,
   .assistant-demo-graph-path,
+  .runaway-symbol,
+  .assistant-nav-icon,
   .navbar-coffee-icon,
   .navbar-coffee-steam i,
   .demo-highlight-card:hover .demo-highlight-shine {

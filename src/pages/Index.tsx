@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { motion } from 'framer-motion';
-import { Database, Zap, ArrowRight, Play, Target, Eye, Cpu, Code2, BookOpen, Sparkles } from 'lucide-react';
+import { Database, Zap, ArrowRight, Play, Target, Eye, Cpu, Code2, BookOpen } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { AssistantInfo } from '../components/AssistantInfo';
 
+const runawaySymbolPool = ['{}', '[]', '</>', 'Σ', 'λ', '↺'];
+
+const randomOffset = () => {
+  const x = Math.round((Math.random() - 0.5) * 180);
+  const y = Math.round((Math.random() - 0.5) * 120);
+  return { x, y };
+};
+
 const Index = () => {
+  const initialRunawaySymbols = useMemo(
+    () =>
+      runawaySymbolPool.map((symbol, index) => ({
+        id: `${symbol}-${index}`,
+        symbol,
+        offset: { x: 0, y: 0 }
+      })),
+    []
+  );
+  const [runawaySymbols, setRunawaySymbols] = useState(initialRunawaySymbols);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -76,10 +95,16 @@ const Index = () => {
     {
       type: 'graph',
       title: "Graph Pathfinding",
-      description: "See algorithms find paths with animated node exploration",
+      description: "Watch shortest-path and traversal strategies unfold with guided, cinematic node exploration",
       gradient: "from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))]"
     }
   ] as const;
+
+  const nudgeRunawaySymbol = (id: string) => {
+    setRunawaySymbols((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, offset: randomOffset() } : item))
+    );
+  };
 
   return (
     <Layout>
@@ -106,15 +131,6 @@ const Index = () => {
               className="space-y-8"
             >
               <div className="space-y-4">
-                <motion.div
-                  className="hero-badge-wrap"
-                  variants={itemVariants}
-                >
-                  <span className="hero-badge">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Interactive learning, made calm and clear
-                  </span>
-                </motion.div>
                 <motion.h1 
                   className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-[hsl(var(--zady-pink))] via-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))] bg-clip-text text-transparent leading-tight"
                   variants={itemVariants}
@@ -145,6 +161,22 @@ const Index = () => {
                 Experience the beauty of algorithms and data structures through interactive visualizations. 
                 Watch code come to life with step-by-step animations that make complex concepts crystal clear.
               </motion.p>
+
+              <div className="runaway-symbol-zone" aria-hidden="true">
+                {runawaySymbols.map((item, index) => (
+                  <motion.span
+                    key={item.id}
+                    className="runaway-symbol"
+                    initial={false}
+                    animate={{ x: item.offset.x, y: item.offset.y }}
+                    transition={{ type: 'spring', stiffness: 180, damping: 13 }}
+                    style={{ animationDelay: `${index * 0.25}s` }}
+                    onMouseEnter={() => nudgeRunawaySymbol(item.id)}
+                  >
+                    {item.symbol}
+                  </motion.span>
+                ))}
+              </div>
 
               <motion.div
                 variants={itemVariants}
@@ -254,10 +286,10 @@ const Index = () => {
           <div className="container mx-auto">
             <motion.div className="text-center mb-16" variants={itemVariants}>
               <h2 className="text-3xl md:text-4xl font-bold mb-4 pixel-text">
-                See It In Action
+                Experience the Platform in Motion
               </h2>
               <p className="text-lg text-muted-foreground">
-                Get a taste of what makes our visualizations special
+                Preview refined algorithm walkthroughs designed for clarity, depth, and speed of understanding
               </p>
             </motion.div>
 
