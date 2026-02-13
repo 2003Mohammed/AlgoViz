@@ -2,12 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { motion } from 'framer-motion';
-import { Database, Zap, ArrowRight, Play, Target, Eye, Cpu, Code2, BookOpen, Sparkles } from 'lucide-react';
+import { Database, Zap, ArrowRight, Play, Target, Eye, Cpu, Code2, BookOpen } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { AssistantInfo } from '../components/AssistantInfo';
 
+
 const Index = () => {
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -76,10 +78,11 @@ const Index = () => {
     {
       type: 'graph',
       title: "Graph Pathfinding",
-      description: "See algorithms find paths with animated node exploration",
+      description: "Watch shortest-path and traversal strategies unfold with guided, cinematic node exploration",
       gradient: "from-[hsl(var(--zady-accent))] to-[hsl(var(--zady-pink))]"
     }
   ] as const;
+
 
   return (
     <Layout>
@@ -106,15 +109,6 @@ const Index = () => {
               className="space-y-8"
             >
               <div className="space-y-4">
-                <motion.div
-                  className="hero-badge-wrap"
-                  variants={itemVariants}
-                >
-                  <span className="hero-badge">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Interactive learning, made calm and clear
-                  </span>
-                </motion.div>
                 <motion.h1 
                   className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-[hsl(var(--zady-pink))] via-[hsl(var(--zady-blue))] to-[hsl(var(--zady-accent))] bg-clip-text text-transparent leading-tight"
                   variants={itemVariants}
@@ -145,6 +139,7 @@ const Index = () => {
                 Experience the beauty of algorithms and data structures through interactive visualizations. 
                 Watch code come to life with step-by-step animations that make complex concepts crystal clear.
               </motion.p>
+
 
               <motion.div
                 variants={itemVariants}
@@ -254,10 +249,10 @@ const Index = () => {
           <div className="container mx-auto">
             <motion.div className="text-center mb-16" variants={itemVariants}>
               <h2 className="text-3xl md:text-4xl font-bold mb-4 pixel-text">
-                See It In Action
+                Experience the Platform in Motion
               </h2>
               <p className="text-lg text-muted-foreground">
-                Get a taste of what makes our visualizations special
+                Preview refined algorithm walkthroughs designed for clarity, depth, and speed of understanding
               </p>
             </motion.div>
 
@@ -287,6 +282,7 @@ const Index = () => {
                               style={{ height: `${height}px`, animationDelay: `${i * 0.15}s` }}
                             />
                           ))}
+                          <span className="assistant-demo-sort-runner" />
                         </div>
                       )}
 
@@ -296,6 +292,7 @@ const Index = () => {
                             {[0, 1, 2, 3, 4, 5, 6].map((node, i) => (
                               <span key={`tree-${node}`} className="assistant-demo-tree-node" style={{ animationDelay: `${i * 0.25}s` }} />
                             ))}
+                            <span className="assistant-demo-tree-scan" />
                           </div>
                         </div>
                       )}
@@ -307,6 +304,8 @@ const Index = () => {
                               <span key={`graph-${node}`} className="assistant-demo-graph-node" style={{ animationDelay: `${i * 0.2}s` }} />
                             ))}
                             <span className="assistant-demo-graph-path" />
+                            <span className="assistant-demo-graph-packet" />
+                            <span className="assistant-demo-graph-packet assistant-demo-graph-packet-alt" />
                           </div>
                         </div>
                       )}

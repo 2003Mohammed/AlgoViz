@@ -85,16 +85,17 @@ export const Navigation = () => {
             </Link>
           ))}
 
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="assistant-nav-wrap">
             <Button
               variant="ghost"
               size="icon"
-              className="theme-transition hover:bg-accent/80"
+              className="theme-transition hover:bg-accent/80 assistant-nav-button"
               onClick={handleAssistantNavigation}
               aria-label="Open AlgoViz Assistant"
               title="AlgoViz Assistant"
             >
-              <Bot className="h-4 w-4" />
+              <span className="assistant-nav-pulse" aria-hidden="true" />
+              <Bot className="h-4 w-4 assistant-nav-icon" />
             </Button>
           </motion.div>
 
