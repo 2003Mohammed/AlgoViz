@@ -1,0 +1,21 @@
+{
+  "name": "AlgoViz",
+  "short_name": "AlgoViz",
+  "description": "Interactive data structures and algorithms visualizer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c1222",
+  "theme_color": "#0c1222",
+  "icons": [
+    {
+      "src": "/algoviz_favicon_128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/algoviz_favicon_256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}
