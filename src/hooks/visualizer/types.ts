@@ -12,6 +12,10 @@ export interface VisualizerStateReturnType {
   activeLineIndex: number;
   speed: number;
   setSpeed: (speed: number) => void;
+  searchTarget: string;
+  setSearchTarget: (target: string) => void;
+  graphStartNode: string;
+  setGraphStartNode: (node: string) => void;
   handleGenerateRandomArray: (sorted?: boolean) => void;
   handleGenerateRandomGraph: () => void;
   handleGenerateRandomTree: () => void;

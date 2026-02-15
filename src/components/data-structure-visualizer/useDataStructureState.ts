@@ -8,8 +8,8 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
   const [customInput, setCustomInput] = useState<string>('');
   const [structure, setStructure] = useState(dataStructure.defaultExample);
   const [operationResult, setOperationResult] = useState<any>(null);
-  const [operationLog, setOperationLog] = useState<string[]>([]);
   const [animationSteps, setAnimationSteps] = useState<VisualizationStep[]>([]);
+  const [treeMode, setTreeMode] = useState<'binary' | 'balanced'>('binary');
 
   const {
     currentStep,
@@ -37,7 +37,6 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
   useEffect(() => {
     setStructure(dataStructure.defaultExample);
     setOperationResult(null);
-    setOperationLog([]);
     setAnimationSteps([]);
 resetAnimation();
   }, [dataStructure.id]);
@@ -45,17 +44,12 @@ resetAnimation();
   const resetToDefault = () => {
     setStructure(dataStructure.defaultExample);
     setOperationResult(null);
-    setOperationLog([]);
     setAnimationSteps([]);
 resetAnimation();
     toast({
       title: "Reset Complete",
       description: `${dataStructure.name} has been reset to default state`,
     });
-  };
-  
-  const addLogEntry = (message: string) => {
-    setOperationLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +115,6 @@ resetAnimation();
       if (newStructure !== null) {
         setStructure(newStructure.structure);
         setOperationResult(newStructure.result);
-        addLogEntry(newStructure.message);
         
         const steps = createAnimationSteps(operation, oldStructure, newStructure.structure);
         setAnimationSteps(steps);
@@ -321,24 +314,79 @@ resetAnimation();
     }
   };
 
-  // Binary Tree operations (simplified)
-  const handleBinaryTreeOperation = (operation: string, tree: any, input: string) => {
-    switch (operation) {
-      case 'insert':
-        if (!input) return { structure: tree, result: null, message: "Please enter a value to insert" };
-        const value = isNaN(Number(input)) ? input : Number(input);
-        const newTree = { ...tree };
-        if (newTree.nodes.length === 0) {
-          newTree.nodes = [{ value, left: null, right: null }];
-          newTree.root = 0;
-        } else {
-          newTree.nodes.push({ value, left: null, right: null });
-        }
-        return { structure: newTree, result: value, message: `Inserted ${value} into binary tree` };
-        
-      default:
-        return { structure: tree, result: null, message: "Operation not implemented yet" };
+  // Tree operations
+  const buildBinaryTree = (balanced: boolean) => {
+    const values = Array.from({ length: 7 }, () => Math.floor(Math.random() * 90) + 10);
+    const ordered = [...values].sort((a, b) => a - b);
+    const nodes: any[] = [];
+
+    if (balanced) {
+      const build = (arr: number[]): number | null => {
+        if (!arr.length) return null;
+        const mid = Math.floor(arr.length / 2);
+        const index = nodes.length;
+        nodes.push({ value: arr[mid], left: null, right: null, status: 'default' });
+        nodes[index].left = build(arr.slice(0, mid));
+        nodes[index].right = build(arr.slice(mid + 1));
+        return index;
+      };
+      const root = build(ordered);
+      return { nodes, root };
     }
+
+    values.forEach((value, idx) => nodes.push({ value, left: 2 * idx + 1 < values.length ? 2 * idx + 1 : null, right: 2 * idx + 2 < values.length ? 2 * idx + 2 : null, status: 'default' }));
+    return { nodes, root: 0 };
+  };
+
+  const buildTraversalFrames = (tree: any, order: 'inorder' | 'preorder' | 'postorder') => {
+    const steps: VisualizationStep[] = [];
+    const nodes = tree.nodes;
+    const traversal: number[] = [];
+
+    const visit = (idx: number | null) => {
+      if (idx === null || nodes[idx] === undefined) return;
+      if (order === 'preorder') traversal.push(idx);
+      visit(nodes[idx].left);
+      if (order === 'inorder') traversal.push(idx);
+      visit(nodes[idx].right);
+      if (order === 'postorder') traversal.push(idx);
+    };
+
+    visit(tree.root);
+    steps.push({ array: [], structure: tree, lineIndex: 0, description: `Starting ${order} traversal` });
+
+    const visited = new Set<number>();
+    traversal.forEach((idx, stepIndex) => {
+      visited.add(idx);
+      const frameTree = {
+        ...tree,
+        nodes: tree.nodes.map((node: any, nodeIndex: number) => ({
+          ...node,
+          status: nodeIndex === idx ? 'current' : visited.has(nodeIndex) ? 'visited' : 'default',
+        })),
+      };
+      steps.push({ array: [], structure: frameTree, lineIndex: stepIndex + 1, description: `Visit ${tree.nodes[idx].value}` });
+    });
+
+    return steps;
+  };
+
+  const handleBinaryTreeOperation = (operation: string, tree: any, input: string) => {
+    if (operation === 'generate' || operation === 'generate-balanced') {
+      const balanced = operation === 'generate-balanced' || treeMode === 'balanced';
+      const generated = buildBinaryTree(balanced);
+      return { structure: generated, result: null, message: `Generated ${balanced ? 'balanced tree' : 'binary tree'} example` };
+    }
+
+    if (operation === 'inorder' || operation === 'preorder' || operation === 'postorder') {
+      const traversalSteps = buildTraversalFrames(tree, operation);
+      setAnimationSteps(traversalSteps);
+      setCurrentStep(0);
+      setIsAnimating(true);
+      return { structure: tree, result: traversalSteps.length, message: `${operation} traversal started` };
+    }
+
+    return { structure: tree, result: null, message: 'Operation not implemented yet' };
   };
 
   // Hash Table operations (simplified)
@@ -389,6 +437,8 @@ resetAnimation();
           nodes: Array.from({ length: 4 }, (_, index) => ({ value: randomNumber(), next: index < 3 ? index + 1 : null })),
           head: 0,
         };
+      case 'binary-tree':
+        return buildBinaryTree(treeMode === 'balanced');
       default:
         return dataStructure.defaultExample;
     }
@@ -413,13 +463,14 @@ resetAnimation();
     customInput,
     structure,
     operationResult,
-    operationLog,
     animationSteps,
     currentStep,
     isAnimating,
     setCustomInput,
     resetToDefault,
     generateRandomExample,
+    treeMode,
+    setTreeMode,
     handleOperation,
     handleInputChange,
     setCurrentStep,

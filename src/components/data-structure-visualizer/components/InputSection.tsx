@@ -15,13 +15,17 @@ interface InputSectionProps {
   customInput: string;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleOperation: (operation: string) => void;
+  treeMode?: "binary" | "balanced";
+  onTreeModeChange?: (mode: "binary" | "balanced") => void;
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
   dataStructureId,
   customInput,
   handleInputChange,
-  handleOperation
+  handleOperation,
+  treeMode = "binary",
+  onTreeModeChange
 }) => {
   const getPlaceholderText = () => {
     switch (dataStructureId) {
@@ -78,6 +82,21 @@ export const InputSection: React.FC<InputSectionProps> = ({
         />
       </div>
       
+
+      {dataStructureId === 'binary-tree' && onTreeModeChange && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Tree Type</label>
+          <select
+            className="w-full rounded-md border bg-background px-3 py-2"
+            value={treeMode}
+            onChange={(event) => onTreeModeChange(event.target.value as 'binary' | 'balanced')}
+          >
+            <option value="binary">Binary Tree</option>
+            <option value="balanced">Balanced Tree</option>
+          </select>
+        </div>
+      )}
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Operations</label>
         {renderOperationControls()}

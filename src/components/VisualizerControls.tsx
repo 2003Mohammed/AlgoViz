@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { SpeedSlider } from '@/components/ui/speed-slider';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Play, Pause, RotateCcw, StepForward, StepBack, Keyboard, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, RotateCcw, StepForward, StepBack, SkipBack, SkipForward } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
@@ -119,23 +119,6 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
 
         <SpeedSlider speed={speed} onSpeedChange={onSpeedChange} />
 
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="rounded-lg border bg-muted/30 p-3"
-          aria-live="polite"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Keyboard className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Keyboard Shortcuts</span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div className="flex items-center justify-between"><span className="text-muted-foreground">Play/Pause:</span><kbd className="bg-muted px-2 py-1 rounded">Space</kbd></div>
-            <div className="flex items-center justify-between"><span className="text-muted-foreground">Reset:</span><kbd className="bg-muted px-2 py-1 rounded">R</kbd></div>
-            <div className="flex items-center justify-between"><span className="text-muted-foreground">Rewind:</span><kbd className="bg-muted px-2 py-1 rounded">Home</kbd></div>
-            <div className="flex items-center justify-between"><span className="text-muted-foreground">Skip End:</span><kbd className="bg-muted px-2 py-1 rounded">End</kbd></div>
-          </div>
-        </motion.div>
       </div>
     </TooltipProvider>
   );

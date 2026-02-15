@@ -5,7 +5,6 @@ import { StructureRenderer } from './StructureRenderer';
 import { VisualizerHeader } from './components/VisualizerHeader';
 import { InputSection } from './components/InputSection';
 import { AnimationControls } from './components/AnimationControls';
-import { OperationLog } from './OperationLog';
 import { OperationsInfo } from './OperationsInfo';
 import { ImplementationCode } from './ImplementationCode';
 import { ReferenceSection } from './components/ReferenceSection';
@@ -23,7 +22,6 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     customInput,
     structure,
     operationResult,
-    operationLog,
     animationSteps,
     currentStep,
     isAnimating,
@@ -32,6 +30,8 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     generateRandomExample,
     handleOperation,
     handleInputChange,
+    treeMode,
+    setTreeMode,
     setCurrentStep,
     setIsAnimating,
     speed,
@@ -76,6 +76,8 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
             customInput={customInput}
             handleInputChange={handleInputChange}
             handleOperation={handleOperation}
+            treeMode={treeMode}
+            onTreeModeChange={setTreeMode}
           />
           
           {animationSteps.length > 0 && (
@@ -98,10 +100,6 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
 
         {/* Right Column - Logs and Info */}
         <div className="space-y-4">
-          <OperationLog 
-            logs={operationLog}
-          />
-          
           <OperationsInfo 
             operations={dataStructure.operations || []}
           />
@@ -110,6 +108,15 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
 
       {/* Real World Applications */}
       <RealWorldApplications dataStructure={dataStructure} />
+
+      <div className="cyber-panel p-4">
+        <h3 className="text-lg font-semibold mb-2">Learn More Resources</h3>
+        <div className="flex flex-wrap gap-3 text-sm">
+          <a href={`https://www.w3schools.com/search/search.php?query=${dataStructure.name}`} target="_blank" rel="noopener noreferrer" className="underline">W3Schools</a>
+          <a href={`https://www.geeksforgeeks.org/search/?q=${dataStructure.name}`} target="_blank" rel="noopener noreferrer" className="underline">GeeksforGeeks</a>
+          <a href={`https://www.javatpoint.com/search?query=${dataStructure.name}`} target="_blank" rel="noopener noreferrer" className="underline">Javatpoint</a>
+        </div>
+      </div>
 
       {/* Code and Reference */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

@@ -13,6 +13,8 @@ export function useArrayOperations(
   setActiveLineIndex: React.Dispatch<React.SetStateAction<number>>,
   stepsRef: React.MutableRefObject<any[]>,
   resetAnimation: () => void
+,
+  searchTarget?: string
 ) {
   const handleGenerateRandomArray = (sorted = false) => {
     try {
@@ -21,7 +23,7 @@ export function useArrayOperations(
       resetAnimation();
       
       // Generate visualization steps
-      const visualizationSteps = generateVisualizationSteps(algorithmId, newArray);
+      const visualizationSteps = generateVisualizationSteps(algorithmId, newArray, { target: searchTarget });
       stepsRef.current = visualizationSteps;
       setTotalSteps(visualizationSteps.length);
       
@@ -56,7 +58,7 @@ export function useArrayOperations(
       resetAnimation();
       
       // Generate visualization steps for the custom array
-      const visualizationSteps = generateVisualizationSteps(algorithmId, newArray);
+      const visualizationSteps = generateVisualizationSteps(algorithmId, newArray, { target: searchTarget });
       stepsRef.current = visualizationSteps;
       setTotalSteps(visualizationSteps.length);
       

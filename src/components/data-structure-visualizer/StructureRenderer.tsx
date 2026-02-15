@@ -37,7 +37,7 @@ export const StructureRenderer: React.FC<StructureRendererProps> = ({
       case 'linked-list':
         return (
           <LinkedListRenderer 
-            structure={structure} 
+            structure={animationStep?.structure ?? structure} 
           />
         );
         
@@ -58,21 +58,22 @@ export const StructureRenderer: React.FC<StructureRendererProps> = ({
       case 'binary-tree':
         return (
           <BinaryTreeRenderer 
-            tree={structure} 
+            tree={animationStep?.structure ?? structure} 
+            animationStep={animationStep?.structure ?? animationStep}
           />
         );
         
       case 'hash-table':
         return (
           <HashTableRenderer 
-            table={structure} 
+            table={animationStep?.structure ?? structure} 
           />
         );
         
       case 'graph':
         return (
           <GraphRenderer 
-            graph={structure} 
+            graph={animationStep?.structure ?? structure} 
           />
         );
         

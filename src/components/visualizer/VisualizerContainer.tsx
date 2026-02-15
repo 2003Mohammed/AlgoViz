@@ -35,6 +35,10 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
     activeLineIndex,
     speed,
     setSpeed,
+    searchTarget,
+    setSearchTarget,
+    graphStartNode,
+    setGraphStartNode,
     handleGenerateRandomArray,
     handleGenerateRandomGraph,
     handleGenerateRandomTree,
@@ -110,6 +114,23 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
                   {visualizationType === 'array' && (
                     <>
                       <CustomArrayInput onSubmit={handleCustomArraySubmit} />
+
+                  {algorithm.id === 'binary-search' && (
+                    <Card>
+                      <CardHeader className="pb-2"><CardTitle className="text-base">Binary Search Target</CardTitle></CardHeader>
+                      <CardContent>
+                        <input
+                          className="w-full rounded-md border px-3 py-2 bg-background"
+                          aria-label="Binary search target"
+                          placeholder="Enter target value"
+                          value={searchTarget}
+                          onChange={(event) => setSearchTarget(event.target.value)}
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
+
+
                       <Card>
                         <CardHeader className="pb-2">
                           <CardTitle className="text-base">Example Presets</CardTitle>
@@ -124,6 +145,22 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
                       </Card>
                     </>
                   )}
+
+                  {visualizationType === 'graph' && (
+                    <Card>
+                      <CardHeader className="pb-2"><CardTitle className="text-base">Graph Start Node</CardTitle></CardHeader>
+                      <CardContent>
+                        <input
+                          className="w-full rounded-md border px-3 py-2 bg-background"
+                          aria-label="Graph start node"
+                          placeholder="Enter start node (case-insensitive)"
+                          value={graphStartNode}
+                          onChange={(event) => setGraphStartNode(event.target.value)}
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
+
 
                   <motion.div
                     className="rounded-sm overflow-x-auto cyber-grid relative z-0"
@@ -191,7 +228,6 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
           <h3 className="text-xl font-semibold mb-4">Help & Usage</h3>
           <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
             <li>Use Play/Pause to animate, or use step controls for precise walkthroughs.</li>
-            <li>Use Home and End shortcuts to jump to the beginning or final state instantly.</li>
             <li>Adjust animation speed to match your learning pace.</li>
             <li>Use presets or custom arrays to compare behavior across input sizes.</li>
           </ul>
@@ -204,6 +240,18 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }} className="cyber-panel">
         <RealWorldExamples algorithm={algorithm} />
+      </motion.div>
+
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52, duration: 0.5 }} className="cyber-panel">
+        <div className="glass-card p-6">
+          <h3 className="text-xl font-semibold mb-3">Learn More</h3>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <a href={`https://www.w3schools.com/search/search.php?query=${algorithm.name}`} target="_blank" rel="noopener noreferrer" className="underline">W3Schools</a>
+            <a href={`https://www.geeksforgeeks.org/search/?q=${algorithm.name}`} target="_blank" rel="noopener noreferrer" className="underline">GeeksforGeeks</a>
+            <a href={`https://www.javatpoint.com/search?query=${algorithm.name}`} target="_blank" rel="noopener noreferrer" className="underline">Javatpoint</a>
+          </div>
+        </div>
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.5 }} className="cyber-panel">

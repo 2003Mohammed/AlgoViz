@@ -11,7 +11,7 @@ const dataStructures = [
   { id: 'linked-list', name: 'Linked List', description: 'Dynamic linear structure with pointer-based connections', path: '/data-structures/linked-list' },
   { id: 'stack', name: 'Stack', description: 'LIFO (Last In First Out) data structure', path: '/data-structures/stack' },
   { id: 'queue', name: 'Queue', description: 'FIFO (First In First Out) data structure', path: '/data-structures/queue' },
-  { id: 'tree', name: 'Binary Tree', description: 'Hierarchical structure with parent-child relationships', path: '/data-structures/tree' },
+  { id: 'tree', name: 'Tree', description: 'Binary Tree and Balanced Tree visualizations with traversals', path: '/data-structures/tree' },
   { id: 'graph', name: 'Graph', description: 'Network of vertices connected by edges', path: '/data-structures/graph' }
 ];
 

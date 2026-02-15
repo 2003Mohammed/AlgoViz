@@ -25,6 +25,6 @@ describe('VisualizerControls integration (markup)', () => {
     expect(html.includes('aria-label="Step forward"')).toBe(true);
     expect(html.includes('aria-label="Skip to last step"')).toBe(true);
     expect(html.includes('aria-label="Reset visualization"')).toBe(true);
-    expect(html.includes('Keyboard Shortcuts')).toBe(true);
+    expect(html.includes('Keyboard Shortcuts')).toBe(false);
   });
 });
