@@ -4,17 +4,18 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "sunday" # Checks every Sunday to keep your week clean
+      day: "sunday"
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "automerge" # Label used by the Action below
-    
-    # Grouping logic: This is the secret to "professional" dependency management
+      - "automerge"
+  
     groups:
       critical-updates:
         patterns:
           - "*"
         update-types:
-          - "security"
           - "major"
+          - "minor"
+        # This ensures security-related updates are prioritized 
+        # for these groups where applicable.
