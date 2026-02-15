@@ -3,6 +3,8 @@ import { visualizeBubbleSort } from '../sort-visualizations';
 import { visualizeBFS } from '../graph-visualizations';
 import { getTraversalResult, TreeNode } from '../../treeTraversalUtils';
 import { visualizeArrayOperation } from '../array-visualizations';
+import { generateVisualizationSteps } from '..';
+import { generateRandomGraph, generateRandomTree } from '../../visualizerUtils';
 
 describe('frame generation', () => {
   test('bubble sort generates deterministic frames and sorted final state', () => {
@@ -47,5 +49,22 @@ describe('frame generation', () => {
 
     const searchFrames = visualizeArrayOperation([10, 20, 30], 'search', 20);
     expect(searchFrames.some((s) => s.description?.includes('Found 20'))).toBe(true);
+  });
+
+  test('all algorithm categories generate non-empty frames', () => {
+    const sorting = generateVisualizationSteps('selection-sort', [
+      { value: 9, status: 'default' as const },
+      { value: 1, status: 'default' as const },
+      { value: 4, status: 'default' as const },
+    ]);
+
+    const graph = generateVisualizationSteps('dijkstra', generateRandomGraph(5));
+    const tree = generateVisualizationSteps('binary-tree', generateRandomTree());
+
+    expect(sorting.length).toBeGreaterThan(0);
+    expect(graph.length).toBeGreaterThan(0);
+    expect(tree.length).toBeGreaterThan(0);
+    expect(graph.some((frame) => frame.graphData?.nodes.length)).toBe(true);
+    expect(tree.some((frame) => frame.treeData)).toBe(true);
   });
 });

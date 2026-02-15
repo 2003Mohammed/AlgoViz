@@ -14,8 +14,8 @@ export function visualizeGraphOperation(
     return visualizeBFS(graph, startNode);
   } else if (operation === 'dfs' && startNode) {
     return visualizeDFS(graph, startNode);
-  // else if (operation === 'dijkstra' && startNode) {
-    // return visualizeDijkstra(graph, startNode, endNode);
+  } else if ((operation === 'dijkstra' || operation === 'astar') && startNode) {
+    return visualizeDijkstra(graph, startNode, endNode);
   }
   
   return steps;

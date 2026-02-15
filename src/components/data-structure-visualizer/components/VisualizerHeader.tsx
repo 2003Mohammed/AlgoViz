@@ -1,17 +1,19 @@
 
 import React from 'react';
 import { Button } from '../../ui/button';
-import { RotateCcw, Download } from 'lucide-react';
+import { RefreshCw, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface VisualizerHeaderProps {
   dataStructureName: string;
   onReset: () => void;
+  onGenerateExample?: () => void;
 }
 
 export const VisualizerHeader: React.FC<VisualizerHeaderProps> = ({
   dataStructureName,
-  onReset
+  onReset,
+  onGenerateExample
 }) => {
   return (
     <motion.div 
@@ -30,6 +32,12 @@ export const VisualizerHeader: React.FC<VisualizerHeaderProps> = ({
       </div>
       
       <div className="flex gap-2">
+        {onGenerateExample && (
+          <Button variant="outline" onClick={onGenerateExample}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Generate Example
+          </Button>
+        )}
         <Button variant="outline" onClick={onReset}>
           <RotateCcw className="h-4 w-4 mr-2" />
           Reset

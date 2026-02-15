@@ -1,5 +1,4 @@
 import React from 'react';
-import { useUnifiedAnimationController } from '../../hooks/useUnifiedAnimationController';
 import { dataStructures } from '../../utils/dataStructureData';
 import { DataStructureVisualizer } from '../data-structure-visualizer/DataStructureVisualizer';
 

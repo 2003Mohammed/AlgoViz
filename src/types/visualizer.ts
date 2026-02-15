@@ -1,25 +1,8 @@
-
 // Array visualizer types
 export interface ArrayItem {
   value: any;
   status?: 'default' | 'comparing' | 'swapping' | 'sorted' | 'visited' | 'found' | 'removing' | 'added' | 'current' | 'pivot' | 'active' | 'target' | 'path' | 'processing';
 }
-
-// Step in the visualization process
-export interface VisualizationStep {
-  array: ArrayItem[];
-  lineIndex: number;
-  comparingIndices?: number[];
-  swappedIndices?: number[];
-  sortedIndices?: number[];
-  pivotIndex?: number;
-  currentIndex?: number;
-  graphData?: GraphData;
-  description?: string; // Added description property
-}
-
-// Visualizer steps used by animations
-export interface VisualizerStep extends VisualizationStep {}
 
 // Graph visualizer types
 export interface GraphNode {
@@ -55,6 +38,54 @@ export interface TreeNode {
   status?: 'default' | 'visited' | 'inserted' | 'removed' | 'found' | 'active' | 'comparing' | 'sorted';
 }
 
+// Frame contracts by visualization category
+export interface SortingFrame {
+  array: ArrayItem[];
+  lineIndex: number;
+  description?: string;
+}
+
+export interface GraphFrame {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  activeNode?: string;
+  visitedNodes: string[];
+  distances?: Record<string, number>;
+  lineIndex: number;
+  description?: string;
+}
+
+export interface TreeFrame {
+  treeData: TreeNode;
+  activeNodeId?: string;
+  lineIndex: number;
+  description?: string;
+}
+
+export interface DataStructureFrame {
+  structure: any;
+  lineIndex: number;
+  description?: string;
+}
+
+// Step in the visualization process
+export interface VisualizationStep {
+  array: ArrayItem[];
+  lineIndex: number;
+  comparingIndices?: number[];
+  swappedIndices?: number[];
+  sortedIndices?: number[];
+  pivotIndex?: number;
+  currentIndex?: number;
+  graphData?: GraphData;
+  treeData?: TreeNode;
+  structure?: any;
+  description?: string;
+}
+
+// Visualizer steps used by animations
+export interface VisualizerStep extends VisualizationStep {}
+
 // NodeItem and EdgeItem for general visualization utilities
 export interface NodeItem {
   id: string;
@@ -84,5 +115,5 @@ export interface GuideSlide {
   content: string;
   code?: string;
   image?: string;
-  id: string; // Changed from optional to required
+  id: string;
 }

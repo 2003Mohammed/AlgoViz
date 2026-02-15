@@ -26,7 +26,11 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     reset: resetAnimation,
   } = useUnifiedAnimationController<VisualizationStep>({
     steps: animationSteps,
-    onApplyStep: () => {},
+    onApplyStep: (step) => {
+      if (step.structure !== undefined) {
+        setStructure(step.structure);
+      }
+    },
     initialSpeed: 1,
   });
   
@@ -58,65 +62,28 @@ resetAnimation();
     setCustomInput(e.target.value);
   };
 
+  const toArrayFrame = (value: any) => (Array.isArray(value)
+    ? value.map((item: any) => ({ value: typeof item === 'object' ? item.value : item, status: 'default' as const }))
+    : []);
+
   const createAnimationSteps = (operation: string, oldStructure: any, newStructure: any) => {
-    const steps: VisualizationStep[] = [];
-    
-    // Create animation steps based on the operation
-    switch (operation) {
-      case 'add':
-      case 'push':
-      case 'enqueue':
-        steps.push({
-          array: oldStructure.map((item: any) => ({ 
-            value: typeof item === 'object' ? item.value : item, 
-            status: 'default' 
-          })),
-          lineIndex: 0,
-          description: `Before ${operation}`
-        });
-        steps.push({
-          array: newStructure.map((item: any, index: number) => ({ 
-            value: typeof item === 'object' ? item.value : item, 
-            status: index === newStructure.length - 1 ? 'added' : 'default' 
-          })),
-          lineIndex: 1,
-          description: `After ${operation}`
-        });
-        break;
-        
-      case 'remove':
-      case 'pop':
-      case 'dequeue':
-        steps.push({
-          array: oldStructure.map((item: any, index: number) => ({ 
-            value: typeof item === 'object' ? item.value : item, 
-            status: index === oldStructure.length - 1 ? 'removing' : 'default' 
-          })),
-          lineIndex: 0,
-          description: `Removing element`
-        });
-        steps.push({
-          array: newStructure.map((item: any) => ({ 
-            value: typeof item === 'object' ? item.value : item, 
-            status: 'default' 
-          })),
-          lineIndex: 1,
-          description: `After ${operation}`
-        });
-        break;
-        
-      default:
-        steps.push({
-          array: newStructure.map((item: any) => ({ 
-            value: typeof item === 'object' ? item.value : item, 
-            status: 'default' 
-          })),
-          lineIndex: 0,
-          description: `Operation: ${operation}`
-        });
-    }
-    
-    return steps;
+    const oldArray = toArrayFrame(oldStructure);
+    const newArray = toArrayFrame(newStructure);
+
+    return [
+      {
+        array: oldArray,
+        structure: oldStructure,
+        lineIndex: 0,
+        description: `Before ${operation}`
+      },
+      {
+        array: newArray,
+        structure: newStructure,
+        lineIndex: 1,
+        description: `After ${operation}`
+      }
+    ] as VisualizationStep[];
   };
 
   const handleOperation = (operation: string) => {
@@ -156,15 +123,15 @@ resetAnimation();
         setOperationResult(newStructure.result);
         addLogEntry(newStructure.message);
         
-        // Create animation steps for visual feedback
-        if (Array.isArray(oldStructure) && Array.isArray(newStructure.structure)) {
-          const steps = createAnimationSteps(operation, oldStructure, newStructure.structure);
-          setAnimationSteps(steps);
-          jumpToStart();
+        const steps = createAnimationSteps(operation, oldStructure, newStructure.structure);
+        setAnimationSteps(steps);
 
-          if (steps.length > 1) {
-            setIsAnimating(true);
-          }
+        if (steps.length > 0) {
+          setCurrentStep(0);
+        }
+
+        if (steps.length > 1) {
+          setIsAnimating(true);
         }
         
         setCustomInput('');
@@ -407,6 +374,41 @@ resetAnimation();
     }
   };
 
+
+  const generateContextualExample = () => {
+    const randomNumber = () => Math.floor(Math.random() * 90) + 10;
+    switch (dataStructure.id) {
+      case 'array':
+        return Array.from({ length: 6 }, randomNumber);
+      case 'stack':
+        return Array.from({ length: 4 }, randomNumber);
+      case 'queue':
+        return Array.from({ length: 4 }, randomNumber);
+      case 'linked-list':
+        return {
+          nodes: Array.from({ length: 4 }, (_, index) => ({ value: randomNumber(), next: index < 3 ? index + 1 : null })),
+          head: 0,
+        };
+      default:
+        return dataStructure.defaultExample;
+    }
+  };
+
+  const generateRandomExample = () => {
+    const nextExample = generateContextualExample();
+    setStructure(nextExample);
+    setAnimationSteps([
+      {
+        array: Array.isArray(nextExample) ? nextExample.map((item: any) => ({ value: item, status: 'default' as const })) : [],
+        structure: nextExample,
+        lineIndex: 0,
+        description: 'Generated contextual example',
+      },
+    ]);
+    setCurrentStep(0);
+    setIsAnimating(false);
+  };
+
   return {
     customInput,
     structure,
@@ -417,6 +419,7 @@ resetAnimation();
     isAnimating,
     setCustomInput,
     resetToDefault,
+    generateRandomExample,
     handleOperation,
     handleInputChange,
     setCurrentStep,

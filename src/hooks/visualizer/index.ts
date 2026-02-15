@@ -1,5 +1,4 @@
-
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrayItem, VisualizerStep, GraphData, TreeNode } from '../../types/visualizer';
 import { useArrayOperations } from './useArrayOperations';
 import { useGraphTreeOperations } from './useGraphTreeOperations';
@@ -7,25 +6,53 @@ import { useAnimationControls } from './useAnimationControls';
 import { exportVisualizationData } from './utils';
 import { VisualizerStateReturnType } from './types';
 
+
+const getVisualizationType = (algorithmId: string): 'array' | 'graph' | 'tree' => {
+  if (
+    algorithmId.includes('graph') ||
+    algorithmId.includes('path') ||
+    algorithmId === 'bfs' ||
+    algorithmId === 'dfs' ||
+    algorithmId === 'dijkstra' ||
+    algorithmId === 'astar'
+  ) {
+    return 'graph';
+  }
+
+  if (algorithmId.includes('tree')) {
+    return 'tree';
+  }
+
+  return 'array';
+};
+
+
 export function useVisualizerState(algorithmId: string): VisualizerStateReturnType {
   const [array, setArray] = useState<ArrayItem[]>([]);
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [treeData, setTreeData] = useState<TreeNode | null>(null);
-  const [visualizationType, setVisualizationType] = useState<'array' | 'graph' | 'tree'>('array');
+  const [visualizationType, setVisualizationType] = useState<'array' | 'graph' | 'tree'>(() => getVisualizationType(algorithmId));
   const [totalSteps, setTotalSteps] = useState(0);
   const [activeLineIndex, setActiveLineIndex] = useState(-1);
 
-  const animationRef = useRef<number | null>(null);
   const stepsRef = useRef<VisualizerStep[]>([]);
-  
-  // Animation controls
-  const resetAnimation = () => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-  };
-  
+
+  const applyStep = useCallback(
+    (step: VisualizerStep) => {
+      if (step.array) {
+        setArray(step.array);
+      }
+      if (step.graphData) {
+        setGraphData(step.graphData);
+      }
+      if (step.treeData) {
+        setTreeData(step.treeData);
+      }
+      setActiveLineIndex(step.lineIndex ?? -1);
+    },
+    []
+  );
+
   const {
     isPlaying,
     currentStep,
@@ -37,19 +64,12 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     jumpToEnd,
     speed,
     setSpeed,
-    setCurrentStep
-  } = useAnimationControls(
-    totalSteps,
-    stepsRef,
-    setArray,
-    setActiveLineIndex,
-    animationRef
-  );
-  
-  // Array operations
-  const { 
+    setCurrentStep,
+  } = useAnimationControls(totalSteps, stepsRef, applyStep);
+
+  const {
     handleGenerateRandomArray,
-    handleCustomArraySubmit
+    handleCustomArraySubmit,
   } = useArrayOperations(
     algorithmId,
     setArray,
@@ -57,51 +77,41 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     setCurrentStep,
     setActiveLineIndex,
     stepsRef,
-    resetAnimation
+    reset
   );
-  
-  // Graph and tree operations
+
   const {
     handleGenerateRandomGraph,
-    handleGenerateRandomTree
+    handleGenerateRandomTree,
   } = useGraphTreeOperations(
     algorithmId,
     setGraphData,
     setTreeData,
-    resetAnimation
+    reset,
+    setTotalSteps,
+    setCurrentStep,
+    setActiveLineIndex,
+    stepsRef,
+    setArray
   );
-  
-  // Export visualization
+
   const exportVisualization = () => {
     exportVisualizationData(algorithmId, stepsRef.current, currentStep);
   };
-  
-  // Initialize visualization when component mounts or algorithm changes
-  useEffect(() => {
-    if (algorithmId.includes('sort')) {
-      setVisualizationType('array');
-      handleGenerateRandomArray();
-    } else if (algorithmId.includes('search')) {
-      setVisualizationType('array');
-      handleGenerateRandomArray(true);
-    } else if (algorithmId.includes('graph') || algorithmId.includes('path')) {
-      setVisualizationType('graph');
-      handleGenerateRandomGraph();
-    } else if (algorithmId.includes('tree')) {
-      setVisualizationType('tree');
-      handleGenerateRandomTree();
-    } else {
-      setVisualizationType('array');
-      handleGenerateRandomArray();
-    }
 
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
+  useEffect(() => {
+    const nextType = getVisualizationType(algorithmId);
+    setVisualizationType(nextType);
+
+    if (nextType === 'array') {
+      handleGenerateRandomArray(algorithmId.includes('binary-search'));
+    } else if (nextType === 'graph') {
+      handleGenerateRandomGraph();
+    } else {
+      handleGenerateRandomTree();
+    }
   }, [algorithmId]);
-  
+
   return {
     array,
     graphData,
@@ -123,6 +133,6 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     stepBackward,
     jumpToStart,
     jumpToEnd,
-    exportVisualization
+    exportVisualization,
   };
 }

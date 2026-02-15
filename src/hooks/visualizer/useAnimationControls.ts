@@ -2,21 +2,16 @@ import { useMemo } from 'react';
 import { toast } from '../use-toast';
 import { useUnifiedAnimationController } from '../useUnifiedAnimationController';
 
-export function useAnimationControls(
+export function useAnimationControls<TStep>(
   totalSteps: number,
-  stepsRef: React.MutableRefObject<any[]>,
-  setArray: React.Dispatch<React.SetStateAction<any>>,
-  setActiveLineIndex: React.Dispatch<React.SetStateAction<number>>,
-  _animationRef: React.MutableRefObject<number | null>
+  stepsRef: React.MutableRefObject<TStep[]>,
+  onApplyStep: (step: TStep, index: number) => void
 ) {
   const steps = useMemo(() => stepsRef.current.slice(0, totalSteps), [stepsRef, totalSteps]);
 
-  const controller = useUnifiedAnimationController({
+  const controller = useUnifiedAnimationController<TStep>({
     steps,
-    onApplyStep: (step) => {
-      setArray(step.array);
-      setActiveLineIndex(step.lineIndex);
-    },
+    onApplyStep,
     initialSpeed: 1,
   });
 

@@ -87,6 +87,17 @@ export const useUnifiedAnimationController = <TStep,>({
     };
   }, [isPlaying, onApplyStep, speed, steps]);
 
+  useEffect(() => {
+    setIsPlaying(false);
+    if (steps.length === 0) {
+      setCurrentStep(0);
+      return;
+    }
+
+    setCurrentStep(0);
+    onApplyStep(steps[0], 0);
+  }, [steps, onApplyStep]);
+
   return {
     isPlaying,
     currentStep,

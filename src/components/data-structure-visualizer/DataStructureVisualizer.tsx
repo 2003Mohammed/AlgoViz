@@ -29,6 +29,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     isAnimating,
     setCustomInput,
     resetToDefault,
+    generateRandomExample,
     handleOperation,
     handleInputChange,
     setCurrentStep,
@@ -48,6 +49,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
       <VisualizerHeader 
         dataStructureName={dataStructure.name}
         onReset={resetToDefault}
+        onGenerateExample={generateRandomExample}
       />
 
       {/* Main Visualization Area */}
