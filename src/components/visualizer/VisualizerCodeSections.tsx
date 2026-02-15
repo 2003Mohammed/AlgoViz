@@ -6,16 +6,20 @@ import { Algorithm } from '../../utils/algorithms';
 interface VisualizerCodeSectionsProps {
   algorithm: Algorithm;
   activeLineIndex: number;
+  pseudocodeOnly?: boolean;
+  hidePseudocode?: boolean;
 }
 
 export const VisualizerCodeSections: React.FC<VisualizerCodeSectionsProps> = ({
   algorithm,
-  activeLineIndex
+  activeLineIndex,
+  pseudocodeOnly = false,
+  hidePseudocode = false,
 }) => {
   return (
     <>
-      {algorithm.pseudocode && (
-        <div className="glass-card p-6">
+      {!hidePseudocode && algorithm.pseudocode && (
+        <div className="glass-card p-6" aria-live="polite" aria-label="Pseudocode panel">
           <h3 className="text-xl font-semibold mb-4">Pseudocode</h3>
           <CodeHighlighter 
             code={algorithm.pseudocode} 
@@ -24,7 +28,7 @@ export const VisualizerCodeSections: React.FC<VisualizerCodeSectionsProps> = ({
         </div>
       )}
       
-      {algorithm.implementation && (
+      {!pseudocodeOnly && algorithm.implementation && (
         <div className="glass-card p-6">
           <h3 className="text-xl font-semibold mb-4">Implementation</h3>
           <CodeHighlighter 

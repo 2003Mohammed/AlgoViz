@@ -6,6 +6,8 @@ interface KeyboardShortcutsProps {
   onReset: () => void;
   onStepForward: () => void;
   onStepBackward: () => void;
+  onJumpToStart?: () => void;
+  onJumpToEnd?: () => void;
   onSpeedUp?: () => void;
   onSpeedDown?: () => void;
 }
@@ -15,12 +17,13 @@ export function useKeyboardShortcuts({
   onReset,
   onStepForward,
   onStepBackward,
+  onJumpToStart,
+  onJumpToEnd,
   onSpeedUp,
   onSpeedDown
 }: KeyboardShortcutsProps) {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      // Ignore if user is typing in an input field
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return;
       }
@@ -42,6 +45,18 @@ export function useKeyboardShortcuts({
           event.preventDefault();
           onStepBackward();
           break;
+        case 'Home':
+          if (onJumpToStart) {
+            event.preventDefault();
+            onJumpToStart();
+          }
+          break;
+        case 'End':
+          if (onJumpToEnd) {
+            event.preventDefault();
+            onJumpToEnd();
+          }
+          break;
         case 'ArrowUp':
           if (onSpeedUp) {
             event.preventDefault();
@@ -59,5 +74,5 @@ export function useKeyboardShortcuts({
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [onPlayPause, onReset, onStepForward, onStepBackward, onSpeedUp, onSpeedDown]);
+  }, [onPlayPause, onReset, onStepForward, onStepBackward, onJumpToStart, onJumpToEnd, onSpeedUp, onSpeedDown]);
 }

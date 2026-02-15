@@ -1,5 +1,5 @@
 
-import { ArrayItem, GraphData, TreeNode, VisualizerStep } from '../../types/visualizer';
+import { ArrayItem, GraphData, TreeNode } from '../../types/visualizer';
 
 export interface VisualizerStateReturnType {
   array: ArrayItem[];
@@ -10,6 +10,8 @@ export interface VisualizerStateReturnType {
   currentStep: number;
   totalSteps: number;
   activeLineIndex: number;
+  speed: number;
+  setSpeed: (speed: number) => void;
   handleGenerateRandomArray: (sorted?: boolean) => void;
   handleGenerateRandomGraph: () => void;
   handleGenerateRandomTree: () => void;
@@ -18,5 +20,7 @@ export interface VisualizerStateReturnType {
   togglePlayPause: () => void;
   stepForward: () => boolean;
   stepBackward: () => boolean;
+  jumpToStart: () => boolean;
+  jumpToEnd: () => boolean;
   exportVisualization: () => void;
 }

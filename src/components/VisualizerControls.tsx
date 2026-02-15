@@ -1,7 +1,8 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RotateCcw, StepForward, StepBack, Keyboard } from 'lucide-react';
+import { SpeedSlider } from '@/components/ui/speed-slider';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Play, Pause, RotateCcw, StepForward, StepBack, Keyboard, SkipBack, SkipForward } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
@@ -11,6 +12,10 @@ interface VisualizerControlsProps {
   onReset: () => void;
   onStepForward: () => void;
   onStepBackward: () => void;
+  onJumpToStart: () => void;
+  onJumpToEnd: () => void;
+  speed: number;
+  onSpeedChange: (speed: number) => void;
   disableBackward?: boolean;
   disableForward?: boolean;
 }
@@ -21,105 +26,117 @@ export const VisualizerControls: React.FC<VisualizerControlsProps> = ({
   onReset,
   onStepForward,
   onStepBackward,
+  onJumpToStart,
+  onJumpToEnd,
+  speed,
+  onSpeedChange,
   disableBackward = false,
   disableForward = false,
 }) => {
-  // Setup keyboard shortcuts (removed speed controls)
   useKeyboardShortcuts({
     onPlayPause,
     onReset,
     onStepForward,
     onStepBackward,
-    onSpeedUp: () => {}, // No-op
-    onSpeedDown: () => {} // No-op
+    onJumpToStart,
+    onJumpToEnd,
   });
 
   const buttonVariants = {
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
-    tap: { scale: 0.95, transition: { duration: 0.1 } }
+    hover: { scale: 1.04, transition: { duration: 0.15 } },
+    tap: { scale: 0.96, transition: { duration: 0.1 } },
   };
 
+  const ControlButton = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent>{title}</TooltipContent>
+    </Tooltip>
+  );
+
+  const iconClass = 'h-4 w-4 text-foreground';
+
   return (
-    <div className="space-y-4">
-      {/* Main Controls */}
-      <div className="flex flex-wrap items-center justify-center gap-3 p-4 bg-muted/10 rounded-lg border">
-        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-          <Button
-            onClick={onStepBackward}
-            disabled={disableBackward || isPlaying}
-            variant="outline"
-            title="Step Backward (←)"
-          >
-            <StepBack className="h-4 w-4" />
-          </Button>
-        </motion.div>
-
-        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-          <Button
-            onClick={onPlayPause}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
-            title="Play/Pause (Space)"
-          >
-            <motion.div
-              key={isPlaying ? 'pause' : 'play'}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+    <TooltipProvider delayDuration={100}>
+      <div className="relative z-30 space-y-3" role="group" aria-label="Visualization controls">
+        <div className="rounded-xl border bg-background/95 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/85 p-3 sm:p-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+              <ControlButton title="Rewind to Start (Home)">
+                <Button onClick={onJumpToStart} disabled={disableBackward || isPlaying} variant="outline" size="icon" aria-label="Rewind to first step">
+                  <SkipBack className={iconClass} />
+                </Button>
+              </ControlButton>
             </motion.div>
-            <span className="ml-2">{isPlaying ? 'Pause' : 'Play'}</span>
-          </Button>
-        </motion.div>
 
-        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-          <Button
-            onClick={onStepForward}
-            disabled={disableForward || isPlaying}
-            variant="outline"
-            title="Step Forward (→)"
-          >
-            <StepForward className="h-4 w-4" />
-          </Button>
-        </motion.div>
+            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+              <ControlButton title="Step Backward (←)">
+                <Button onClick={onStepBackward} disabled={disableBackward || isPlaying} variant="outline" size="icon" aria-label="Step backward">
+                  <StepBack className={iconClass} />
+                </Button>
+              </ControlButton>
+            </motion.div>
 
-        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-          <Button
-            onClick={onReset}
-            variant="outline"
-            title="Reset (R)"
-          >
-            <RotateCcw className="h-4 w-4" />
-            <span className="ml-2">Reset</span>
-          </Button>
+            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap" className="mx-1">
+              <ControlButton title="Play/Pause (Space)">
+                <Button
+                  onClick={onPlayPause}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-28"
+                  aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
+                >
+                  {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                  <span className="ml-2">{isPlaying ? 'Pause' : 'Play'}</span>
+                </Button>
+              </ControlButton>
+            </motion.div>
+
+            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+              <ControlButton title="Step Forward (→)">
+                <Button onClick={onStepForward} disabled={disableForward || isPlaying} variant="outline" size="icon" aria-label="Step forward">
+                  <StepForward className={iconClass} />
+                </Button>
+              </ControlButton>
+            </motion.div>
+
+            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+              <ControlButton title="Skip to End (End)">
+                <Button onClick={onJumpToEnd} disabled={disableForward || isPlaying} variant="outline" size="icon" aria-label="Skip to last step">
+                  <SkipForward className={iconClass} />
+                </Button>
+              </ControlButton>
+            </motion.div>
+
+            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+              <ControlButton title="Reset to Initial Configuration (R)">
+                <Button onClick={onReset} variant="outline" aria-label="Reset visualization">
+                  <RotateCcw className={iconClass} />
+                  <span className="ml-2">Reset</span>
+                </Button>
+              </ControlButton>
+            </motion.div>
+          </div>
+        </div>
+
+        <SpeedSlider speed={speed} onSpeedChange={onSpeedChange} />
+
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="rounded-lg border bg-muted/30 p-3"
+          aria-live="polite"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Keyboard className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Keyboard Shortcuts</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div className="flex items-center justify-between"><span className="text-muted-foreground">Play/Pause:</span><kbd className="bg-muted px-2 py-1 rounded">Space</kbd></div>
+            <div className="flex items-center justify-between"><span className="text-muted-foreground">Reset:</span><kbd className="bg-muted px-2 py-1 rounded">R</kbd></div>
+            <div className="flex items-center justify-between"><span className="text-muted-foreground">Rewind:</span><kbd className="bg-muted px-2 py-1 rounded">Home</kbd></div>
+            <div className="flex items-center justify-between"><span className="text-muted-foreground">Skip End:</span><kbd className="bg-muted px-2 py-1 rounded">End</kbd></div>
+          </div>
         </motion.div>
       </div>
-
-      {/* Keyboard Shortcuts Help */}
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: 'auto' }}
-        className="bg-muted/20 backdrop-blur-sm border border-muted/30 rounded-lg p-3"
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <Keyboard className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Keyboard Shortcuts</span>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Play/Pause:</span>
-            <kbd className="bg-muted px-2 py-1 rounded text-xs">Space</kbd>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Reset:</span>
-            <kbd className="bg-muted px-2 py-1 rounded text-xs">R</kbd>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Step →:</span>
-            <kbd className="bg-muted px-2 py-1 rounded text-xs">→</kbd>
-          </div>
-        </div>
-      </motion.div>
-    </div>
+    </TooltipProvider>
   );
 };

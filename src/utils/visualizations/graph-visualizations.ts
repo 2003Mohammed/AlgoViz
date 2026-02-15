@@ -14,12 +14,12 @@ export function visualizeGraphOperation(
     return visualizeBFS(graph, startNode);
   } else if (operation === 'dfs' && startNode) {
     return visualizeDFS(graph, startNode);
-  } //else if (operation === 'dijkstra' && startNode) {
+  // else if (operation === 'dijkstra' && startNode) {
     // return visualizeDijkstra(graph, startNode, endNode);
   }
   
   return steps;
-
+}
 
 export function visualizeBFS(graph: GraphData, startNode: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
@@ -136,7 +136,7 @@ export function visualizeDFS(graph: GraphData, startNode: string): Visualization
   return steps;
 }
 
-/*export function visualizeDijkstra(graph: GraphData, startNode: string, endNode?: string): VisualizationStep[] {
+export function visualizeDijkstra(graph: GraphData, startNode: string, endNode?: string): VisualizationStep[] {
   const steps: VisualizationStep[] = [];
   const distances: { [key: string]: number } = {};
   const visited = new Set<string>();
@@ -217,4 +217,3 @@ export function visualizeDFS(graph: GraphData, startNode: string): Visualization
   
   return steps;
 }
-*/

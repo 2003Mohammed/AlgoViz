@@ -32,7 +32,14 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
     handleOperation,
     handleInputChange,
     setCurrentStep,
-    setIsAnimating
+    setIsAnimating,
+    speed,
+    setSpeed,
+    stepForward,
+    stepBackward,
+    jumpToStart,
+    jumpToEnd,
+    resetAnimation
   } = useDataStructureState(dataStructure);
 
   return (
@@ -74,10 +81,15 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
               isAnimating={isAnimating}
               currentStep={currentStep}
               animationSteps={animationSteps}
-              speed={1}
+              speed={speed}
               setCurrentStep={setCurrentStep}
               setIsAnimating={setIsAnimating}
-              onSpeedChange={() => {}}
+              onSpeedChange={setSpeed}
+              onStepForward={stepForward}
+              onStepBackward={stepBackward}
+              onJumpToStart={jumpToStart}
+              onJumpToEnd={jumpToEnd}
+              onReset={resetAnimation}
             />
           )}
         </div>

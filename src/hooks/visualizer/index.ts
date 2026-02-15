@@ -14,11 +14,11 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
   const [visualizationType, setVisualizationType] = useState<'array' | 'graph' | 'tree'>('array');
   const [totalSteps, setTotalSteps] = useState(0);
   const [activeLineIndex, setActiveLineIndex] = useState(-1);
-  
+
   const animationRef = useRef<number | null>(null);
   const stepsRef = useRef<VisualizerStep[]>([]);
   
-  // Animation controls (removed speed)
+  // Animation controls
   const resetAnimation = () => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
@@ -33,8 +33,11 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     togglePlayPause,
     stepForward,
     stepBackward,
-    setCurrentStep,
-    setIsPlaying
+    jumpToStart,
+    jumpToEnd,
+    speed,
+    setSpeed,
+    setCurrentStep
   } = useAnimationControls(
     totalSteps,
     stepsRef,
@@ -75,13 +78,12 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
   
   // Initialize visualization when component mounts or algorithm changes
   useEffect(() => {
-    // Determine visualization type based on algorithm
     if (algorithmId.includes('sort')) {
       setVisualizationType('array');
       handleGenerateRandomArray();
     } else if (algorithmId.includes('search')) {
       setVisualizationType('array');
-      handleGenerateRandomArray(true); // Generate sorted array for search algorithms
+      handleGenerateRandomArray(true);
     } else if (algorithmId.includes('graph') || algorithmId.includes('path')) {
       setVisualizationType('graph');
       handleGenerateRandomGraph();
@@ -92,8 +94,7 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
       setVisualizationType('array');
       handleGenerateRandomArray();
     }
-    
-    // Cleanup on unmount or algorithm change
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -101,22 +102,6 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     };
   }, [algorithmId]);
   
-  // Animation effect with medium speed (1000ms interval)
-  useEffect(() => {
-    if (isPlaying) {
-      const timer = setInterval(() => {
-        if (currentStep < totalSteps - 1) {
-          stepForward();
-        } else {
-          setIsPlaying(false);
-        }
-      }, 1000); // Medium speed - 1 second per step
-      
-      return () => clearInterval(timer);
-    }
-  }, [isPlaying, currentStep, totalSteps, stepForward, setIsPlaying]);
-
-  // Public API
   return {
     array,
     graphData,
@@ -126,6 +111,8 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     currentStep,
     totalSteps,
     activeLineIndex,
+    speed,
+    setSpeed,
     handleGenerateRandomArray,
     handleGenerateRandomGraph,
     handleGenerateRandomTree,
@@ -134,6 +121,8 @@ export function useVisualizerState(algorithmId: string): VisualizerStateReturnTy
     togglePlayPause,
     stepForward,
     stepBackward,
+    jumpToStart,
+    jumpToEnd,
     exportVisualization
   };
 }

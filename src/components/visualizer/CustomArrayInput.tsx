@@ -45,6 +45,7 @@ export const CustomArrayInput: React.FC<CustomArrayInputProps> = ({ onSubmit }) 
     <div className="mb-6">
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <Input
+          aria-label="Custom array input"
           placeholder="Enter numbers separated by commas (e.g., 5, 3, 8, 1, 9)"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}

@@ -10,7 +10,7 @@ interface SpeedSliderProps {
 
 export const SpeedSlider: React.FC<SpeedSliderProps> = ({ speed, onSpeedChange }) => {
   return (
-    <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg border border-muted/30">
+    <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg border border-muted/30" title="Adjust animation speed">
       <div className="flex items-center gap-2 min-w-fit">
         <Gauge className="h-4 w-4 text-primary" />
         <span className="text-sm font-medium">Speed</span>
@@ -18,6 +18,7 @@ export const SpeedSlider: React.FC<SpeedSliderProps> = ({ speed, onSpeedChange }
       
       <div className="flex-1 px-2">
         <Slider
+          aria-label="Animation speed"
           value={[speed]}
           onValueChange={(values) => onSpeedChange(values[0])}
           min={0.25}

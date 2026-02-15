@@ -9,7 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:scenarios": "bun test src/utils/exampleScenarios.test.ts"
+    "test:scenarios": "bun test src/utils/exampleScenarios.test.ts",
+    "test": "bun test",
+    "test:unit": "bun test src/hooks/__tests__ src/utils/visualizations/__tests__ src/components/__tests__"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

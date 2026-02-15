@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DataStructure } from '../../utils/dataStructureData';
 import { VisualizationStep } from '../../types/visualizer';
 import { toast } from '../../hooks/use-toast';
+import { useUnifiedAnimationController } from '../../hooks/useUnifiedAnimationController';
 
 export const useDataStructureState = (dataStructure: DataStructure) => {
   const [customInput, setCustomInput] = useState<string>('');
@@ -9,16 +10,32 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
   const [operationResult, setOperationResult] = useState<any>(null);
   const [operationLog, setOperationLog] = useState<string[]>([]);
   const [animationSteps, setAnimationSteps] = useState<VisualizationStep[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+
+  const {
+    currentStep,
+    isPlaying: isAnimating,
+    speed,
+    setSpeed,
+    setCurrentStep,
+    setIsPlaying: setIsAnimating,
+    togglePlayPause,
+    stepForward,
+    stepBackward,
+    jumpToStart,
+    jumpToEnd,
+    reset: resetAnimation,
+  } = useUnifiedAnimationController<VisualizationStep>({
+    steps: animationSteps,
+    onApplyStep: () => {},
+    initialSpeed: 1,
+  });
   
   useEffect(() => {
     setStructure(dataStructure.defaultExample);
     setOperationResult(null);
     setOperationLog([]);
     setAnimationSteps([]);
-    setCurrentStep(0);
-    setIsAnimating(false);
+resetAnimation();
   }, [dataStructure.id]);
   
   const resetToDefault = () => {
@@ -26,8 +43,7 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     setOperationResult(null);
     setOperationLog([]);
     setAnimationSteps([]);
-    setCurrentStep(0);
-    setIsAnimating(false);
+resetAnimation();
     toast({
       title: "Reset Complete",
       description: `${dataStructure.name} has been reset to default state`,
@@ -144,9 +160,8 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
         if (Array.isArray(oldStructure) && Array.isArray(newStructure.structure)) {
           const steps = createAnimationSteps(operation, oldStructure, newStructure.structure);
           setAnimationSteps(steps);
-          setCurrentStep(0);
-          
-          // Auto-play animation
+          jumpToStart();
+
           if (steps.length > 1) {
             setIsAnimating(true);
           }
@@ -405,6 +420,14 @@ export const useDataStructureState = (dataStructure: DataStructure) => {
     handleOperation,
     handleInputChange,
     setCurrentStep,
-    setIsAnimating
+    setIsAnimating,
+    speed,
+    setSpeed,
+    togglePlayPause,
+    stepForward,
+    stepBackward,
+    jumpToStart,
+    jumpToEnd,
+    resetAnimation
   };
 };
