@@ -4,6 +4,21 @@ import { VisualizationStep } from '../../types/visualizer';
 import { toast } from '../../hooks/use-toast';
 import { useUnifiedAnimationController } from '../../hooks/useUnifiedAnimationController';
 import { visualizeBubbleSort, visualizeInsertionSort, visualizeMergeSort, visualizeQuickSort, visualizeHeapSort } from '../../utils/visualizations/sort-visualizations';
+import {
+  rebuildLinkedList,
+  stackPush,
+  stackPop,
+  stackPeek,
+  queueEnqueue,
+  queueDequeue,
+  queuePeek,
+  treeTraversalOrder,
+  graphAddNode,
+  graphRemoveNode,
+  graphAddEdge,
+  graphRemoveEdge,
+} from './dataStructureLogic';
+
 
 export const useDataStructureState = (dataStructure: DataStructure) => {
   const [customInput, setCustomInput] = useState<string>('');
@@ -235,6 +250,17 @@ resetAnimation();
         }
         return { structure: newList, result: value, message: `Inserted ${value} at the beginning` };
         
+      case 'insert-index':
+        if (!input || !input.includes(':')) return { structure: list, result: null, message: 'Use index:value' };
+        const [idxRaw, valRaw] = input.split(':');
+        const idxNum = Math.max(0, Math.min(Number(idxRaw), (list.nodes || []).length));
+        const val = isNaN(Number(valRaw)) ? valRaw : Number(valRaw);
+        {
+          const values = (list.nodes || []).map((n: any) => n.value);
+          values.splice(idxNum, 0, val);
+          return { structure: rebuildLinkedList(values, list.type || 'singly'), result: val, message: `Inserted ${val} at index ${idxNum}` };
+        }
+
       case 'insert-end':
         if (!input) return { structure: list, result: null, message: "Please enter a value to insert" };
         const endValue = isNaN(Number(input)) ? input : Number(input);
@@ -252,19 +278,25 @@ resetAnimation();
         }
         return { structure: endList, result: endValue, message: `Inserted ${endValue} at the end` };
 
-      case 'delete': {
-        if (!input) return { structure: list, result: null, message: 'Please enter a value to delete' };
-        const target = isNaN(Number(input)) ? input : Number(input);
-        const nodes = [...(list.nodes || [])];
-        const index = nodes.findIndex((node: any) => node.value === target);
-        if (index === -1) return { structure: list, result: null, message: `${target} not found` };
-        nodes.splice(index, 1);
-        const rebuilt = {
-          ...list,
-          nodes: nodes.map((node: any, idx: number) => ({ ...node, next: idx < nodes.length - 1 ? idx + 1 : null, prev: list.type?.includes('doubly') ? (idx > 0 ? idx - 1 : null) : undefined })),
-          head: nodes.length ? 0 : null,
-        };
-        return { structure: rebuilt, result: target, message: `Deleted ${target}` };
+      case 'delete-head': {
+        const values = (list.nodes || []).map((n: any) => n.value);
+        const removed = values.shift();
+        return { structure: rebuildLinkedList(values, list.type || 'singly'), result: removed, message: `Deleted head` };
+      }
+
+      case 'delete-tail': {
+        const values = (list.nodes || []).map((n: any) => n.value);
+        const removed = values.pop();
+        return { structure: rebuildLinkedList(values, list.type || 'singly'), result: removed, message: `Deleted tail` };
+      }
+
+      case 'delete-index': {
+        if (!input) return { structure: list, result: null, message: 'Please enter index to delete' };
+        const values = (list.nodes || []).map((n: any) => n.value);
+        const idx = Number(input);
+        if (Number.isNaN(idx) || idx < 0 || idx >= values.length) return { structure: list, result: null, message: 'Invalid index' };
+        const [removed] = values.splice(idx, 1);
+        return { structure: rebuildLinkedList(values, list.type || 'singly'), result: removed, message: `Deleted index ${idx}` };
       }
 
       case 'search': {
@@ -323,17 +355,16 @@ resetAnimation();
       case 'push':
         if (!input) return { structure: stack, result: null, message: "Please enter a value to push" };
         const value = isNaN(Number(input)) ? input : Number(input);
-        newStack.push(value);
-        return { structure: newStack, result: value, message: `Pushed ${value} onto stack` };
+        return { structure: stackPush(stack, value), result: value, message: `Pushed ${value} onto stack` };
         
       case 'pop':
         if (newStack.length === 0) return { structure: stack, result: null, message: "Stack is empty" };
-        const popped = newStack.pop();
-        return { structure: newStack, result: popped, message: `Popped ${popped} from stack` };
+        const popped = stackPop(stack);
+        return { structure: popped.stack, result: popped.value, message: `Popped ${popped.value} from stack` };
         
       case 'peek':
-        const top = newStack[newStack.length - 1];
-        return { structure: stack, result: top, message: `Top element: ${top || 'Stack is empty'}` };
+        const top = stackPeek(stack);
+        return { structure: stack, result: top, message: `Top element: ${top ?? 'Stack is empty'}` };
         
       default:
         return { structure: stack, result: null, message: "Unknown operation" };
@@ -348,16 +379,16 @@ resetAnimation();
       case 'enqueue':
         if (!input) return { structure: queue, result: null, message: "Please enter a value to enqueue" };
         const value = isNaN(Number(input)) ? input : Number(input);
-        newQueue.push(value); // Add to rear
-        return { structure: newQueue, result: value, message: `Enqueued ${value} to queue` };
+        return { structure: queueEnqueue(queue, value), result: value, message: `Enqueued ${value} to queue` };
         
       case 'dequeue':
         if (newQueue.length === 0) return { structure: queue, result: null, message: "Queue is empty" };
-        const dequeued = newQueue.shift(); // Remove from front
-        return { structure: newQueue, result: dequeued, message: `Dequeued ${dequeued} from queue` };
+        const dequeued = queueDequeue(queue);
+        return { structure: dequeued.queue, result: dequeued.value, message: `Dequeued ${dequeued.value} from queue` };
         
       case 'peek':
-        return { structure: queue, result: queue[0], message: `Front element: ${queue[0] ?? 'Queue is empty'}` };
+        const front = queuePeek(queue);
+        return { structure: queue, result: front, message: `Front element: ${front ?? 'Queue is empty'}` };
       default:
         return { structure: queue, result: null, message: "Unknown operation" };
     }
@@ -387,21 +418,10 @@ resetAnimation();
     return { nodes, root: 0 };
   };
 
-  const buildTraversalFrames = (tree: any, order: 'inorder' | 'preorder' | 'postorder') => {
+  const buildTraversalFrames = (tree: any, order: 'inorder' | 'preorder' | 'postorder' | 'levelorder') => {
     const steps: VisualizationStep[] = [];
     const nodes = tree.nodes;
-    const traversal: number[] = [];
-
-    const visit = (idx: number | null) => {
-      if (idx === null || nodes[idx] === undefined) return;
-      if (order === 'preorder') traversal.push(idx);
-      visit(nodes[idx].left);
-      if (order === 'inorder') traversal.push(idx);
-      visit(nodes[idx].right);
-      if (order === 'postorder') traversal.push(idx);
-    };
-
-    visit(tree.root);
+    const traversal = treeTraversalOrder(tree, order);
     steps.push({ array: [], structure: tree, lineIndex: 0, description: `Starting ${order} traversal` });
 
     const visited = new Set<number>();
@@ -427,7 +447,7 @@ resetAnimation();
       return { structure: generated, result: null, message: `Generated ${balanced ? 'balanced tree' : 'binary tree'} example` };
     }
 
-    if (operation === 'inorder' || operation === 'preorder' || operation === 'postorder') {
+    if (operation === 'inorder' || operation === 'preorder' || operation === 'postorder' || operation === 'levelorder') {
       const traversalSteps = buildTraversalFrames(tree, operation);
       setAnimationSteps(traversalSteps);
       setCurrentStep(0);
@@ -500,11 +520,36 @@ resetAnimation();
       return { structure: graph, result: steps.length, message: `${operation.toUpperCase()} traversal started` };
     }
 
-    if (operation === 'addVertex') {
-      if (!input) return { structure: graph, result: null, message: 'Please enter vertex name' };
-      const newGraph = { ...graph, nodes: [...graph.nodes] };
-      newGraph.nodes.push({ id: input, x: Math.random() * 360 + 60, y: Math.random() * 220 + 60 });
-      return { structure: newGraph, result: input, message: `Added vertex ${input}` };
+    if (operation === 'toggle-directed') {
+      return { structure: { ...graph, directed: !graph.directed }, result: !graph.directed, message: `Directed: ${!graph.directed}` };
+    }
+
+    if (operation === 'toggle-weighted') {
+      return { structure: { ...graph, weighted: !graph.weighted }, result: !graph.weighted, message: `Weighted: ${!graph.weighted}` };
+    }
+
+    if (operation === 'add-node') {
+      if (!input) return { structure: graph, result: null, message: 'Enter node id' };
+      return { structure: graphAddNode(graph, input.trim().toUpperCase()), result: input, message: `Added node ${input}` };
+    }
+
+    if (operation === 'remove-node') {
+      if (!input) return { structure: graph, result: null, message: 'Enter node id' };
+      return { structure: graphRemoveNode(graph, input.trim().toUpperCase()), result: input, message: `Removed node ${input}` };
+    }
+
+    if (operation === 'add-edge') {
+      if (!input || !input.includes('-')) return { structure: graph, result: null, message: 'Use SOURCE-TARGET[:weight]' };
+      const [pair, weightRaw] = input.split(':');
+      const [s, t] = pair.split('-').map((v) => v.trim().toUpperCase());
+      const weight = Math.max(1, Number(weightRaw || 1));
+      return { structure: graphAddEdge(graph, s, t, graph.weighted ? weight : 1), result: `${s}-${t}`, message: `Added edge ${s}-${t}` };
+    }
+
+    if (operation === 'remove-edge') {
+      if (!input || !input.includes('-')) return { structure: graph, result: null, message: 'Use SOURCE-TARGET' };
+      const [s, t] = input.split('-').map((v) => v.trim().toUpperCase());
+      return { structure: graphRemoveEdge(graph, s, t), result: `${s}-${t}`, message: `Removed edge ${s}-${t}` };
     }
 
     return { structure: graph, result: null, message: 'Operation not implemented yet' };
@@ -517,9 +562,9 @@ resetAnimation();
       case 'array':
         return Array.from({ length: 6 }, randomNumber);
       case 'stack':
-        return Array.from({ length: 4 }, randomNumber);
+        return ['Undo: type', 'Undo: delete', 'Undo: move'];
       case 'queue':
-        return Array.from({ length: 4 }, randomNumber);
+        return ['Ticket-101', 'Ticket-102', 'Ticket-103'];
       case 'linked-list': {
         const types = ['singly', 'doubly', 'circular'];
         const type = types[Math.floor(Math.random() * types.length)];
@@ -533,9 +578,36 @@ resetAnimation();
       }
       case 'binary-tree':
         return buildBinaryTree(treeMode === 'balanced');
+      case 'graph':
+        return {
+          nodes: [
+            { id: 'A', x: 100, y: 90 },
+            { id: 'B', x: 260, y: 80 },
+            { id: 'C', x: 420, y: 90 },
+            { id: 'D', x: 180, y: 220 },
+            { id: 'E', x: 340, y: 220 }
+          ],
+          edges: [
+            { source: 'A', target: 'B', weight: 2 },
+            { source: 'B', target: 'C', weight: 3 },
+            { source: 'A', target: 'D', weight: 4 },
+            { source: 'D', target: 'E', weight: 1 },
+            { source: 'E', target: 'C', weight: 2 }
+          ],
+          directed: false,
+          weighted: true
+        };
       default:
         return dataStructure.defaultExample;
     }
+  };
+
+  const generateContextExample = () => {
+    const nextExample = generateContextualExample();
+    setStructure(nextExample);
+    setAnimationSteps([{ array: Array.isArray(nextExample) ? nextExample.map((item: any) => ({ value: item, status: "default" as const })) : [], structure: nextExample, lineIndex: 0, description: "Generated contextual example" }]);
+    setCurrentStep(0);
+    setIsAnimating(false);
   };
 
   const generateRandomExample = () => {
@@ -574,6 +646,7 @@ resetAnimation();
     setCustomInput,
     resetToDefault,
     generateRandomExample,
+    generateContextExample,
     treeMode,
     setTreeMode,
     handleOperation,
@@ -587,6 +660,7 @@ resetAnimation();
     stepBackward,
     jumpToStart,
     jumpToEnd,
-    resetAnimation
+    resetAnimation,
+    clearStructure: () => { setStructure(Array.isArray(structure) ? [] : { nodes: [], edges: [], root: null, head: null, type: treeMode }); setAnimationSteps([]); setCurrentStep(0); setIsAnimating(false); }
   };
 };

@@ -19,6 +19,7 @@ export const BinaryTreeOperations: React.FC<BinaryTreeOperationsProps> = ({ hand
         <OperationButton operation="inorder" handleOperation={handleOperation} icon={<Search className="h-4 w-4" />} label="Inorder" />
         <OperationButton operation="preorder" handleOperation={handleOperation} icon={<Search className="h-4 w-4" />} label="Preorder" />
         <OperationButton operation="postorder" handleOperation={handleOperation} icon={<Search className="h-4 w-4" />} label="Postorder" />
+        <OperationButton operation="levelorder" handleOperation={handleOperation} icon={<Search className="h-4 w-4" />} label="Level Order" />
       </div>
     </div>
   );

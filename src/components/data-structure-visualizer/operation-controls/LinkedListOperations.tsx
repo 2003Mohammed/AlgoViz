@@ -76,10 +76,28 @@ export const LinkedListOperations: React.FC<LinkedListOperationsProps> = ({ hand
           label="Insert at Tail"
         />
         <OperationButton 
-          operation="delete"
+          operation="insert-index"
+          handleOperation={handleOperation}
+          icon={<Plus className="h-4 w-4" />}
+          label="Insert at Index"
+        />
+        <OperationButton 
+          operation="delete-head"
           handleOperation={handleOperation}
           icon={<Minus className="h-4 w-4" />}
-          label="Delete Node"
+          label="Delete Head"
+        />
+        <OperationButton 
+          operation="delete-tail"
+          handleOperation={handleOperation}
+          icon={<Minus className="h-4 w-4" />}
+          label="Delete Tail"
+        />
+        <OperationButton 
+          operation="delete-index"
+          handleOperation={handleOperation}
+          icon={<Minus className="h-4 w-4" />}
+          label="Delete Index"
         />
         <OperationButton 
           operation="search"

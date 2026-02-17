@@ -8,12 +8,16 @@ interface VisualizerHeaderProps {
   dataStructureName: string;
   onReset: () => void;
   onGenerateExample?: () => void;
+  onGenerateRandom?: () => void;
+  onClear?: () => void;
 }
 
 export const VisualizerHeader: React.FC<VisualizerHeaderProps> = ({
   dataStructureName,
   onReset,
-  onGenerateExample
+  onGenerateExample,
+  onGenerateRandom,
+  onClear
 }) => {
   return (
     <motion.div 
@@ -32,10 +36,21 @@ export const VisualizerHeader: React.FC<VisualizerHeaderProps> = ({
       </div>
       
       <div className="flex gap-2">
+        {onGenerateRandom && (
+          <Button variant="outline" onClick={onGenerateRandom}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Generate Random
+          </Button>
+        )}
         {onGenerateExample && (
           <Button variant="outline" onClick={onGenerateExample}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Generate Example
+          </Button>
+        )}
+        {onClear && (
+          <Button variant="outline" onClick={onClear}>
+            Clear
           </Button>
         )}
         <Button variant="outline" onClick={onReset}>
