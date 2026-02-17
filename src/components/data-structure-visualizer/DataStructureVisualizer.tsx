@@ -80,7 +80,7 @@ export const DataStructureVisualizer: React.FC<DataStructureVisualizerProps> = (
             onTreeModeChange={setTreeMode}
           />
           
-          {animationSteps.length > 0 && (
+          {animationSteps.length > 0 && ['array', 'binary-tree', 'graph'].includes(dataStructure.id) && (
             <AnimationControls
               isAnimating={isAnimating}
               currentStep={currentStep}

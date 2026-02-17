@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, Eye } from 'lucide-react';
 import { OperationButton } from './OperationButton';
 
 interface QueueOperationsProps {
@@ -21,6 +21,12 @@ export const QueueOperations: React.FC<QueueOperationsProps> = ({ handleOperatio
         handleOperation={handleOperation}
         icon={<ArrowUpFromLine className="h-4 w-4" />}
         label="Dequeue"
+      />
+      <OperationButton 
+        operation="peek"
+        handleOperation={handleOperation}
+        icon={<Eye className="h-4 w-4" />}
+        label="Peek"
       />
     </div>
   );

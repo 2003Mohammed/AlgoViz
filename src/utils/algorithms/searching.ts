@@ -69,5 +69,30 @@ export const searchingAlgorithms: Algorithm[] = [
         industry: "Artificial Intelligence"
       }
     ]
+  },
+  {
+    id: 'linear-search',
+    name: 'Linear Search',
+    category: 'searching',
+    description: 'Sequentially checks each element until the target is found.',
+    icon: Search,
+    timeComplexity: { best: 'O(1)', average: 'O(n)', worst: 'O(n)' },
+    spaceComplexity: 'O(1)',
+    pseudocode: [
+      'for i from 0 to n-1',
+      '  if A[i] == target return i',
+      'return -1'
+    ],
+    implementation: `function linearSearch(arr, target) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] === target) return i;
   }
+  return -1;
+}`,
+    realWorldExamples: [
+      { title: 'Small Data Scan', description: 'Useful for small unsorted lists.', industry: 'General Computing' },
+      { title: 'One-pass validation', description: 'Sequential checks in streams.', industry: 'Data Processing' }
+    ]
+  }
+
 ];

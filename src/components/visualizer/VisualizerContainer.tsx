@@ -119,13 +119,18 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
                     <Card>
                       <CardHeader className="pb-2"><CardTitle className="text-base">Binary Search Target</CardTitle></CardHeader>
                       <CardContent>
-                        <input
-                          className="w-full rounded-md border px-3 py-2 bg-background"
-                          aria-label="Binary search target"
-                          placeholder="Enter target value"
-                          value={searchTarget}
-                          onChange={(event) => setSearchTarget(event.target.value)}
-                        />
+                        <div className="flex gap-2">
+                          <input
+                            className="w-full rounded-md border px-3 py-2 bg-background"
+                            aria-label="Binary search target"
+                            placeholder="Enter target value"
+                            value={searchTarget}
+                            onChange={(event) => setSearchTarget(event.target.value)}
+                          />
+                          <Button variant="outline" onClick={() => handleCustomArraySubmit(array.map((item) => Number(item.value)))}>
+                            Search
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   )}
@@ -150,13 +155,16 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
                     <Card>
                       <CardHeader className="pb-2"><CardTitle className="text-base">Graph Start Node</CardTitle></CardHeader>
                       <CardContent>
-                        <input
-                          className="w-full rounded-md border px-3 py-2 bg-background"
-                          aria-label="Graph start node"
-                          placeholder="Enter start node (case-insensitive)"
-                          value={graphStartNode}
-                          onChange={(event) => setGraphStartNode(event.target.value)}
-                        />
+                        <div className="flex gap-2">
+                          <input
+                            className="w-full rounded-md border px-3 py-2 bg-background"
+                            aria-label="Graph start node"
+                            placeholder="Enter start node (case-insensitive)"
+                            value={graphStartNode}
+                            onChange={(event) => setGraphStartNode(event.target.value)}
+                          />
+                          <Button variant="outline" onClick={handleGenerateRandomGraph}>Apply</Button>
+                        </div>
                       </CardContent>
                     </Card>
                   )}
@@ -237,6 +245,31 @@ export const VisualizerContainer: React.FC<VisualizerContainerProps> = ({ algori
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5 }} className="cyber-panel">
         <VisualizerCodeSections algorithm={algorithm} activeLineIndex={activeLineIndex} hidePseudocode />
       </motion.div>
+
+
+      {algorithm.category === 'graph' && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }} className="cyber-panel">
+          <div className="glass-card p-6 overflow-x-auto">
+            <h3 className="text-xl font-semibold mb-3">Graph Algorithm Summary</h3>
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2">Algorithm</th>
+                  <th className="text-left py-2">Graph Type</th>
+                  <th className="text-left py-2">Shortest Path</th>
+                  <th className="text-left py-2">Best For</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b"><td className="py-2">BFS</td><td>Unweighted</td><td>Fewest edges</td><td>Simple shortest path</td></tr>
+                <tr className="border-b"><td className="py-2">DFS</td><td>Unweighted</td><td>No</td><td>Traversal / cycles</td></tr>
+                <tr className="border-b"><td className="py-2">Dijkstra</td><td>Weighted (non-negative)</td><td>Lowest cost</td><td>Weighted shortest path</td></tr>
+                <tr><td className="py-2">A*</td><td>Weighted (non-negative)</td><td>Lowest cost</td><td>Faster pathfinding</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }} className="cyber-panel">
         <RealWorldExamples algorithm={algorithm} />
